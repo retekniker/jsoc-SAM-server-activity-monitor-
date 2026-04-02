@@ -82,6 +82,25 @@
             box-shadow: 0 0 10px #ff4d4d;
         }
         @keyframes alert-blink { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.3; transform: scale(1.2); } }
+
+        .btn-clear-all {
+            margin-top: 8px;
+            width: 100%;
+            border: 1px solid #ff4d4d;
+            background: rgba(255, 77, 77, 0.1);
+            color: #ff4d4d;
+            font-size: 9px;
+            font-weight: bold;
+            padding: 4px;
+            text-transform: uppercase;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .btn-clear-all:hover {
+            background: #ff4d4d;
+            color: #0b0f14;
+            box-shadow: 0 0 10px #ff4d4d;
+        }
     </style>
 </head>
 <body class="p-4 md:p-6">
@@ -188,6 +207,7 @@
                     <button onclick="addWatch()" id="addBtn" class="bg-green-900 hover:bg-green-700 text-white text-[10px] px-4 py-1 transition-all font-bold">ADD</button>
                 </div>
                 <div id="watchList" class="text-xs space-y-2 max-h-40 overflow-y-auto"></div>
+                <button onclick="clearAllWatch()" id="clearBtn" class="btn-clear-all"></button>
             </div>
 
             <div class="soc-border-red p-4 bg-red-950/10">
@@ -220,19 +240,19 @@
                 manual: "SYSTEM MANUAL [?]", totalPop: "Total JSOC Population", watchlist: "Priority Watchlist", critical: "Critical Alerts", trend: "Population Trend", syslog: "System Log",
                 players: "Players:", map: "Map:", ping: "Ping:", roster: "Roster (Dbl-Click)", m_title: "System Operations Manual", m_close: "Return to Monitor",
                 m_body: `<div class="border-l-2 border-green-500 pl-4"><strong>1. Live Monitoring</strong><p class="opacity-70">Data fetched every 8s.</p></div><div class="border-l-2 border-green-500 pl-4"><strong>2. Watchlist</strong><p class="opacity-70">Alerts when watched players join.</p></div><div class="border-l-2 border-green-500 pl-4"><strong>3. Shortcuts</strong><p class="opacity-70">Double-click names to watch.</p></div>`,
-                sync: "Data sync complete", added: "Added to Watchlist:", online: "ONLINE", full: "SERVER FULL", offline: "OFFLINE", joined: "JOINED", left: "LEFT", searching: "Searching..."
+                sync: "Data sync complete", added: "Added to Watchlist:", online: "ONLINE", full: "SERVER FULL", offline: "OFFLINE", joined: "JOINED", left: "LEFT", searching: "Searching...", clear: "Clear All Watchlist", cleared: "Watchlist cleared"
             },
             pl: {
                 manual: "MANUAL SYSTEMU [?]", totalPop: "Całkowita Populacja JSOC", watchlist: "Lista Priorytetowa", critical: "Alerty Krytyczne", trend: "Trend Populacji", syslog: "Log Systemowy",
                 players: "Gracze:", map: "Mapa:", ping: "Ping:", roster: "Lista (Dbl-Click)", m_title: "Instrukcja Operacyjna Systemu", m_close: "Powrót do Monitora",
                 m_body: `<div class="border-l-2 border-green-500 pl-4"><strong>1. Monitoring na Żywo</strong><p class="opacity-70">Dane pobierane co 8s.</p></div><div class="border-l-2 border-green-500 pl-4"><strong>2. Obserwowani</strong><p class="opacity-70">Alerty gdy gracz wejdzie na serwer.</p></div><div class="border-l-2 border-green-500 pl-4"><strong>3. Skróty</strong><p class="opacity-70">Kliknij dwa razy nick, aby dodać.</p></div>`,
-                sync: "Synchronizacja zakończona", added: "Dodano do listy:", online: "ONLINE", full: "SERWER PEŁNY", offline: "OFFLINE", joined: "WSZEDŁ NA", left: "OPUŚCIŁ", searching: "Szukanie..."
+                sync: "Synchronizacja zakończona", added: "Dodano do listy:", online: "ONLINE", full: "SERWER PEŁNY", offline: "OFFLINE", joined: "WSZEDŁ NA", left: "OPUŚCIŁ", searching: "Szukanie...", clear: "Wyczyść listę", cleared: "Lista obserwacyjna wyczyszczona"
             },
             se: {
                 manual: "SYSTEM MANUAL [?]", totalPop: "Total JSOC Population", watchlist: "Prioritetslista", critical: "Kritiska Varningar", trend: "Populationstrend", syslog: "Systemlogg",
                 players: "Spelare:", map: "Karta:", ping: "Ping:", roster: "Lista (Dubbelklicka)", m_title: "Systemets Manual", m_close: "Tillbaka till Monitorn",
                 m_body: `<div class="border-l-2 border-green-500 pl-4"><strong>1. Live-övervakning</strong><p class="opacity-70">Data hämtas var 8:e sek.</p></div><div class="border-l-2 border-green-500 pl-4"><strong>2. Bevakningslista</strong><p class="opacity-70">Varningar när spelare ansluter.</p></div><div class="border-l-2 border-green-500 pl-4"><strong>3. Genvägar</strong><p class="opacity-70">Dubbelklicka för att bevaka.</p></div>`,
-                sync: "Synkronisering klar", added: "Tillagd i listan:", online: "ONLINE", full: "SERVER FULL", offline: "OFFLINE", joined: "ANSLÖT TILL", left: "LÄMNADE", searching: "Söker..."
+                sync: "Synkronisering klar", added: "Tillagd i listan:", online: "ONLINE", full: "SERVER FULL", offline: "OFFLINE", joined: "ANSLÖT TILL", left: "LÄMNADE", searching: "Söker...", clear: "Rensa listan", cleared: "Bevakningslistan rensad"
             }
         };
 
@@ -252,6 +272,7 @@
             document.getElementById('criticalTitle').innerText = t.critical;
             document.getElementById('trendTitle').innerText = t.trend;
             document.getElementById('syslogTitle').innerText = t.syslog;
+            document.getElementById('clearBtn').innerText = t.clear;
             document.querySelectorAll('.lang-players').forEach(el => el.innerText = t.players);
             document.querySelectorAll('.lang-map').forEach(el => el.innerText = t.map);
             document.querySelectorAll('.lang-ping').forEach(el => el.innerText = t.ping);
@@ -274,7 +295,9 @@
         let isFirstLoad = true;
         const FETCH_INTERVAL = 8000;
         let lastFetchTime = 0;
+        
         const alarmAudio = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
+        const disconnectAudio = new Audio("https://actions.google.com/sounds/v1/foley/pop.ogg");
 
         function toggleHelp() {
             const modal = document.getElementById('helpModal');
@@ -282,7 +305,9 @@
         }
 
         function isPlayerWatched(name) { return name && WATCH.some(w => w.toLowerCase() === name.toLowerCase()); }
+        
         function alertSound() { alarmAudio.currentTime = 0; alarmAudio.play().catch(()=>{}); }
+        function disconnectSound() { disconnectAudio.currentTime = 0; disconnectAudio.play().catch(()=>{}); }
 
         function logEvent(text, color = "text-green-500") {
             const log = document.getElementById("logBox");
@@ -323,6 +348,12 @@
 
         function removeWatch(nick) { WATCH = WATCH.filter(x => x !== nick); renderWatchList(); }
 
+        function clearAllWatch() {
+            WATCH = [];
+            renderWatchList();
+            logEvent(i18n[currentLang].cleared, "text-red-400");
+        }
+
         async function fetchServer(name, id) {
             const start = performance.now();
             try {
@@ -335,15 +366,18 @@
                 currentNames.filter(p => !previous[name].includes(p)).forEach(pName => {
                     if (!isFirstLoad && isPlayerWatched(pName)) { alertSound(); addAlert(`${pName} ${i18n[currentLang].joined} ${name}`, 'join'); }
                 });
+
                 previous[name].filter(p => !currentNames.includes(p)).forEach(pName => {
-                    if (!isFirstLoad && isPlayerWatched(pName)) { addAlert(`${pName} ${i18n[currentLang].left} ${name}`, 'leave'); }
+                    if (!isFirstLoad && isPlayerWatched(pName)) { 
+                        disconnectSound(); 
+                        addAlert(`${pName} ${i18n[currentLang].left} ${name}`, 'leave'); 
+                    }
                 });
                 previous[name] = currentNames;
 
-                // Logika Alertu o pełnym serwerze
                 const isNowFull = attr.status === 'online' && attr.players >= attr.maxPlayers;
                 if (!isFirstLoad && isNowFull && !serverFullState[name]) {
-                    addAlert(`${name}: ${i18n[currentLang].full}`, 'leave'); // 'leave' używa czerwonego koloru
+                    addAlert(`${name}: ${i18n[currentLang].full}`, 'leave');
                 }
                 serverFullState[name] = isNowFull;
 
