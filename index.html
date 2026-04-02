@@ -41,8 +41,28 @@
         .btn-clear-all { margin-top: 8px; width: 100%; border: 1px solid #ff4d4d; background: rgba(255, 77, 77, 0.1); color: #ff4d4d; font-size: 9px; font-weight: bold; padding: 4px; text-transform: uppercase; transition: all 0.2s; cursor: pointer; }
         .btn-clear-all:hover { background: #ff4d4d; color: #0b0f14; box-shadow: 0 0 10px #ff4d4d; }
 
-        .btn-add-all { border: 1px solid #00ff9c; background: rgba(0, 255, 156, 0.05); color: #00ff9c; font-size: 9px; font-weight: bold; padding: 2px 6px; text-transform: uppercase; transition: all 0.2s; cursor: pointer; margin-left: auto; }
-        .btn-add-all:hover { background: #00ff9c; color: #0b0f14; box-shadow: 0 0 8px #00ff9c; }
+        /* NOWY STYL PRZYCISKU ADD ALL */
+        .btn-add-all { 
+            border: 2px solid #00ff9c; 
+            background: rgba(0, 255, 156, 0.1); 
+            color: #00ff9c; 
+            font-size: 9px; 
+            font-weight: 900; 
+            padding: 3px 8px; 
+            text-transform: uppercase; 
+            transition: all 0.3s; 
+            cursor: pointer; 
+            margin-left: auto;
+            box-shadow: 0 0 8px rgba(0, 255, 156, 0.4);
+            letter-spacing: 0.05em;
+        }
+        .btn-add-all:hover { 
+            background: #00ff9c; 
+            color: #0b0f14; 
+            box-shadow: 0 0 15px #00ff9c, inset 0 0 5px rgba(0,0,0,0.5); 
+            transform: translateY(-1px);
+        }
+        .btn-add-all:active { transform: translateY(1px); }
 
         .mute-btn { cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; padding: 4px; border-radius: 4px; }
         .mute-btn:hover { background: rgba(0, 255, 156, 0.1); }
@@ -179,7 +199,7 @@
                 <div class="flex justify-between items-center mb-3">
                     <h3 id="criticalTitle" class="text-sm font-bold uppercase opacity-80 text-white"></h3>
                     <div class="flex gap-2">
-                        <button onclick="clearAllAlerts()" class="btn-alert-action">Clear All</button>
+                        <button onclick="clearAllAlerts()" class="btn-alert-action" style="border: 1px solid #ff4d4d; color: #ff4d4d; font-size: 8px; padding: 2px 6px;">Clear All</button>
                     </div>
                 </div>
                 <div id="alertBox" class="text-[11px] space-y-1 h-40 overflow-y-auto"></div>
@@ -223,7 +243,7 @@
         let isMuted = localStorage.getItem('jsoc_muted') === 'true';
         let currentVolume = parseFloat(localStorage.getItem('jsoc_volume')) || 1.0;
         
-        // POPRAWIONE ID SERWERÓW (EU2 i EU3 zamienione miejscami)
+        // POPRAWIONE ID SERWERÓW
         const SERVERS = { EU1: "14808491", EU2: "30137964", EU3: "28825461" };
         let WATCH = JSON.parse(localStorage.getItem('jsoc_watch')) || [];
         let previous = { EU1: [], EU2: [], EU3: [] };
