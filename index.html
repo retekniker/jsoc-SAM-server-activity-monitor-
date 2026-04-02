@@ -84,23 +84,11 @@
         @keyframes alert-blink { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.3; transform: scale(1.2); } }
 
         .btn-clear-all {
-            margin-top: 8px;
-            width: 100%;
-            border: 1px solid #ff4d4d;
-            background: rgba(255, 77, 77, 0.1);
-            color: #ff4d4d;
-            font-size: 9px;
-            font-weight: bold;
-            padding: 4px;
-            text-transform: uppercase;
-            transition: all 0.2s;
-            cursor: pointer;
+            margin-top: 8px; width: 100%; border: 1px solid #ff4d4d; background: rgba(255, 77, 77, 0.1);
+            color: #ff4d4d; font-size: 9px; font-weight: bold; padding: 4px; text-transform: uppercase;
+            transition: all 0.2s; cursor: pointer;
         }
-        .btn-clear-all:hover {
-            background: #ff4d4d;
-            color: #0b0f14;
-            box-shadow: 0 0 10px #ff4d4d;
-        }
+        .btn-clear-all:hover { background: #ff4d4d; color: #0b0f14; box-shadow: 0 0 10px #ff4d4d; }
     </style>
 </head>
 <body class="p-4 md:p-6">
@@ -132,28 +120,18 @@
         <div class="text-center md:text-right">
             <div class="flex flex-col md:flex-row items-center justify-end gap-3 md:gap-5 mb-2">
                 <button onclick="toggleHelp()" id="manualBtn" class="btn-neon-help text-[10px] font-bold px-4 py-1.5 rounded-sm order-2 md:order-1"></button>
-                <h1 class="text-3xl md:text-4xl font-bold glow-text tracking-tighter uppercase mb-0 leading-none order-1 md:order-2">
-                    77th JSOC
-                </h1>
+                <h1 class="text-3xl md:text-4xl font-bold glow-text tracking-tighter uppercase mb-0 leading-none order-1 md:order-2">77th JSOC</h1>
             </div>
-            <p class="text-lg md:text-xl font-light opacity-80 tracking-[0.2em] md:tracking-[0.3em] text-green-300 mb-0">
-                SERVER ACTIVITY MONITOR
-            </p>
-            <div class="text-[10px] opacity-30 uppercase tracking-[0.4em] mt-1">
-                by Komputer
-            </div>
+            <p class="text-lg md:text-xl font-light opacity-80 tracking-[0.2em] md:tracking-[0.3em] text-green-300 mb-0">SERVER ACTIVITY MONITOR</p>
+            <div class="text-[10px] opacity-30 uppercase tracking-[0.4em] mt-1">by Komputer</div>
         </div>
     </div>
 
     <div class="flex flex-col lg:flex-row gap-6 items-start w-full">
-        
         <div class="flex flex-col gap-6 w-full lg:w-auto shrink-0">
             <div class="flex flex-col md:flex-row gap-4 w-full">
                 <div id="containerEU1" class="soc-border p-4 bg-black/40 w-full md:w-64 relative overflow-hidden shrink-0">
-                    <div class="flex items-center mb-3">
-                        <h2 class="font-bold text-lg">EU-1</h2>
-                        <div id="alertEU1" class="alert-icon">!</div>
-                    </div>
+                    <div class="flex items-center mb-3"><h2 class="font-bold text-lg">EU-1</h2><div id="alertEU1" class="alert-icon">!</div></div>
                     <div id="statusEU1" class="text-[10px] px-2 py-0.5 rounded border border-current uppercase w-full text-right mb-3">Loading</div>
                     <div class="grid grid-cols-2 gap-2 text-sm mb-4">
                         <div class="lang-players opacity-70"></div> <div id="playersEU1" class="text-right font-bold">-/-</div>
@@ -164,10 +142,7 @@
                     <div id="listEU1" class="h-[400px] md:h-[500px] overflow-y-auto text-xs space-y-1"></div>
                 </div>
                 <div id="containerEU2" class="soc-border p-4 bg-black/40 w-full md:w-64 relative overflow-hidden shrink-0">
-                    <div class="flex items-center mb-3">
-                        <h2 class="font-bold text-lg">EU-2</h2>
-                        <div id="alertEU2" class="alert-icon">!</div>
-                    </div>
+                    <div class="flex items-center mb-3"><h2 class="font-bold text-lg">EU-2</h2><div id="alertEU2" class="alert-icon">!</div></div>
                     <div id="statusEU2" class="text-[10px] px-2 py-0.5 rounded border border-current uppercase w-full text-right mb-3">Loading</div>
                     <div class="grid grid-cols-2 gap-2 text-sm mb-4">
                         <div class="lang-players opacity-70"></div> <div id="playersEU2" class="text-right font-bold">-/-</div>
@@ -178,10 +153,7 @@
                     <div id="listEU2" class="h-[400px] md:h-[500px] overflow-y-auto text-xs space-y-1"></div>
                 </div>
                 <div id="containerEU3" class="soc-border p-4 bg-black/40 w-full md:w-64 relative overflow-hidden shrink-0">
-                    <div class="flex items-center mb-3">
-                        <h2 class="font-bold text-lg">EU-3</h2>
-                        <div id="alertEU3" class="alert-icon">!</div>
-                    </div>
+                    <div class="flex items-center mb-3"><h2 class="font-bold text-lg">EU-3</h2><div id="alertEU3" class="alert-icon">!</div></div>
                     <div id="statusEU3" class="text-[10px] px-2 py-0.5 rounded border border-current uppercase w-full text-right mb-3">Loading</div>
                     <div class="grid grid-cols-2 gap-2 text-sm mb-4">
                         <div class="lang-players opacity-70"></div> <div id="playersEU3" class="text-right font-bold">-/-</div>
@@ -192,7 +164,6 @@
                     <div id="listEU3" class="h-[400px] md:h-[500px] overflow-y-auto text-xs space-y-1"></div>
                 </div>
             </div>
-
             <div class="soc-border p-6 bg-black/60 flex flex-col items-center justify-center w-full">
                 <div id="totalLabel" class="text-sm opacity-60 uppercase tracking-[0.4em] mb-2 text-center"></div>
                 <div class="text-6xl md:text-8xl font-bold glow-text leading-none" id="totalStat">0</div>
@@ -218,13 +189,9 @@
             <div class="soc-border p-4 bg-black flex-1 min-h-[300px]">
                 <div class="flex justify-between items-center mb-3">
                     <h3 id="trendTitle" class="text-sm font-bold uppercase opacity-80"></h3>
-                    <div class="text-xs bg-green-900/30 px-2 py-0.5 rounded border border-green-500/30">
-                        Live: <span id="trendTotal" class="font-bold">0</span>
-                    </div>
+                    <div class="text-xs bg-green-900/30 px-2 py-0.5 rounded border border-green-500/30">Live: <span id="trendTotal" class="font-bold">0</span></div>
                 </div>
-                <div class="relative h-[200px] md:h-[250px] w-full">
-                    <canvas id="popChart"></canvas>
-                </div>
+                <div class="relative h-[200px] md:h-[250px] w-full"><canvas id="popChart"></canvas></div>
             </div>
 
             <div class="soc-border p-4 bg-black/40">
@@ -257,12 +224,18 @@
         };
 
         let currentLang = localStorage.getItem('jsoc_lang') || 'en';
+        const SERVERS = { EU1: "14808491", EU2: "28825461", EU3: "30137964" };
+        let WATCH = JSON.parse(localStorage.getItem('jsoc_watch')) || [];
+        let previous = { EU1: [], EU2: [], EU3: [] };
+        let serverFullState = { EU1: false, EU2: false, EU3: false };
+        let serverOfflineState = { EU1: false, EU2: false, EU3: false }; // Śledzenie statusu offline
+        let historyData = []; let historyLabels = []; let cache = {}; let isFirstLoad = true;
+        const FETCH_INTERVAL = 8000; let lastFetchTime = 0;
+        
+        const alarmAudio = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
+        const disconnectAudio = new Audio("https://actions.google.com/sounds/v1/foley/pop.ogg");
 
-        function changeLang(lang) {
-            currentLang = lang;
-            localStorage.setItem('jsoc_lang', lang);
-            applyLang();
-        }
+        function changeLang(lang) { currentLang = lang; localStorage.setItem('jsoc_lang', lang); applyLang(); }
 
         function applyLang() {
             const t = i18n[currentLang];
@@ -285,27 +258,8 @@
             updateClock(); 
         }
 
-        const SERVERS = { EU1: "14808491", EU2: "28825461", EU3: "30137964" };
-        let WATCH = JSON.parse(localStorage.getItem('jsoc_watch')) || [];
-        let previous = { EU1: [], EU2: [], EU3: [] };
-        let serverFullState = { EU1: false, EU2: false, EU3: false };
-        let historyData = [];
-        let historyLabels = [];
-        let cache = {};
-        let isFirstLoad = true;
-        const FETCH_INTERVAL = 8000;
-        let lastFetchTime = 0;
-        
-        const alarmAudio = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
-        const disconnectAudio = new Audio("https://actions.google.com/sounds/v1/foley/pop.ogg");
-
-        function toggleHelp() {
-            const modal = document.getElementById('helpModal');
-            modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
-        }
-
+        function toggleHelp() { const modal = document.getElementById('helpModal'); modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex'; }
         function isPlayerWatched(name) { return name && WATCH.some(w => w.toLowerCase() === name.toLowerCase()); }
-        
         function alertSound() { alarmAudio.currentTime = 0; alarmAudio.play().catch(()=>{}); }
         function disconnectSound() { disconnectAudio.currentTime = 0; disconnectAudio.play().catch(()=>{}); }
 
@@ -347,12 +301,7 @@
         }
 
         function removeWatch(nick) { WATCH = WATCH.filter(x => x !== nick); renderWatchList(); }
-
-        function clearAllWatch() {
-            WATCH = [];
-            renderWatchList();
-            logEvent(i18n[currentLang].cleared, "text-red-400");
-        }
+        function clearAllWatch() { WATCH = []; renderWatchList(); logEvent(i18n[currentLang].cleared, "text-red-400"); }
 
         async function fetchServer(name, id) {
             const start = performance.now();
@@ -366,20 +315,25 @@
                 currentNames.filter(p => !previous[name].includes(p)).forEach(pName => {
                     if (!isFirstLoad && isPlayerWatched(pName)) { alertSound(); addAlert(`${pName} ${i18n[currentLang].joined} ${name}`, 'join'); }
                 });
-
                 previous[name].filter(p => !currentNames.includes(p)).forEach(pName => {
-                    if (!isFirstLoad && isPlayerWatched(pName)) { 
-                        disconnectSound(); 
-                        addAlert(`${pName} ${i18n[currentLang].left} ${name}`, 'leave'); 
-                    }
+                    if (!isFirstLoad && isPlayerWatched(pName)) { disconnectSound(); addAlert(`${pName} ${i18n[currentLang].left} ${name}`, 'leave'); }
                 });
                 previous[name] = currentNames;
 
+                // CRITICAL ALERT: SERVER FULL
                 const isNowFull = attr.status === 'online' && attr.players >= attr.maxPlayers;
                 if (!isFirstLoad && isNowFull && !serverFullState[name]) {
                     addAlert(`${name}: ${i18n[currentLang].full}`, 'leave');
                 }
                 serverFullState[name] = isNowFull;
+
+                // CRITICAL ALERT: SERVER OFFLINE
+                const isNowOffline = attr.status !== 'online';
+                if (!isFirstLoad && isNowOffline && !serverOfflineState[name]) {
+                    disconnectSound();
+                    addAlert(`${name}: ${i18n[currentLang].offline}`, 'leave');
+                }
+                serverOfflineState[name] = isNowOffline;
 
                 cache[name] = { ...attr, list: players, ping: Math.round(performance.now() - start) };
             } catch (err) {}
@@ -403,7 +357,6 @@
                 const c = cache[name]; if (!c) return;
                 const sEl = document.getElementById(`status${name}`);
                 const container = document.getElementById(`container${name}`);
-                
                 const isFull = c.status === 'online' && c.players >= c.maxPlayers;
                 
                 if (c.status === 'online') {
@@ -419,12 +372,11 @@
                 } else {
                     sEl.innerText = i18n[currentLang].offline;
                     sEl.className = `text-[10px] px-2 py-0.5 rounded border w-full text-right border-red-500 text-red-500`;
-                    container.classList.remove('server-full-anim');
+                    container.classList.add('server-full-anim'); // Animacja pulsu na czerwono przy offline
                 }
 
                 document.getElementById(`players${name}`).innerText = `${c.players || 0}/${c.maxPlayers || 0}`;
-                const mapDisplay = c.map || (c.details && c.details.map) || i18n[currentLang].searching;
-                document.getElementById(`map${name}`).innerText = mapDisplay;
+                document.getElementById(`map${name}`).innerText = c.map || (c.details && c.details.map) || i18n[currentLang].searching;
                 document.getElementById(`ping${name}`).innerText = `${c.ping || 0}ms`;
                 document.getElementById(`alert${name}`).style.display = c.list?.some(p => isPlayerWatched(p.name)) ? 'block' : 'none';
                 if (c.list) {
