@@ -9,10 +9,16 @@
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body { background-color: #0b0f14; color: #00ff9c; font-family: 'JetBrains Mono', monospace; overflow-x: hidden; }
-        .soc-border { border: 3px solid #00ff9c; box-shadow: 0 0 15px rgba(0, 255, 156, 0.3); }
+        .soc-border { border: 3px solid #00ff9c; box-shadow: 0 0 15px rgba(0, 255, 156, 0.3); transition: all 0.3s ease; }
         .soc-border-red { border: 3px solid #ff4d4d; box-shadow: 0 0 15px rgba(255, 77, 77, 0.3); }
         .glow-text { text-shadow: 0 0 12px rgba(0, 255, 156, 0.8), 0 0 20px rgba(0, 255, 156, 0.4); }
         .glow-text-red { text-shadow: 0 0 12px rgba(255, 77, 77, 0.8); }
+
+        @keyframes neon-pulse-red {
+            0%, 100% { border-color: #ff4d4d; box-shadow: 0 0 5px #ff4d4d, inset 0 0 5px #ff4d4d; }
+            50% { border-color: #ff0000; box-shadow: 0 0 30px #ff0000, inset 0 0 15px #ff0000; }
+        }
+        .server-full-anim { animation: neon-pulse-red 0.8s infinite; border-color: #ff4d4d !important; }
 
         .lang-btn {
             border: 1px solid #00ff9c;
@@ -124,7 +130,7 @@
         
         <div class="flex flex-col gap-6 w-full lg:w-auto shrink-0">
             <div class="flex flex-col md:flex-row gap-4 w-full">
-                <div class="soc-border p-4 bg-black/40 w-full md:w-64 relative overflow-hidden shrink-0">
+                <div id="containerEU1" class="soc-border p-4 bg-black/40 w-full md:w-64 relative overflow-hidden shrink-0">
                     <div class="flex items-center mb-3">
                         <h2 class="font-bold text-lg">EU-1</h2>
                         <div id="alertEU1" class="alert-icon">!</div>
@@ -138,7 +144,7 @@
                     <div class="lang-roster text-[10px] uppercase opacity-50 mb-2 border-t border-green-900 pt-2 text-center"></div>
                     <div id="listEU1" class="h-[400px] md:h-[500px] overflow-y-auto text-xs space-y-1"></div>
                 </div>
-                <div class="soc-border p-4 bg-black/40 w-full md:w-64 relative overflow-hidden shrink-0">
+                <div id="containerEU2" class="soc-border p-4 bg-black/40 w-full md:w-64 relative overflow-hidden shrink-0">
                     <div class="flex items-center mb-3">
                         <h2 class="font-bold text-lg">EU-2</h2>
                         <div id="alertEU2" class="alert-icon">!</div>
@@ -152,7 +158,7 @@
                     <div class="lang-roster text-[10px] uppercase opacity-50 mb-2 border-t border-green-900 pt-2 text-center"></div>
                     <div id="listEU2" class="h-[400px] md:h-[500px] overflow-y-auto text-xs space-y-1"></div>
                 </div>
-                <div class="soc-border p-4 bg-black/40 w-full md:w-64 relative overflow-hidden shrink-0">
+                <div id="containerEU3" class="soc-border p-4 bg-black/40 w-full md:w-64 relative overflow-hidden shrink-0">
                     <div class="flex items-center mb-3">
                         <h2 class="font-bold text-lg">EU-3</h2>
                         <div id="alertEU3" class="alert-icon">!</div>
@@ -214,19 +220,19 @@
                 manual: "SYSTEM MANUAL [?]", totalPop: "Total JSOC Population", watchlist: "Priority Watchlist", critical: "Critical Alerts", trend: "Population Trend", syslog: "System Log",
                 players: "Players:", map: "Map:", ping: "Ping:", roster: "Roster (Dbl-Click)", m_title: "System Operations Manual", m_close: "Return to Monitor",
                 m_body: `<div class="border-l-2 border-green-500 pl-4"><strong>1. Live Monitoring</strong><p class="opacity-70">Data fetched every 8s.</p></div><div class="border-l-2 border-green-500 pl-4"><strong>2. Watchlist</strong><p class="opacity-70">Alerts when watched players join.</p></div><div class="border-l-2 border-green-500 pl-4"><strong>3. Shortcuts</strong><p class="opacity-70">Double-click names to watch.</p></div>`,
-                sync: "Data sync complete", added: "Added to Watchlist:", online: "is ONLINE on", joined: "JOINED", left: "LEFT", searching: "Searching..."
+                sync: "Data sync complete", added: "Added to Watchlist:", online: "ONLINE", full: "SERVER FULL", offline: "OFFLINE", joined: "JOINED", left: "LEFT", searching: "Searching..."
             },
             pl: {
                 manual: "MANUAL SYSTEMU [?]", totalPop: "Całkowita Populacja JSOC", watchlist: "Lista Priorytetowa", critical: "Alerty Krytyczne", trend: "Trend Populacji", syslog: "Log Systemowy",
                 players: "Gracze:", map: "Mapa:", ping: "Ping:", roster: "Lista (Dbl-Click)", m_title: "Instrukcja Operacyjna Systemu", m_close: "Powrót do Monitora",
                 m_body: `<div class="border-l-2 border-green-500 pl-4"><strong>1. Monitoring na Żywo</strong><p class="opacity-70">Dane pobierane co 8s.</p></div><div class="border-l-2 border-green-500 pl-4"><strong>2. Obserwowani</strong><p class="opacity-70">Alerty gdy gracz wejdzie na serwer.</p></div><div class="border-l-2 border-green-500 pl-4"><strong>3. Skróty</strong><p class="opacity-70">Kliknij dwa razy nick, aby dodać.</p></div>`,
-                sync: "Synchronizacja zakończona", added: "Dodano do listy:", online: "jest ONLINE na", joined: "WSZEDŁ NA", left: "OPUŚCIŁ", searching: "Szukanie..."
+                sync: "Synchronizacja zakończona", added: "Dodano do listy:", online: "ONLINE", full: "SERWER PEŁNY", offline: "OFFLINE", joined: "WSZEDŁ NA", left: "OPUŚCIŁ", searching: "Szukanie..."
             },
             se: {
                 manual: "SYSTEM MANUAL [?]", totalPop: "Total JSOC Population", watchlist: "Prioritetslista", critical: "Kritiska Varningar", trend: "Populationstrend", syslog: "Systemlogg",
                 players: "Spelare:", map: "Karta:", ping: "Ping:", roster: "Lista (Dubbelklicka)", m_title: "Systemets Manual", m_close: "Tillbaka till Monitorn",
                 m_body: `<div class="border-l-2 border-green-500 pl-4"><strong>1. Live-övervakning</strong><p class="opacity-70">Data hämtas var 8:e sek.</p></div><div class="border-l-2 border-green-500 pl-4"><strong>2. Bevakningslista</strong><p class="opacity-70">Varningar när spelare ansluter.</p></div><div class="border-l-2 border-green-500 pl-4"><strong>3. Genvägar</strong><p class="opacity-70">Dubbelklicka för att bevaka.</p></div>`,
-                sync: "Synkronisering klar", added: "Tillagd i listan:", online: "är ONLINE på", joined: "ANSLÖT TILL", left: "LÄMNADE", searching: "Söker..."
+                sync: "Synkronisering klar", added: "Tillagd i listan:", online: "ONLINE", full: "SERVER FULL", offline: "OFFLINE", joined: "ANSLÖT TILL", left: "LÄMNADE", searching: "Söker..."
             }
         };
 
@@ -261,6 +267,7 @@
         const SERVERS = { EU1: "14808491", EU2: "28825461", EU3: "30137964" };
         let WATCH = JSON.parse(localStorage.getItem('jsoc_watch')) || [];
         let previous = { EU1: [], EU2: [], EU3: [] };
+        let serverFullState = { EU1: false, EU2: false, EU3: false };
         let historyData = [];
         let historyLabels = [];
         let cache = {};
@@ -332,6 +339,14 @@
                     if (!isFirstLoad && isPlayerWatched(pName)) { addAlert(`${pName} ${i18n[currentLang].left} ${name}`, 'leave'); }
                 });
                 previous[name] = currentNames;
+
+                // Logika Alertu o pełnym serwerze
+                const isNowFull = attr.status === 'online' && attr.players >= attr.maxPlayers;
+                if (!isFirstLoad && isNowFull && !serverFullState[name]) {
+                    addAlert(`${name}: ${i18n[currentLang].full}`, 'leave'); // 'leave' używa czerwonego koloru
+                }
+                serverFullState[name] = isNowFull;
+
                 cache[name] = { ...attr, list: players, ping: Math.round(performance.now() - start) };
             } catch (err) {}
         }
@@ -353,8 +368,26 @@
             ["EU1", "EU2", "EU3"].forEach(name => {
                 const c = cache[name]; if (!c) return;
                 const sEl = document.getElementById(`status${name}`);
-                sEl.innerText = (c.status || "offline").toUpperCase();
-                sEl.className = `text-[10px] px-2 py-0.5 rounded border w-full text-right ${c.status === 'online' ? 'border-green-500 text-green-500' : 'border-red-500 text-red-500'}`;
+                const container = document.getElementById(`container${name}`);
+                
+                const isFull = c.status === 'online' && c.players >= c.maxPlayers;
+                
+                if (c.status === 'online') {
+                    if (isFull) {
+                        sEl.innerText = i18n[currentLang].full;
+                        sEl.className = `text-[10px] px-2 py-0.5 rounded border w-full text-right border-red-500 text-red-500 font-bold`;
+                        container.classList.add('server-full-anim');
+                    } else {
+                        sEl.innerText = i18n[currentLang].online;
+                        sEl.className = `text-[10px] px-2 py-0.5 rounded border w-full text-right border-green-500 text-green-500`;
+                        container.classList.remove('server-full-anim');
+                    }
+                } else {
+                    sEl.innerText = i18n[currentLang].offline;
+                    sEl.className = `text-[10px] px-2 py-0.5 rounded border w-full text-right border-red-500 text-red-500`;
+                    container.classList.remove('server-full-anim');
+                }
+
                 document.getElementById(`players${name}`).innerText = `${c.players || 0}/${c.maxPlayers || 0}`;
                 const mapDisplay = c.map || (c.details && c.details.map) || i18n[currentLang].searching;
                 document.getElementById(`map${name}`).innerText = mapDisplay;
