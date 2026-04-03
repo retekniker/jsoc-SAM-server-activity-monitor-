@@ -22,7 +22,6 @@
             opacity: 0.8;
         }
 
-        /* Styl przycisku Refresh */
         .btn-refresh {
             font-size: 9px;
             letter-spacing: 0.2em;
@@ -64,8 +63,8 @@
         .watch-highlight { color: #ff4d4d !important; font-weight: bold !important; animation: row-pulse 2s infinite; }
         @keyframes row-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
 
-        .btn-clear-all { margin-top: 8px; width: 100%; border: 1px solid #ff4d4d; background: rgba(255, 77, 77, 0.1); color: #ff4d4d; font-size: 9px; font-weight: bold; padding: 4px; text-transform: uppercase; transition: all 0.2s; cursor: pointer; }
-        .btn-clear-all:hover { background: #ff4d4d; color: #0b0f14; box-shadow: 0 0 10px #ff4d4d; }
+        .btn-clear-all-green { border: 1px solid #00ff9c; color: #00ff9c; background: rgba(0, 255, 156, 0.05); font-size: 8px; padding: 2px 8px; font-weight: bold; text-transform: uppercase; transition: all 0.2s; cursor: pointer; }
+        .btn-clear-all-green:hover { background: #00ff9c; color: #0b0f14; box-shadow: 0 0 10px #00ff9c; }
 
         .btn-add-all { border: 2px solid #00ff9c; background: rgba(0, 255, 156, 0.1); color: #00ff9c; font-size: 9px; font-weight: 900; padding: 3px 8px; text-transform: uppercase; transition: all 0.3s; cursor: pointer; margin-left: auto; box-shadow: 0 0 10px rgba(0, 255, 156, 0.4); }
         .alert-btn-top { border: 1px solid #ff4d4d; color: #ff4d4d; font-size: 8px; padding: 2px 8px; font-weight: bold; text-transform: uppercase; transition: all 0.2s; cursor: pointer; }
@@ -191,13 +190,15 @@
 
         <div class="flex flex-col gap-6 flex-1 w-full">
             <div class="soc-border p-4 bg-black/40">
-                <h3 id="watchlistTitle" class="text-sm font-bold mb-3 uppercase opacity-80"></h3>
+                <div class="flex justify-between items-center mb-3">
+                    <h3 id="watchlistTitle" class="text-sm font-bold uppercase opacity-80"></h3>
+                    <button onclick="clearAllWatch()" class="btn-clear-all-green">Clear All</button>
+                </div>
                 <div class="flex gap-2 mb-4">
                     <input id="watchInput" type="text" placeholder="Nickname..." class="bg-black border border-green-900 text-xs p-2 flex-1 outline-none focus:border-green-400">
                     <button onclick="addWatch()" class="bg-green-900 hover:bg-green-700 text-white text-[10px] px-4 py-1 font-bold">ADD</button>
                 </div>
                 <div id="watchList" class="text-xs space-y-2 max-h-40 overflow-y-auto"></div>
-                <button onclick="clearAllWatch()" id="clearBtn" class="btn-clear-all"></button>
             </div>
 
             <div class="soc-border-red p-4 bg-red-950/10">
@@ -226,19 +227,19 @@
                 manual: "SYSTEM MANUAL [?]", totalPop: "Total Population", watchlist: "Priority Watchlist", critical: "Notifications", trend: "Population Trend", syslog: "System Log", players: "Players:", map: "Map:", ping: "Ping:", 
                 m_title: "Tactical Monitor Manual", m_close: "Return", 
                 m_body: `<div class="space-y-4 text-xs"><div><b class="text-green-400">SERVER STATUS:</b> Monitors EU-1, EU-2, and EU-3. Red pulse indicates server is full.</div><div><b class="text-green-400">WATCHLIST:</b> Track specific players. Double-click any name in the roster or use "ADD ALL" to monitor everyone currently online.</div><div><b class="text-green-400">NOTIFICATIONS:</b> Alerts trigger when a watched player joins or leaves. Click 'X' to dismiss one, or 'Clear All' to wipe the log.</div><div><b class="text-green-400">AUDIO:</b> Beep for joins, Pop for leaves. Volume controls are located next to the system clock.</div></div>`,
-                sync: "Sync complete", added: "Added:", online: "ONLINE", full: "SERVER FULL", offline: "OFFLINE", joined: "JOINED", left: "LEFT", clear: "Clear Watchlist", cleared: "Watchlist cleared" 
+                sync: "Sync complete", added: "Added:", online: "ONLINE", full: "SERVER FULL", offline: "OFFLINE", joined: "JOINED", left: "LEFT", cleared: "Watchlist cleared" 
             },
             pl: { 
                 manual: "MANUAL SYSTEMU [?]", totalPop: "Całkowita Populacja", watchlist: "Lista Priorytetowa", critical: "Powiadomienia", trend: "Trend Populacji", syslog: "Log Systemowy", players: "Gracze:", map: "Mapa:", ping: "Ping:", 
                 m_title: "Instrukcja Monitora", m_close: "Powrót", 
                 m_body: `<div class="space-y-4 text-xs"><div><b class="text-green-400">STATUS SERWERÓW:</b> Monitoruje EU-1, EU-2 i EU-3. Czerwony puls oznacza pełny serwer.</div><div><b class="text-green-400">OBSERWOWANI:</b> Śledź wybranych graczy. Kliknij 2x na nick na liście lub użyj "DODAJ WSZ.", by obserwować wszystkich obecnych.</div><div><b class="text-green-400">POWIADOMIENIA:</b> Alerty pojawiają się gdy gracz wejdzie lub wyjdzie. Kliknij 'X' by usunąć wpis lub 'Clear All' by wyczyścić wszystko.</div><div><b class="text-green-400">AUDIO:</b> Sygnał przy wejściu i wyjściu. Kontrola głośności znajduje się przy zegarze systemowym.</div></div>`,
-                sync: "Synchronizacja OK", added: "Dodano:", online: "ONLINE", full: "SERWER PEŁNY", offline: "OFFLINE", joined: "WSZEDŁ", left: "OPUŚCIŁ", clear: "Wyczyść listę", cleared: "Lista wyczyszczona" 
+                sync: "Synchronizacja OK", added: "Dodano:", online: "ONLINE", full: "SERWER PEŁNY", offline: "OFFLINE", joined: "WSZEDŁ", left: "OPUŚCIŁ", cleared: "Lista wyczyszczona" 
             },
             se: { 
                 manual: "SYSTEM MANUAL [?]", totalPop: "Total Population", watchlist: "Prioritetslista", critical: "Notiser", trend: "Populationstrend", syslog: "Systemlogg", players: "Spelare:", map: "Karta:", ping: "Ping:", 
                 m_title: "Monitor Manual", m_close: "Tillbaka", 
                 m_body: `<div class="space-y-4 text-xs"><div><b class="text-green-400">SERVERSTATUS:</b> Övervakar EU-1, EU-2 och EU-3. Röd puls indikerar full server.</div><div><b class="text-green-400">PRIORITETSLISTA:</b> Spåra specifika spelare. Dubbelklicka på namn eller använd "ADD ALL" för att lägga till alla online.</div><div><b class="text-green-400">NOTISER:</b> Aviseringar när spelare ansluter/lämnar. Klicka på 'X' för att ta bort en notis.</div><div><b class="text-green-400">LJUD:</b> Beep vid anslutning, Pop vid lämna. Volymkontroll finns bredvid klockan.</div></div>`,
-                sync: "Synk klar", added: "Tillagd:", online: "ONLINE", full: "SERVER FULL", offline: "OFFLINE", joined: "ANSLÖT", left: "LÄMNADE", clear: "Rensa listan", cleared: "Listan rensad" 
+                sync: "Synk klar", added: "Tillagd:", online: "ONLINE", full: "SERVER FULL", offline: "OFFLINE", joined: "ANSLÖT", left: "LÄMNADE", cleared: "Listan rensad" 
             }
         };
 
@@ -266,7 +267,7 @@
             const t = i18n[currentLang];
             document.getElementById('manualBtn').innerText = t.manual; document.getElementById('totalLabel').innerText = t.totalPop; document.getElementById('watchlistTitle').innerText = t.watchlist;
             document.getElementById('criticalTitle').innerText = t.critical; document.getElementById('trendTitle').innerText = t.trend; document.getElementById('syslogTitle').innerText = t.syslog;
-            document.getElementById('clearBtn').innerText = t.clear; document.getElementById('modalTitle').innerText = t.m_title; document.getElementById('modalBody').innerHTML = t.m_body;
+            document.getElementById('modalTitle').innerText = t.m_title; document.getElementById('modalBody').innerHTML = t.m_body;
             document.getElementById('modalClose').innerText = t.m_close;
             document.querySelectorAll('.lang-players').forEach(el => el.innerText = t.players); document.querySelectorAll('.lang-map').forEach(el => el.innerText = t.map);
             document.querySelectorAll('.lang-ping').forEach(el => el.innerText = t.ping);
