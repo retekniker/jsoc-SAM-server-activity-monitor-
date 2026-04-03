@@ -13,16 +13,8 @@
         .soc-border-red { border: 3px solid #ff4d4d; box-shadow: 0 0 15px rgba(255, 77, 77, 0.3); }
         .glow-text { text-shadow: 0 0 12px rgba(0, 255, 156, 0.8), 0 0 20px rgba(0, 255, 156, 0.4); }
         
-        .bottom-logo {
-            max-width: 200px;
-            width: 100%;
-            height: auto;
-            margin-top: 20px;
-            filter: drop-shadow(0 0 10px rgba(0, 255, 156, 0.3));
-            opacity: 0.8;
-        }
+        .bottom-logo { max-width: 200px; width: 100%; height: auto; margin-top: 20px; filter: drop-shadow(0 0 10px rgba(0, 255, 156, 0.3)); opacity: 0.8; }
 
-        /* Zwiększona czcionka i mocniejszy neon dla liczby graczy */
         .players-count-glow {
             font-size: 1.75rem; 
             color: #ffffff;
@@ -31,30 +23,33 @@
             line-height: 1;
         }
 
+        /* Sekcja Live Capacity - Poprawki Czytelności */
+        .cap-bar-bg { background: rgba(255, 255, 255, 0.05); height: 12px; border: 1px solid rgba(0, 255, 156, 0.2); border-radius: 2px; overflow: hidden; }
+        .cap-bar-fill { height: 100%; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s; }
+        
+        /* Większe czcionki dla etykiet w Trendach */
+        .cap-label-name { font-size: 1.1rem; font-weight: 700; letter-spacing: 0.05em; }
+        .cap-label-perc { font-size: 1.3rem; font-weight: 900; }
+
+        @keyframes alert-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+        .full-text-blink { 
+            font-size: 10px; 
+            font-weight: 900; 
+            color: #ff4d4d; 
+            text-shadow: 0 0 8px #ff4d4d;
+            animation: alert-blink 0.5s infinite;
+            display: none; /* domyślnie ukryte */
+        }
+
         @keyframes refresh-glow {
             0%, 100% { box-shadow: 0 0 5px rgba(0, 255, 156, 0.2); border-color: rgba(0, 255, 156, 0.4); }
             50% { box-shadow: 0 0 15px rgba(0, 255, 156, 0.6); border-color: #00ff9c; }
         }
 
         .btn-refresh {
-            font-size: 9px;
-            letter-spacing: 0.2em;
-            padding: 2px 10px;
-            border: 1px solid #00ff9c;
-            background: rgba(0, 255, 156, 0.05);
-            color: #00ff9c;
-            margin-bottom: 8px;
-            transition: all 0.2s;
-            text-transform: uppercase;
-            animation: refresh-glow 2s infinite ease-in-out;
-            cursor: pointer;
+            font-size: 9px; letter-spacing: 0.2em; padding: 2px 10px; border: 1px solid #00ff9c; background: rgba(0, 255, 156, 0.05); color: #00ff9c; margin-bottom: 8px; transition: all 0.2s; text-transform: uppercase; animation: refresh-glow 2s infinite ease-in-out; cursor: pointer;
         }
-        .btn-refresh:hover {
-            background: #00ff9c;
-            color: #0b0f14;
-            box-shadow: 0 0 20px #00ff9c;
-            animation: none;
-        }
+        .btn-refresh:hover { background: #00ff9c; color: #0b0f14; box-shadow: 0 0 20px #00ff9c; animation: none; }
 
         @keyframes neon-pulse-red {
             0%, 100% { border-color: #ff4d4d; box-shadow: 0 0 5px #ff4d4d, inset 0 0 5px #ff4d4d; }
@@ -62,7 +57,6 @@
         }
         .server-full-anim { animation: neon-pulse-red 0.8s infinite; border-color: #ff4d4d !important; }
 
-        @keyframes alert-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
         .alert-icon { display: none; width: 18px; height: 18px; background-color: #ff4d4d; color: white; border-radius: 50%; text-align: center; line-height: 18px; font-weight: bold; font-size: 10px; margin-left: 8px; animation: alert-blink 0.8s infinite; box-shadow: 0 0 10px #ff4d4d; }
 
         .lang-btn { border: 1px solid #00ff9c; background: rgba(0, 255, 156, 0.1); color: #00ff9c; font-size: 10px; padding: 2px 8px; transition: all 0.2s; cursor: pointer; }
@@ -78,7 +72,6 @@
         
         .player-row:hover { background: rgba(0, 255, 156, 0.1); cursor: cell; }
         .watch-highlight { color: #ff4d4d !important; font-weight: bold !important; animation: row-pulse 2s infinite; }
-        @keyframes row-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
 
         .btn-clear-all-green { border: 1px solid #00ff9c; color: #00ff9c; background: rgba(0, 255, 156, 0.05); font-size: 8px; padding: 2px 8px; font-weight: bold; text-transform: uppercase; transition: all 0.2s; cursor: pointer; }
         .btn-clear-all-green:hover { background: #00ff9c; color: #0b0f14; box-shadow: 0 0 10px #00ff9c; }
@@ -226,9 +219,45 @@
                 <div id="alertBox" class="text-[11px] space-y-1 h-40 overflow-y-auto"></div>
             </div>
 
-            <div class="soc-border p-4 bg-black flex-1 min-h-[300px]">
-                <h3 id="trendTitle" class="text-sm font-bold uppercase opacity-80 mb-3"></h3>
-                <div class="relative h-[200px] md:h-[250px] w-full"><canvas id="popChart"></canvas></div>
+            <div class="soc-border p-4 bg-black flex-1 min-h-[380px]">
+                <h3 id="trendTitle" class="text-sm font-bold uppercase opacity-80 mb-6"></h3>
+                
+                <div class="grid grid-cols-4 gap-4 mb-8">
+                    <div class="text-center">
+                        <div class="flex flex-col mb-1">
+                            <span class="cap-label-name text-green-400">EU1</span>
+                            <span id="percEU1" class="cap-label-perc glow-text">0%</span>
+                            <span id="fullEU1" class="full-text-blink mt-1">SERVER FULL</span>
+                        </div>
+                        <div class="cap-bar-bg"><div id="barEU1" class="cap-bar-fill bg-green-500" style="width: 0%"></div></div>
+                    </div>
+                    <div class="text-center">
+                        <div class="flex flex-col mb-1">
+                            <span class="cap-label-name text-green-400">EU2</span>
+                            <span id="percEU2" class="cap-label-perc glow-text">0%</span>
+                            <span id="fullEU2" class="full-text-blink mt-1">SERVER FULL</span>
+                        </div>
+                        <div class="cap-bar-bg"><div id="barEU2" class="cap-bar-fill bg-green-500" style="width: 0%"></div></div>
+                    </div>
+                    <div class="text-center">
+                        <div class="flex flex-col mb-1">
+                            <span class="cap-label-name text-green-400">EU3</span>
+                            <span id="percEU3" class="cap-label-perc glow-text">0%</span>
+                            <span id="fullEU3" class="full-text-blink mt-1">SERVER FULL</span>
+                        </div>
+                        <div class="cap-bar-bg"><div id="barEU3" class="cap-bar-fill bg-green-500" style="width: 0%"></div></div>
+                    </div>
+                    <div class="text-center">
+                        <div class="flex flex-col mb-1">
+                            <span class="cap-label-name text-white">TOTAL</span>
+                            <span id="percTOTAL" class="cap-label-perc text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">0%</span>
+                            <span id="fullTOTAL" class="full-text-blink mt-1 text-white opacity-40">TOTAL REACHED</span>
+                        </div>
+                        <div class="cap-bar-bg border-white/40"><div id="barTOTAL" class="cap-bar-fill bg-white" style="width: 0%"></div></div>
+                    </div>
+                </div>
+
+                <div class="relative h-[180px] w-full"><canvas id="popChart"></canvas></div>
             </div>
 
             <div class="soc-border p-4 bg-black/40">
@@ -240,30 +269,14 @@
 
     <script>
         const i18n = {
-            en: { 
-                manual: "SYSTEM MANUAL [?]", totalPop: "Total Population", watchlist: "Priority Watchlist", critical: "Notifications", trend: "Population Trend", syslog: "System Log", players: "Players:", map: "Map:", ping: "Ping:", 
-                m_title: "Tactical Monitor Manual", m_close: "Return", 
-                m_body: `<div class="space-y-4 text-xs"><div><b class="text-green-400">SERVER STATUS:</b> Monitors EU-1, EU-2, and EU-3. Red pulse indicates server is full.</div><div><b class="text-green-400">WATCHLIST:</b> Track specific players. Double-click any name in the roster or use "ADD ALL" to monitor everyone currently online.</div><div><b class="text-green-400">NOTIFICATIONS:</b> Alerts trigger when a watched player joins or leaves. Click 'X' to dismiss one, or 'Clear All' to wipe the log.</div><div><b class="text-green-400">AUDIO:</b> Beep for joins, Pop for leaves. Volume controls are located next to the system clock.</div></div>`,
-                sync: "Sync complete", added: "Added:", online: "ONLINE", full: "SERVER FULL", offline: "OFFLINE", joined: "JOINED", left: "LEFT", cleared: "Watchlist cleared" 
-            },
-            pl: { 
-                manual: "MANUAL SYSTEMU [?]", totalPop: "Całkowita Populacja", watchlist: "Lista Priorytetowa", critical: "Powiadomienia", trend: "Trend Populacji", syslog: "Log Systemowy", players: "Gracze:", map: "Mapa:", ping: "Ping:", 
-                m_title: "Instrukcja Monitora", m_close: "Powrót", 
-                m_body: `<div class="space-y-4 text-xs"><div><b class="text-green-400">STATUS SERWERÓW:</b> Monitoruje EU-1, EU-2 i EU-3. Czerwony puls oznacza pełny serwer.</div><div><b class="text-green-400">OBSERWOWANI:</b> Śledź wybranych graczy. Kliknij 2x na nick na liście lub użyj "DODAJ WSZ.", by obserwować wszystkich obecnych.</div><div><b class="text-green-400">POWIADOMIENIA:</b> Alerty pojawiają się gdy gracz wejdzie lub wyjdzie. Kliknij 'X' by usunąć wpis lub 'Clear All' by wyczyścić wszystko.</div><div><b class="text-green-400">AUDIO:</b> Sygnał przy wejściu i wyjściu. Kontrola głośności znajduje się przy zegarze systemowym.</div></div>`,
-                sync: "Synchronizacja OK", added: "Dodano:", online: "ONLINE", full: "SERWER PEŁNY", offline: "OFFLINE", joined: "WSZEDŁ", left: "OPUŚCIŁ", cleared: "Lista wyczyszczona" 
-            },
-            se: { 
-                manual: "SYSTEM MANUAL [?]", totalPop: "Total Population", watchlist: "Prioritetslista", critical: "Notiser", trend: "Populationstrend", syslog: "Systemlogg", players: "Spelare:", map: "Karta:", ping: "Ping:", 
-                m_title: "Monitor Manual", m_close: "Tillbaka", 
-                m_body: `<div class="space-y-4 text-xs"><div><b class="text-green-400">SERVERSTATUS:</b> Övervakar EU-1, EU-2 och EU-3. Röd puls indikerar full server.</div><div><b class="text-green-400">PRIORITETSLISTA:</b> Spåra specifika spelare. Dubbelklicka på namn eller använd "ADD ALL" för att lägga till alla online.</div><div><b class="text-green-400">NOTISER:</b> Aviseringar när spelare ansluter/lämnar. Klicka på 'X' för att ta bort en notis.</div><div><b class="text-green-400">LJUD:</b> Beep vid anslutning, Pop vid lämna. Volymkontroll finns bredvid klockan.</div></div>`,
-                sync: "Synk klar", added: "Tillagd:", online: "ONLINE", full: "SERVER FULL", offline: "OFFLINE", joined: "ANSLÖT", left: "LÄMNADE", cleared: "Listan rensad" 
-            }
+            en: { manual: "SYSTEM MANUAL [?]", totalPop: "Total Population", watchlist: "Priority Watchlist", critical: "Notifications", trend: "Population Trend", syslog: "System Log", players: "Players:", map: "Map:", ping: "Ping:", m_title: "Tactical Monitor Manual", m_close: "Return", m_body: "...", sync: "Sync complete", added: "Added:", online: "ONLINE", full: "SERVER FULL", offline: "OFFLINE", joined: "JOINED", left: "LEFT", cleared: "Watchlist cleared" },
+            pl: { manual: "MANUAL SYSTEMU [?]", totalPop: "Całkowita Populacja", watchlist: "Lista Priorytetowa", critical: "Powiadomienia", trend: "Trend Populacji", syslog: "Log Systemowy", players: "Gracze:", map: "Mapa:", ping: "Ping:", m_title: "Instrukcja Monitora", m_close: "Powrót", m_body: "...", sync: "Synchronizacja OK", added: "Dodano:", online: "ONLINE", full: "SERWER PEŁNY", offline: "OFFLINE", joined: "WSZEDŁ", left: "OPUŚCIŁ", cleared: "Lista wyczyszczona" },
+            se: { manual: "SYSTEM MANUAL [?]", totalPop: "Total Population", watchlist: "Prioritetslista", critical: "Notiser", trend: "Populationstrend", syslog: "Systemlogg", players: "Spelare:", map: "Karta:", ping: "Ping:", m_title: "Monitor Manual", m_close: "Tillbaka", m_body: "...", sync: "Synk klar", added: "Tillagd:", online: "ONLINE", full: "SERVER FULL", offline: "OFFLINE", joined: "ANSLÖT", left: "LÄMNADE", cleared: "Listan rensad" }
         };
 
         let currentLang = localStorage.getItem('jsoc_lang') || 'en';
         let isMuted = localStorage.getItem('jsoc_muted') === 'true';
         let currentVolume = parseFloat(localStorage.getItem('jsoc_volume')) || 1.0;
-        let testSoundToggle = false;
         const SERVERS = { EU1: "14808491", EU2: "30137964", EU3: "28825461" };
         let WATCH = JSON.parse(localStorage.getItem('jsoc_watch')) || [];
         let previous = { EU1: [], EU2: [], EU3: [] };
@@ -272,17 +285,7 @@
         const soundLeave = new Audio("https://actions.google.com/sounds/v1/cartoon/pop.ogg");
 
         function playAudioFile(audioObj) { if(!isMuted) { const clone = audioObj.cloneNode(); clone.volume = currentVolume; clone.play().catch(()=>{}); } }
-        
-        function setVolume(level) { 
-            currentVolume = level; 
-            localStorage.setItem('jsoc_volume', level); 
-            updateVolumeUI(); 
-            if (!isMuted) {
-                if (testSoundToggle) { playAudioFile(soundLeave); } else { playAudioFile(soundJoin); }
-                testSoundToggle = !testSoundToggle;
-            }
-        }
-
+        function setVolume(level) { currentVolume = level; localStorage.setItem('jsoc_volume', level); updateVolumeUI(); }
         function updateVolumeUI() { document.querySelectorAll('.vol-level').forEach(el => { const vol = parseFloat(el.getAttribute('data-vol')); el.className = vol <= currentVolume ? "vol-level w-6 h-1.5 cursor-pointer rounded-sm bg-green-400 shadow-[0_0_8px_#00ff9c]" : "vol-level w-6 h-1.5 cursor-pointer rounded-sm bg-green-900/40"; }); }
         function toggleMute() { isMuted = !isMuted; localStorage.setItem('jsoc_muted', isMuted); updateMuteUI(); }
         function updateMuteUI() {
@@ -295,21 +298,8 @@
             const t = i18n[currentLang];
             document.getElementById('manualBtn').innerText = t.manual; document.getElementById('totalLabel').innerText = t.totalPop; document.getElementById('watchlistTitle').innerText = t.watchlist;
             document.getElementById('criticalTitle').innerText = t.critical; document.getElementById('trendTitle').innerText = t.trend; document.getElementById('syslogTitle').innerText = t.syslog;
-            document.getElementById('modalTitle').innerText = t.m_title; document.getElementById('modalBody').innerHTML = t.m_body;
-            document.getElementById('modalClose').innerText = t.m_close;
-            document.querySelectorAll('.lang-players').forEach(el => el.innerText = t.players); document.querySelectorAll('.lang-map').forEach(el => el.innerText = t.map);
-            document.querySelectorAll('.lang-ping').forEach(el => el.innerText = t.ping);
             document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active')); document.getElementById(`btn-${currentLang}`).classList.add('active');
         }
-
-        function addAlert(text) {
-            const box = document.getElementById("alertBox");
-            const div = document.createElement("div");
-            div.className = "flex justify-between items-center mb-1 border-l-2 border-green-500 pl-2 bg-black/20";
-            div.innerHTML = `<div class="text-green-400 font-bold"><span class="opacity-50 font-normal">[${new Date().toLocaleTimeString()}]</span> ${text}</div><span class="cursor-pointer text-white hover:text-red-500 px-2 font-bold" onclick="this.parentElement.remove()">✖</span>`;
-            box.insertBefore(div, box.firstChild);
-        }
-        function clearAllAlerts() { document.getElementById("alertBox").innerHTML = ""; }
 
         function renderWatchList() {
             const div = document.getElementById("watchList"); div.innerHTML = "";
@@ -353,12 +343,48 @@
 
         async function updateAll() {
             await Promise.all([fetchServer("EU1", SERVERS.EU1), fetchServer("EU2", SERVERS.EU2), fetchServer("EU3", SERVERS.EU3)]);
-            let total = 0; ["EU1", "EU2", "EU3"].forEach(n => total += cache[n]?.players || 0);
+            let totalPlayers = 0; let totalMax = 0;
+
+            ["EU1", "EU2", "EU3"].forEach(n => {
+                const c = cache[n];
+                if (!c) return;
+                totalPlayers += c.players || 0;
+                totalMax += c.maxPlayers || 0;
+                
+                const perc = Math.round((c.players / c.maxPlayers) * 100);
+                const percEl = document.getElementById(`perc${n}`);
+                const bar = document.getElementById(`bar${n}`);
+                const fullText = document.getElementById(`full${n}`);
+
+                percEl.innerText = `${perc}%`;
+                bar.style.width = `${perc}%`;
+
+                // Logika kolorów i napisów
+                if (perc >= 100) {
+                    bar.className = "cap-bar-fill bg-red-500 shadow-[0_0_15px_#ff4d4d]";
+                    percEl.className = "cap-label-perc text-red-500 glow-text";
+                    fullText.style.display = "block";
+                } else if (perc >= 90) {
+                    bar.className = "cap-bar-fill bg-yellow-500 shadow-[0_0_10px_#facc15]";
+                    percEl.className = "cap-label-perc text-yellow-400 glow-text";
+                    fullText.style.display = "none";
+                } else {
+                    bar.className = "cap-bar-fill bg-green-500 shadow-[0_0_8px_#00ff9c]";
+                    percEl.className = "cap-label-perc text-green-400 glow-text";
+                    fullText.style.display = "none";
+                }
+            });
+
+            const totalPerc = totalMax > 0 ? Math.round((totalPlayers / totalMax) * 100) : 0;
+            document.getElementById(`percTOTAL`).innerText = `${totalPerc}%`;
+            document.getElementById(`barTOTAL`).style.width = `${totalPerc}%`;
+            document.getElementById(`fullTOTAL`).style.display = totalPerc >= 100 ? "block" : "none";
+
             const timeLabel = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-            historyData.push(total); historyLabels.push(timeLabel);
+            historyData.push(totalPlayers); historyLabels.push(timeLabel);
             if (historyData.length > 60) { historyData.shift(); historyLabels.shift(); }
             chart.data.labels = historyLabels; chart.data.datasets[0].data = historyData; chart.update('none');
-            document.getElementById("totalStat").innerText = total;
+            document.getElementById("totalStat").innerText = totalPlayers;
             isFirstLoad = false; logEvent(i18n[currentLang].sync);
         }
 
@@ -393,6 +419,8 @@
                     scales: { x: { grid: { color: '#004400' }, ticks: { color: '#00ff9c', font: { size: 9 } } }, y: { beginAtZero: true, grid: { color: '#004400' }, ticks: { color: '#00ff9c', font: { size: 10 } } } } }
             });
         }
+        function addAlert(text) { const box = document.getElementById("alertBox"); const div = document.createElement("div"); div.className = "flex justify-between items-center mb-1 border-l-2 border-green-500 pl-2 bg-black/20"; div.innerHTML = `<div class="text-green-400 font-bold"><span class="opacity-50 font-normal">[${new Date().toLocaleTimeString()}]</span> ${text}</div><span class="cursor-pointer text-white hover:text-red-500 px-2 font-bold" onclick="this.parentElement.remove()">✖</span>`; box.insertBefore(div, box.firstChild); }
+        function clearAllAlerts() { document.getElementById("alertBox").innerHTML = ""; }
         function logEvent(text, color = "text-green-500") { const log = document.getElementById("logBox"); log.innerHTML = `<div class="${color}">[${new Date().toLocaleTimeString()}] ${text}</div>` + log.innerHTML; if (log.children.length > 30) log.removeChild(log.lastChild); }
         function isPlayerWatched(name) { return name && WATCH.some(w => w.toLowerCase() === name.toLowerCase()); }
         function toggleHelp() { const m = document.getElementById('helpModal'); m.style.display = (m.style.display === 'flex') ? 'none' : 'flex'; }
