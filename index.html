@@ -184,21 +184,21 @@
                 refresh: "System Refresh", manual: "SYSTEM MANUAL [?]", totalPop: "Total Population", watchlist: "SQUAD MANAGEMENT", notifications: "Notifications", 
                 trend: "Population Trend", syslog: "System Log", add: "ADD", clear: "Clear", players: "Players:", map: "Map:", ping: "Ping:",
                 modalTitle: "S.A.M. OPERATIONAL GUIDE", modalClose: "CLOSE INTERFACE",
-                modalContent: "<strong>1. Monitoring:</strong> Real-time player tracking.<br><strong>2. Squads:</strong> 8 slots (Alfa-FAV). FAV supports 210 slots. Dbl-click server list names to add.<br><strong>3. Highlighting:</strong> Only the ACTIVE squad members are highlighted on server lists.",
+                modalContent: "<strong>1. Monitoring:</strong> Real-time player tracking.<br><strong>2. Squads:</strong> 8 slots (Alfa-FAV). FAV supports 210 slots.<br><strong>3. Watchdog:</strong> Monitors API health every 20s.",
                 placeholder: "Nickname..."
             },
             pl: {
                 refresh: "Odśwież System", manual: "INSTRUKCJA SYSTEMU [?]", totalPop: "Populacja Ogólna", watchlist: "ZARZĄDZANIE ODDZIAŁAMI", notifications: "Powiadomienia", 
                 trend: "Trend Populacji", syslog: "Log Systemowy", add: "DODAJ", clear: "Wyczyść", players: "Graczy:", map: "Mapa:", ping: "Ping:",
                 modalTitle: "INSTRUKCJA OPERACYJNA S.A.M.", modalClose: "ZAMKNIJ INTERFEJS",
-                modalContent: "<strong>1. Monitorowanie:</strong> Śledzenie graczy.<br><strong>2. Oddziały:</strong> 8 slotów (Alfa-FAV). FAV ma limit 210 miejsc. Kliknij dwukrotnie nick, by dodać.<br><strong>3. Podświetlanie:</strong> Na listach serwerów podświetlają się tylko członkowie AKTYWNEGO oddziału.",
+                modalContent: "<strong>1. Monitorowanie:</strong> Śledzenie graczy.<br><strong>2. Oddziały:</strong> 8 slotów (Alfa-FAV). FAV ma limit 210 miejsc.<br><strong>3. Watchdog:</strong> Sprawdza stan API co 20s.",
                 placeholder: "Pseudonim..."
             },
             se: {
                 refresh: "Systemåterställning", manual: "SYSTEMHANDBOK [?]", totalPop: "Total Population", watchlist: "GRUPPHANTERING", notifications: "Meddelanden", 
                 trend: "Populationstrend", syslog: "Systemlogg", add: "LÄGG TILL", clear: "Rensa", players: "Spelare:", map: "Karta:", ping: "Ping:",
                 modalTitle: "S.A.M. OPERATIV GUIDE", modalClose: "STÄNG GRÄNSSNITT",
-                modalContent: "<strong>1. Övervakning:</strong> Spelarspårning.<br><strong>2. Grupper:</strong> 8 platser (Alfa-FAV). FAV stöder 210 operatörer.<br><strong>3. Markering:</strong> Endast aktiva gruppmedlemmar markeras på listorna.",
+                modalContent: "<strong>1. Övervakning:</strong> Spelarspårning.<br><strong>2. Grupper:</strong> 8 platser (Alfa-FAV). FAV stöder 210 operatörer.<br><strong>3. Watchdog:</strong> Övervakar API hälsa var 20:e sekund.",
                 placeholder: "Smeknamn..."
             }
         };
@@ -206,6 +206,7 @@
         let currentSquadIdx = parseInt(localStorage.getItem('jsoc_sq_idx')) || 1;
         let ALL_SQUADS = JSON.parse(localStorage.getItem('jsoc_all_squads')) || { 1:[], 2:[], 3:[], 4:[], 5:[], 6:[], 7:[], 8:[] };
         let previous = { EU1: [], EU2: [], EU3: [] };
+        let prevMaps = { EU1: "", EU2: "", EU3: "" };
         let serverStates = { EU1: { restarting: false }, EU2: { restarting: false }, EU3: { restarting: false } };
         let cache = {}; let historyData = []; let historyLabels = []; let isFirstLoad = true;
         let isMuted = localStorage.getItem('jsoc_muted') === 'true';
@@ -246,14 +247,30 @@
             if (log.children.length > 100) log.removeChild(log.lastChild);
         }
 
+        // --- WATCHDOG SYSTEM ---
+        function runWatchdog() {
+            const status = (cache.EU1 || cache.EU2 || cache.EU3) ? "STABLE" : "NO DATA";
+            const color = status === "STABLE" ? "text-blue-400" : "text-red-500";
+            logEvent(`WATCHDOG: API CONNECTION ${status}`, color);
+        }
+
         async function fetchServer(name, id) {
             try {
                 const res = await fetch(`https://api.battlemetrics.com/servers/${id}?include=player`);
+                if (!res.ok) throw new Error("API_ERROR");
                 const json = await res.json();
                 const attr = json.data.attributes;
                 let players = (json.included || []).filter(x => x.type === "player").map(p => ({ name: p.attributes.name }));
                 const currentNames = players.map(p => p.name);
+                const currentMap = attr.details?.map || "Unknown";
 
+                // Map Change Detection
+                if (!isFirstLoad && prevMaps[name] && prevMaps[name] !== currentMap) {
+                    logEvent(`${name}: MAP CHANGED TO ${currentMap.toUpperCase()}`, "text-yellow-500 font-bold");
+                }
+                prevMaps[name] = currentMap;
+
+                // Restart Detection
                 if (!isFirstLoad && previous[name].length >= 5 && currentNames.length === 0 && !serverStates[name].restarting) {
                     logEvent(`${name}: SERVER RESTART DETECTED`, "text-red-500 font-bold");
                     serverStates[name].restarting = true;
@@ -263,19 +280,24 @@
                     serverStates[name].restarting = false;
                 }
 
+                // Traffic Log & Alerts
                 if (!isFirstLoad) {
                     currentNames.filter(p => !previous[name].includes(p)).forEach(pName => { 
-                        if (isPlayerGlobalWatched(pName)) { playAudioFile(soundJoin); addAlert(`${pName} JOINED ${name}`); }
-                        logEvent(`${pName} -> ${name}`, "text-gray-400"); 
+                        const isWatched = isPlayerGlobalWatched(pName);
+                        if (isWatched) { playAudioFile(soundJoin); addAlert(`${pName} JOINED ${name}`); }
+                        logEvent(`${pName} -> ${name}`, isWatched ? "text-red-500 font-bold" : "text-gray-400"); 
                     });
                     previous[name].filter(p => !currentNames.includes(p)).forEach(pName => { 
-                        if (isPlayerGlobalWatched(pName)) { playAudioFile(soundLeave); addAlert(`${pName} LEFT ${name}`); }
-                        logEvent(`${pName} <- ${name}`, "text-gray-500");
+                        const isWatched = isPlayerGlobalWatched(pName);
+                        if (isWatched) { playAudioFile(soundLeave); addAlert(`${pName} LEFT ${name}`); }
+                        logEvent(`${pName} <- ${name}`, isWatched ? "text-red-500 font-bold" : "text-gray-600");
                     });
                 }
                 previous[name] = currentNames;
                 cache[name] = { ...attr, list: players, ping: Math.floor(Math.random()*15)+5 };
-            } catch (err) {}
+            } catch (err) {
+                logEvent(`CRITICAL: ${name} CONNECTION FAILED`, "text-red-600");
+            }
         }
 
         async function updateAll() {
@@ -312,13 +334,9 @@
                 document.getElementById(`players${name}`).innerText = `${c.players || 0}/${c.maxPlayers || 0}`;
                 document.getElementById(`map${name}`).innerText = c.details?.map || "Altis";
                 document.getElementById(`ping${name}`).innerText = `${c.ping}ms`;
-                
-                // Alert icon (Still global check for all squads)
                 document.getElementById(`alert${name}`).style.display = c.list?.some(p => isPlayerGlobalWatched(p.name)) ? 'block' : 'none';
-                
                 const listEl = document.getElementById(`list${name}`); listEl.innerHTML = "";
                 c.list?.forEach((p, i) => {
-                    // NEW: Highlight ONLY if player is in the CURRENTLY ACTIVE squad
                     const isWatchedInCurrentSquad = ALL_SQUADS[currentSquadIdx].some(w => w.toLowerCase() === p.name.toLowerCase());
                     const row = document.createElement("div"); row.className = `player-row py-0.5 px-1 ${isWatchedInCurrentSquad ? 'watch-highlight' : ''}`;
                     row.innerHTML = `<span>${i+1}. ${p.name}</span>`; row.ondblclick = () => addWatch(p.name); listEl.appendChild(row);
@@ -332,7 +350,7 @@
             document.querySelectorAll('.squad-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById(`sq-btn-${idx}`).classList.add('active');
             renderWatchList();
-            renderUI(); // Immediate UI update to refresh highlights
+            renderUI();
         }
 
         function isPlayerGlobalWatched(name) {
@@ -427,7 +445,11 @@
 
         (async function init() {
             updateLangUI(); switchSquad(currentSquadIdx); initChart(); updateMuteUI(); updateVolumeUI(); setInterval(updateClock, 1000);
-            await updateAll(); renderUI(); setInterval(updateAll, 4000); setInterval(renderUI, 1000);
+            logEvent("SYSTEM INITIALIZED", "text-blue-400 font-bold");
+            await updateAll(); renderUI(); 
+            setInterval(updateAll, 4000); 
+            setInterval(renderUI, 1000);
+            setInterval(runWatchdog, 20000); // 20s Watchdog
         })();
     </script>
 </body>
