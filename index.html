@@ -44,12 +44,10 @@
         .sam-rest { font-weight: 400; font-size: 0.9em; opacity: 0.8; color: #00ff9c; }
         .by-komputer { font-size: 10px; opacity: 0.5; letter-spacing: 0.3em; margin-top: -4px; text-transform: uppercase; }
 
-        /* Squad Styling - Enhanced with internal count layout */
-        .squad-btn { display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(0, 255, 156, 0.4); background: rgba(0, 255, 156, 0.05); color: #00ff9c; font-size: 10px; font-weight: 700; padding: 6px 10px; cursor: pointer; transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.05em; }
+        /* Squad Styling - Enhanced */
+        .squad-btn { border: 1px solid rgba(0, 255, 156, 0.4); background: rgba(0, 255, 156, 0.05); color: #00ff9c; font-size: 10px; font-weight: 700; padding: 5px 12px; cursor: pointer; transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.05em; }
         .squad-btn:hover { background: rgba(0, 255, 156, 0.2); box-shadow: 0 0 12px rgba(0, 255, 156, 0.3); border-color: #00ff9c; }
         .squad-btn.active { background: #00ff9c; color: #0b0f14; border-color: #00ff9c; box-shadow: 0 0 15px rgba(0, 255, 156, 0.6); }
-        .btn-sq-count { opacity: 0.6; font-size: 9px; font-weight: 900; margin-left: 4px; }
-        .active .btn-sq-count { opacity: 0.8; }
         .squad-count { font-size: 11px; font-weight: 800; margin-left: auto; letter-spacing: 0.1em; }
     </style>
 </head>
@@ -145,14 +143,14 @@
                 </div>
                 
                 <div class="grid grid-cols-4 gap-1.5 mb-4">
-                    <button onclick="switchSquad(1)" id="sq-btn-1" class="squad-btn active"><span>Alfa</span><span class="btn-sq-count" id="btn-count-1">0/11</span></button>
-                    <button onclick="switchSquad(2)" id="sq-btn-2" class="squad-btn"><span>Bravo</span><span class="btn-sq-count" id="btn-count-2">0/11</span></button>
-                    <button onclick="switchSquad(3)" id="sq-btn-3" class="squad-btn"><span>Charlie</span><span class="btn-sq-count" id="btn-count-3">0/11</span></button>
-                    <button onclick="switchSquad(4)" id="sq-btn-4" class="squad-btn"><span>Delta</span><span class="btn-sq-count" id="btn-count-4">0/11</span></button>
-                    <button onclick="switchSquad(5)" id="sq-btn-5" class="squad-btn"><span>Echo</span><span class="btn-sq-count" id="btn-count-5">0/11</span></button>
-                    <button onclick="switchSquad(6)" id="sq-btn-6" class="squad-btn"><span>Foxtrot</span><span class="btn-sq-count" id="btn-count-6">0/11</span></button>
-                    <button onclick="switchSquad(7)" id="sq-btn-7" class="squad-btn"><span>Golf</span><span class="btn-sq-count" id="btn-count-7">0/11</span></button>
-                    <button onclick="switchSquad(8)" id="sq-btn-8" class="squad-btn"><span>Hotel</span><span class="btn-sq-count" id="btn-count-8">0/11</span></button>
+                    <button onclick="switchSquad(1)" id="sq-btn-1" class="squad-btn active">Alfa</button>
+                    <button onclick="switchSquad(2)" id="sq-btn-2" class="squad-btn">Bravo</button>
+                    <button onclick="switchSquad(3)" id="sq-btn-3" class="squad-btn">Charlie</button>
+                    <button onclick="switchSquad(4)" id="sq-btn-4" class="squad-btn">Delta</button>
+                    <button onclick="switchSquad(5)" id="sq-btn-5" class="squad-btn">Echo</button>
+                    <button onclick="switchSquad(6)" id="sq-btn-6" class="squad-btn">Foxtrot</button>
+                    <button onclick="switchSquad(7)" id="sq-btn-7" class="squad-btn">Golf</button>
+                    <button onclick="switchSquad(8)" id="sq-btn-8" class="squad-btn">Hotel</button>
                 </div>
 
                 <div class="flex gap-2 mb-4">
@@ -305,7 +303,6 @@
         }
 
         function renderUI() {
-            const activeSquad = ALL_SQUADS[currentSquadIdx];
             ["EU1", "EU2", "EU3"].forEach(name => {
                 const c = cache[name]; if (!c) return;
                 const sEl = document.getElementById(`status${name}`);
@@ -320,9 +317,8 @@
                 document.getElementById(`alert${name}`).style.display = c.list?.some(p => isPlayerGlobalWatched(p.name)) ? 'block' : 'none';
                 const listEl = document.getElementById(`list${name}`); listEl.innerHTML = "";
                 c.list?.forEach((p, i) => {
-                    const isActiveWatched = activeSquad.some(w => w.toLowerCase() === p.name.toLowerCase());
-                    const row = document.createElement("div"); 
-                    row.className = `player-row py-0.5 px-1 ${isActiveWatched ? 'watch-highlight' : ''}`;
+                    const isWatched = isPlayerGlobalWatched(p.name);
+                    const row = document.createElement("div"); row.className = `player-row py-0.5 px-1 ${isWatched ? 'watch-highlight' : ''}`;
                     row.innerHTML = `<span>${i+1}. ${p.name}</span>`; row.ondblclick = () => addWatch(p.name); listEl.appendChild(row);
                 });
             });
@@ -334,7 +330,6 @@
             document.querySelectorAll('.squad-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById(`sq-btn-${idx}`).classList.add('active');
             renderWatchList();
-            renderUI();
         }
 
         function isPlayerGlobalWatched(name) {
@@ -355,8 +350,6 @@
                 item.innerHTML = `<span>${nick}</span><span class="cursor-pointer hover:text-white" onclick="removeWatch('${nick}')">✖</span>`;
                 div.appendChild(item);
             });
-
-            // GŁÓWNY LICZNIK AKTUALNEGO ODDZIAŁU
             const counter = document.getElementById("squadCounter");
             if (list.length >= 11) {
                 counter.innerHTML = `<span class="full-text-blink">SQUAD FULL</span>`;
@@ -365,15 +358,6 @@
                 counter.innerText = `${list.length}/11`;
                 document.getElementById("btnAddWatch").disabled = false;
             }
-
-            // AKTUALIZACJA LICZNIKÓW NA PRZYCISKACH DLA WSZYSTKICH ODDZIAŁÓW
-            for (let i = 1; i <= 8; i++) {
-                const btnCount = document.getElementById(`btn-count-${i}`);
-                if (btnCount) {
-                    btnCount.innerText = `${ALL_SQUADS[i].length}/11`;
-                }
-            }
-
             localStorage.setItem('jsoc_all_squads', JSON.stringify(ALL_SQUADS));
         }
 
@@ -384,7 +368,6 @@
                 if (!ALL_SQUADS[currentSquadIdx].some(w => w.toLowerCase() === nick.toLowerCase())) {
                     ALL_SQUADS[currentSquadIdx].push(nick);
                     renderWatchList();
-                    renderUI();
                     logEvent(`ADDED TO ${SQUAD_NAMES[currentSquadIdx-1].toUpperCase()}: ${nick}`, "text-blue-400");
                 }
             }
@@ -394,13 +377,11 @@
         function removeWatch(nick) {
             ALL_SQUADS[currentSquadIdx] = ALL_SQUADS[currentSquadIdx].filter(x => x !== nick);
             renderWatchList();
-            renderUI();
         }
 
         function clearAllWatch() {
             ALL_SQUADS[currentSquadIdx] = [];
             renderWatchList();
-            renderUI(); 
             logEvent(`SQUAD ${SQUAD_NAMES[currentSquadIdx-1].toUpperCase()} CLEARED`, "text-red-400");
         }
 
@@ -413,7 +394,6 @@
                 }
             });
             renderWatchList();
-            renderUI();
             playAudioFile(soundJoin);
         }
 
