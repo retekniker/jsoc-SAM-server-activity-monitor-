@@ -13,6 +13,16 @@
         .soc-border-red { border: 3px solid #ff4d4d; box-shadow: 0 0 15px rgba(255, 77, 77, 0.3); }
         .glow-text { text-shadow: 0 0 12px rgba(0, 255, 156, 0.8), 0 0 20px rgba(0, 255, 156, 0.4); }
         
+        /* Stylizacja logo pod licznikiem */
+        .bottom-logo {
+            max-width: 200px;
+            width: 100%;
+            height: auto;
+            margin-top: 20px;
+            filter: drop-shadow(0 0 10px rgba(0, 255, 156, 0.3));
+            opacity: 0.8;
+        }
+
         @keyframes neon-pulse-red {
             0%, 100% { border-color: #ff4d4d; box-shadow: 0 0 5px #ff4d4d, inset 0 0 5px #ff4d4d; }
             50% { border-color: #ff0000; box-shadow: 0 0 30px #ff0000, inset 0 0 15px #ff0000; }
@@ -149,9 +159,12 @@
                     <div id="listEU3" class="h-[400px] md:h-[500px] overflow-y-auto text-xs space-y-1"></div>
                 </div>
             </div>
+            
             <div class="soc-border p-6 bg-black/60 flex flex-col items-center justify-center w-full">
                 <div id="totalLabel" class="text-sm opacity-60 uppercase tracking-[0.4em] mb-2 text-center"></div>
                 <div class="text-6xl md:text-8xl font-bold glow-text leading-none" id="totalStat">0</div>
+                
+                <img src="Adobe Express - file.png" alt="77th JSOC Logo" class="bottom-logo">
             </div>
         </div>
 
@@ -311,10 +324,7 @@
                     isFull ? container.classList.add('server-full-anim') : container.classList.remove('server-full-anim');
                 } else { sEl.innerText = i18n[currentLang].offline; sEl.className = "text-[10px] px-2 py-0.5 rounded border border-red-500 text-red-500 text-right w-full"; }
                 document.getElementById(`players${name}`).innerText = `${c.players || 0}/${c.maxPlayers || 0}`;
-                
-                /* NAPRAWIONE MAPY - Wyciąganie z details.map */
                 document.getElementById(`map${name}`).innerText = c.details?.map || "Altis";
-                
                 document.getElementById(`ping${name}`).innerText = `${c.ping}ms`;
                 document.getElementById(`alert${name}`).style.display = c.list?.some(p => isPlayerWatched(p.name)) ? 'block' : 'none';
                 const listEl = document.getElementById(`list${name}`); listEl.innerHTML = "";
