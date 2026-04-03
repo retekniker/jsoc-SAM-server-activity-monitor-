@@ -186,7 +186,7 @@
                 refresh: "System Refresh", manual: "SYSTEM MANUAL [?]", totalPop: "Total Population", watchlist: "SQUAD MANAGEMENT", notifications: "Notifications", 
                 trend: "Population Trend", syslog: "System Log", add: "ADD", clear: "Clear", players: "Players:", map: "Map:", ping: "Ping:",
                 modalTitle: "S.A.M. OPERATIONAL GUIDE", modalClose: "CLOSE INTERFACE",
-                modalContent: "<strong>1. Monitoring:</strong> Real-time tracking. Dbl-click a name on server lists to add.<br><br><strong>2. Squads:</strong> 8 slots. Alfa-Golf (max 11), FAV (max 210). Only ACTIVE squad members are highlighted.<br><br><strong>3. Alerts & API:</strong> System alerts on global joins/leaves (all 8 squads). Automatic Rate-Limit detection applied.",
+                modalContent: "<strong>1. Monitoring:</strong> Real-time tracking. Dbl-click a name on server lists to add.<br><br><strong>2. Squads:</strong> 8 slots. Alfa-Golf (max 11), FAV (max 210). Only ACTIVE squad members are highlighted.<br><br><strong>3. Alerty & API:</strong> System alerts on global joins/leaves (all 8 squads). Automatic Rate-Limit detection applied.",
                 placeholder: "Nickname..."
             },
             pl: {
@@ -219,7 +219,7 @@
         let errorCount = 0;
         let watchdogCounter = 0;
         
-        const BASE_INTERVAL = 8000; // Updated to 8s
+        const BASE_INTERVAL = 8000; 
         let rateLimitCooldown = 0;
 
         const soundJoin = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
@@ -262,15 +262,19 @@
                     players.forEach(pName => {
                         if (!previous[name].includes(pName)) {
                             const isWatched = isPlayerGlobalWatched(pName);
-                            if (isWatched) { playAlert(soundJoin); addAlert(`${pName} JOINED ${name}`); }
-                            logEvent(`${pName} -> ${name}`, isWatched ? "text-red-500 font-bold" : "text-gray-400");
+                            // Log and Notification for JOINED
+                            const coloredMsg = `${pName} <span class="text-green-500 font-bold">JOINED</span> ${name} <span class="text-green-500">▲</span>`;
+                            if (isWatched) { playAlert(soundJoin); addAlert(coloredMsg); }
+                            logEvent(coloredMsg, isWatched ? "text-red-500 font-bold" : "text-gray-400");
                         }
                     });
                     previous[name].forEach(pName => {
                         if (!players.includes(pName)) {
                             const isWatched = isPlayerGlobalWatched(pName);
-                            if (isWatched) { playAlert(soundLeave); addAlert(`${pName} LEFT ${name}`); }
-                            logEvent(`${pName} <- ${name}`, isWatched ? "text-red-500 font-bold" : "text-gray-600");
+                            // Log and Notification for LEFT
+                            const coloredMsg = `${pName} <span class="text-red-500 font-bold">LEFT</span> ${name} <span class="text-red-500">▼</span>`;
+                            if (isWatched) { playAlert(soundLeave); addAlert(coloredMsg); }
+                            logEvent(coloredMsg, isWatched ? "text-red-500 font-bold" : "text-gray-600");
                         }
                     });
                 }
