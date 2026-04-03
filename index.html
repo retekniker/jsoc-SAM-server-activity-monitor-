@@ -17,7 +17,6 @@
         .cap-bar-bg { background: rgba(255, 255, 255, 0.05); height: 12px; border: 1px solid rgba(0, 255, 156, 0.2); border-radius: 2px; overflow: hidden; }
         .cap-bar-fill { height: 100%; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s; }
         
-        /* SYSTEM LED BUTTONS - REDUCED NEON FOR BETTER READABILITY */
         .btn-system-led { 
             font-size: 9px; letter-spacing: 0.2em; padding: 4px 12px; 
             border: 1px solid #00ff9c; 
@@ -25,13 +24,8 @@
             box-shadow: 0 0 8px rgba(0, 255, 156, 0.4); 
             transition: all 0.05s; text-transform: uppercase; cursor: pointer; font-weight: 900;
         }
-        .btn-system-led:hover {
-            background: #00ff9c;
-            box-shadow: 0 0 12px rgba(0, 255, 156, 0.6);
-        }
-        .btn-system-led:active { 
-            background: rgba(0, 255, 156, 0.1) !important; color: #00ff9c !important; box-shadow: none !important; 
-        }
+        .btn-system-led:hover { background: #00ff9c; box-shadow: 0 0 12px rgba(0, 255, 156, 0.6); }
+        .btn-system-led:active { background: rgba(0, 255, 156, 0.1) !important; color: #00ff9c !important; box-shadow: none !important; }
 
         @keyframes alert-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.1; } }
         .full-text-blink { font-size: 10px; font-weight: 900; color: #ff4d4d; text-shadow: 0 0 8px #ff4d4d; animation: alert-blink 0.5s infinite; }
@@ -57,16 +51,18 @@
         .squad-btn.active { background: #00ff9c; color: #0b0f14; border-color: #00ff9c; box-shadow: 0 0 15px rgba(0, 255, 156, 0.6); }
         .clock-wait { opacity: 0.3; }
 
-        /* LEDS */
         .led-indicator { width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-right: 10px; vertical-align: middle; border: 2px solid rgba(255,255,255,0.4); }
         .led-green-blink { background-color: #00ff9c; box-shadow: 0 0 20px #00ff9c, 0 0 40px rgba(0,255,156,0.8); animation: alert-blink 1s infinite; }
         .led-red-blink { background-color: #ff4d4d; box-shadow: 0 0 20px #ff4d4d, 0 0 40px rgba(255,77,77,0.8); animation: alert-blink 0.4s infinite; }
         .led-green-solid { background-color: #00ff9c; box-shadow: 0 0 15px #00ff9c, 0 0 30px rgba(0,255,156,0.6); }
 
-        /* BUTTONS STYLES FROM SOURCE CODE */
         .btn-clear-all-green { border: 1px solid #00ff9c; background: transparent; color: #00ff9c; font-size: 10px; padding: 2px 10px; cursor: pointer; text-transform: uppercase; }
         .alert-btn-top { font-size: 10px; opacity: 0.5; text-transform: uppercase; }
         .alert-btn-top:hover { opacity: 1; }
+        
+        /* Dodatkowe style dla płynności */
+        .chart-container { position: relative; width: 100%; height: 180px; }
+        canvas { width: 100% !important; height: 100% !important; }
     </style>
 </head>
 <body class="p-4 md:p-6">
@@ -169,7 +165,7 @@
             </div>
         </div>
 
-        <div class="flex flex-col gap-6 flex-1 w-full">
+        <div class="flex flex-col gap-6 flex-1 w-full min-w-0">
             <div class="soc-border p-4 bg-black/40">
                 <div class="flex justify-between items-center mb-4">
                     <h3 id="watchlistTitle" class="text-sm font-bold uppercase opacity-80">SQUAD MANAGEMENT</h3>
@@ -196,7 +192,7 @@
                 <div class="flex justify-between items-center mb-3"><h3 id="criticalTitle" class="text-sm font-bold uppercase text-white">Notifications</h3><button onclick="clearAllAlerts()" id="btnClearAlerts" class="alert-btn-top">Clear All</button></div>
                 <div id="alertBox" class="text-[11px] space-y-1 h-40 overflow-y-auto"></div>
             </div>
-            <div class="soc-border p-4 bg-black flex-1 min-h-[380px]">
+            <div class="soc-border p-4 bg-black flex-1 min-h-[380px] min-w-0">
                 <h3 id="trendTitle" class="text-sm font-bold uppercase opacity-80 mb-6">Population Trend</h3>
                 <div class="grid grid-cols-4 gap-4 mb-8">
                     <div class="text-center"><span class="cap-label-name text-green-400">EU1</span><br><span id="percEU1" class="cap-label-perc glow-text">0%</span><div class="cap-bar-bg"><div id="barEU1" class="cap-bar-fill bg-green-500" style="width: 0%"></div></div><span id="fullEU1" class="full-text-blink mt-1" style="display:none">SERVER FULL</span></div>
@@ -204,7 +200,7 @@
                     <div class="text-center"><span class="cap-label-name text-green-400">EU3</span><br><span id="percEU3" class="cap-label-perc glow-text">0%</span><div class="cap-bar-bg"><div id="barEU3" class="cap-bar-fill bg-green-500" style="width: 0%"></div></div><span id="fullEU3" class="full-text-blink mt-1" style="display:none">SERVER FULL</span></div>
                     <div class="text-center"><span class="cap-label-name text-white">TOTAL</span><br><span id="percTOTAL" class="cap-label-perc text-white">0%</span><div class="cap-bar-bg"><div id="barTOTAL" class="cap-bar-fill bg-white" style="width: 0%"></div></div></div>
                 </div>
-                <div class="relative h-[180px] w-full"><canvas id="popChart"></canvas></div>
+                <div class="chart-container" id="chartParent"><canvas id="popChart"></canvas></div>
             </div>
             <div class="soc-border p-4 bg-black/40"><h3 id="syslogTitle" class="text-sm font-bold mb-2 uppercase opacity-80">System Log</h3><div id="logBox" class="text-[11px] h-32 overflow-y-auto font-mono opacity-80"></div></div>
         </div>
@@ -226,7 +222,7 @@
             se: { 
                 refresh: "Systemåterställning", manual: "SYSTEMHANDBOK [?]", totalPop: "Total Population", watchlist: "GRUPPHANTERING", notifications: "Meddelanden", trend: "Populationstrend", syslog: "Systemlogg", add: "LÄGG TILL", clear: "Rensa", players: "Spelare:", map: "Karta:", ping: "Ping:", placeholder: "Smeknamn...",
                 modalTitle: "S.A.M. OPERATIV GUIDE", modalClose: "STÄNG GRÄNSSNITT",
-                modalContent: "<strong>1. ÖVERVAKNING:</strong> Realtidsspårning.<br><br><strong>2. GRUPPHANTERING:</strong> 8 listor.<br><br><strong>3. MEDDELANDEN:</strong> Spårar in- och utloggningar.<br><br><strong>4. REBOOT-KLOCKOR (TEST):</strong> Helt automatiserade 6h-tidtagare styrda av Watchdog. <br>• <i>Grön blinkande:</i> Väntar på omstart. <br>• <i>Grön fast:</i> Nedräkning nagår. <br>• <i>Röd blinkande:</i> Watchdog upptäckte omstart."
+                modalContent: "<strong>1. ÖVERVAKNING:</strong> Realtidsspårning.<br><br><strong>2. GRUPPHANTERING:</strong> 8 listor.<br><br><strong>3. MEDDELANDEN:</strong> Spårar in- och utloggningar.<br><br><strong>4. REBOOT-KLOCKOR (TEST):</strong> Helt automatiserade 6h-tidtagare styrda av Watchdog. <br>• <i>Grön blinkande:</i> Väntar na omstart. <br>• <i>Grön fast:</i> Nedräkning pågår. <br>• <i>Röd blinkande:</i> Watchdog upptäckte omstart."
             }
         };
 
@@ -400,9 +396,26 @@
         let chart;
         function initChart() {
             const ctx = document.getElementById('popChart').getContext('2d');
-            chart = new Chart(ctx, { type: 'line', data: { labels: historyLabels, datasets: [{ data: historyData, borderColor: '#00ff9c', backgroundColor: 'rgba(0, 255, 156, 0.05)', fill: true, tension: 0.4, pointRadius: 0 }] },
-                options: { responsive: true, maintainAspectRatio: false, animation: false, plugins: { legend: { display: false } }, scales: { x: { grid: { color: '#004400' }, ticks: { color: '#00ff9c', font: { size: 9 } } }, y: { beginAtZero: true, grid: { color: '#004400' }, ticks: { color: '#00ff9c', font: { size: 10 } } } } }
+            chart = new Chart(ctx, { 
+                type: 'line', 
+                data: { labels: historyLabels, datasets: [{ data: historyData, borderColor: '#00ff9c', backgroundColor: 'rgba(0, 255, 156, 0.05)', fill: true, tension: 0.4, pointRadius: 0 }] },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    animation: false, 
+                    plugins: { legend: { display: false } }, 
+                    scales: { 
+                        x: { grid: { color: '#004400' }, ticks: { color: '#00ff9c', font: { size: 9 } } }, 
+                        y: { beginAtZero: true, grid: { color: '#004400' }, ticks: { color: '#00ff9c', font: { size: 10 } } } 
+                    } 
+                }
             });
+
+            // AUTOMATYCZNE PRZERYCOWANIE PRZY ZMIANIE ROZMIARU OKNA
+            const resizeObserver = new ResizeObserver(() => {
+                chart.resize();
+            });
+            resizeObserver.observe(document.getElementById('chartParent'));
         }
 
         (async function init() {
