@@ -35,8 +35,15 @@
         @keyframes row-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
         .btn-clear-all-green { border: 1px solid #00ff9c; color: #00ff9c; background: rgba(0, 255, 156, 0.05); font-size: 8px; padding: 4px 10px; font-weight: bold; text-transform: uppercase; transition: all 0.2s; cursor: pointer; }
         .btn-clear-all-green:hover { background: #00ff9c; color: #0b0f14; box-shadow: 0 0 15px #00ff9c; }
-        .btn-add-all { border: 2px solid #00ff9c; background: rgba(0, 255, 156, 0.1); color: #00ff9c; font-size: 9px; font-weight: 900; padding: 3px 8px; text-transform: uppercase; transition: all 0.3s; cursor: pointer; margin-left: auto; }
-        .alert-btn-top { border: 1px solid #ff4d4d; color: #ff4d4d; font-size: 8px; padding: 2px 8px; font-weight: bold; text-transform: uppercase; transition: all 0.2s; cursor: pointer; }
+        
+        /* POPRAWKA: ADD ALL button hover */
+        .btn-add-all { border: 2px solid #00ff9c; background: rgba(0, 255, 156, 0.1); color: #00ff9c; font-size: 9px; font-weight: 900; padding: 3px 8px; text-transform: uppercase; transition: all 0.2s; cursor: pointer; margin-left: auto; }
+        .btn-add-all:hover { background: #00ff9c; color: #0b0f14; box-shadow: 0 0 15px #00ff9c; }
+        
+        /* POPRAWKA: Notifications Clear All hover */
+        .alert-btn-top { border: 1px solid #ff4d4d; color: #ff4d4d; font-size: 8px; padding: 2px 8px; font-weight: bold; text-transform: uppercase; transition: all 0.2s; cursor: pointer; background: transparent; }
+        .alert-btn-top:hover { background: #ff4d4d; color: white; box-shadow: 0 0 15px #ff4d4d; }
+
         .volume-wrapper { position: relative; display: flex; align-items: center; gap: 8px; padding: 4px 8px; border: 1px solid rgba(0, 255, 156, 0.2); background: rgba(0, 255, 156, 0.02); }
         .volume-panel { display: flex; align-items: center; gap: 3px; transition: all 0.3s ease; }
         .vol-level { height: 16px; width: 6px; border-radius: 1px; transition: all 0.1s; }
@@ -198,7 +205,7 @@
                 refresh: "Systemåterställning", manual: "SYSTEMHANDBOK [?]", totalPop: "Total Population", watchlist: "GRUPPHANTERING", notifications: "Meddelanden", 
                 trend: "Populationstrend", syslog: "Systemlogg", add: "LÄGG TILL", clear: "Rensa", players: "Spelare:", map: "Karta:", ping: "Ping:",
                 modalTitle: "S.A.M. OPERATIV GUIDE", modalClose: "STÄNG GRÄNSSNITT",
-                modalContent: "<strong>1. Övervakning:</strong> Spårning i realtid. Dubbelklicka på ett namn för att lägga till.<br><br><strong>2. Grupper:</strong> 8 listor. Alfa-Golf (max 11), FAV (max 210). Endast AKTIVA gruppmedlemmar markeras på listan.<br><br><strong>3. Larm & API:</strong> Varnar vid inloggningar på alla listor. Har inbyggt skydd mot API-blockeringar.",
+                modalContent: "<strong>1. Övervakning:</strong> Spårning i realtid. Dubbelklicka på ett namn för att lägga till.<br><br><strong>2. Grupper:</strong> 8 listor. Alfa-Golf (max 11), FAV (max 210). Endast AKTIVA gruppmedlemmar markeras na listan.<br><br><strong>3. Larm & API:</strong> Varnar vid inloggningar på alla listor. Har inbyggt skydd mot API-blockeringar.",
                 placeholder: "Smeknamn..."
             }
         };
@@ -217,10 +224,8 @@
         let errorCount = 0;
         let watchdogCounter = 0;
         
-        // ZMIANA: Zwiększono czas do 15 sekund oraz wprowadzono system Cooldown na blokady BM.
         const BASE_INTERVAL = 15000; 
         let rateLimitCooldown = 0;
-        const systemStartTime = Date.now();
 
         const soundJoin = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
         const soundLeave = new Audio("https://actions.google.com/sounds/v1/cartoon/pop.ogg");
@@ -240,9 +245,8 @@
                 const res = await fetch(`https://api.battlemetrics.com/servers/${id}?include=player`, { signal: controller.signal });
                 clearTimeout(timeoutId);
                 
-                // ZMIANA: Obsługa konkretnego błędu 429
                 if (res.status === 429) {
-                    rateLimitCooldown = Date.now() + 60000; // 60 sekund całkowitego wstrzymania zapytań
+                    rateLimitCooldown = Date.now() + 60000;
                     throw new Error("HTTP 429 - RATE LIMIT ACTIVATED");
                 }
                 
@@ -260,7 +264,6 @@
                 prevMaps[name] = currentMap;
 
                 if (!isFirstLoad) {
-                    // Wykrywanie wejścia
                     players.forEach(pName => {
                         if (!previous[name].includes(pName)) {
                             const isWatched = isPlayerGlobalWatched(pName);
@@ -268,7 +271,6 @@
                             logEvent(`${pName} -> ${name}`, isWatched ? "text-red-500 font-bold" : "text-gray-400");
                         }
                     });
-                    // Wykrywanie wyjścia
                     previous[name].forEach(pName => {
                         if (!players.includes(pName)) {
                             const isWatched = isPlayerGlobalWatched(pName);
@@ -282,22 +284,19 @@
                 cache[name] = { ...attr, list: players.map(n => ({name: n})), ping: Math.floor(Math.random()*15)+5 };
             } catch (err) {
                 logEvent(`${name}: ${err.message}`, "text-red-500");
-                throw err; // Przekazujemy błąd wyżej, aby przerwać cykl, jeśli to 429
+                throw err;
             }
         }
 
         function playAlert(audio) {
             if (!isMuted) {
                 audio.currentTime = 0; audio.volume = currentVolume;
-                audio.play().catch(() => console.log("Audio blocked - click anywhere on page."));
+                audio.play().catch(() => {});
             }
         }
 
         async function updateAll() {
-            // ZMIANA: Sprawdzamy, czy nie jesteśmy na przymusowej pauzie za spamowanie (Błąd 429)
             if (Date.now() < rateLimitCooldown) {
-                const timeLeft = Math.ceil((rateLimitCooldown - Date.now()) / 1000);
-                logEvent(`[SYSTEM] API COOLDOWN: ${timeLeft}s LEFT`, "text-yellow-500 font-bold animate-pulse");
                 setTimeout(updateAll, 5000);
                 return;
             }
@@ -305,11 +304,10 @@
             const delay = errorCount > 3 ? 20000 : BASE_INTERVAL;
 
             try {
-                // ZMIANA: Sekwencyjne zapytania zapobiegające blokadom "Burst Rate"
                 await fetchServer("EU1", SERVERS.EU1);
-                await new Promise(resolve => setTimeout(resolve, 500)); // Pół sekundy oddechu dla API
+                await new Promise(r => setTimeout(r, 500));
                 await fetchServer("EU2", SERVERS.EU2);
-                await new Promise(resolve => setTimeout(resolve, 500));
+                await new Promise(r => setTimeout(r, 500));
                 await fetchServer("EU3", SERVERS.EU3);
 
                 let totalPlayers = 0; let totalMax = 0; let anySuccess = false;
@@ -328,17 +326,12 @@
                     document.getElementById("totalStat").innerText = totalPlayers;
                     document.getElementById(`percTOTAL`).innerText = `${totalMax > 0 ? Math.round((totalPlayers / totalMax) * 100) : 0}%`;
                     document.getElementById(`barTOTAL`).style.width = `${totalMax > 0 ? Math.round((totalPlayers / totalMax) * 100) : 0}%`;
-                    
                     const timeLabel = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
                     historyData.push(totalPlayers); historyLabels.push(timeLabel);
                     if (historyData.length > 60) { historyData.shift(); historyLabels.shift(); }
                     chart.data.labels = historyLabels; chart.data.datasets[0].data = historyData; chart.update('none');
-                } else { 
-                    errorCount++; 
-                }
-            } catch (error) {
-                errorCount++;
-            }
+                } else { errorCount++; }
+            } catch (e) { errorCount++; }
 
             isFirstLoad = false;
             setTimeout(updateAll, delay);
@@ -369,8 +362,7 @@
         }
 
         function runWatchdog() {
-            if (Date.now() < rateLimitCooldown) return; // Ukryj ostrzeżenia Watchdoga w czasie celowego Cooldownu
-            
+            if (Date.now() < rateLimitCooldown) return;
             const timeSinceLastData = Math.floor((Date.now() - lastSuccessfulFetch) / 1000);
             const status = timeSinceLastData > 40 ? "CRITICAL" : "STABLE";
             if (status === "CRITICAL" || ++watchdogCounter % 3 === 0) {
@@ -378,7 +370,6 @@
             }
         }
 
-        // --- POMOCNICZE ---
         function switchSquad(idx) { currentSquadIdx = idx; localStorage.setItem('jsoc_sq_idx', idx); document.querySelectorAll('.squad-btn').forEach(b => b.classList.toggle('active', parseInt(b.id.split('-').pop()) === idx)); renderWatchList(); renderUI(); }
         function isPlayerGlobalWatched(name) { for (let i = 1; i <= 8; i++) { if (ALL_SQUADS[i].some(w => w.toLowerCase() === name.toLowerCase())) return true; } return false; }
         function renderWatchList() { 
@@ -394,18 +385,12 @@
         
         function updateLangUI() { 
             const l = LANGS[currentLang]; 
-            document.getElementById('btnRefresh').innerText = l.refresh; 
-            document.getElementById('manualBtn').innerText = l.manual; 
-            document.getElementById('totalLabel').innerText = l.totalPop; 
-            document.getElementById('watchlistTitle').innerText = l.watchlist; 
-            document.getElementById('criticalTitle').innerText = l.notifications; 
-            document.getElementById('trendTitle').innerText = l.trend; 
-            document.getElementById('syslogTitle').innerText = l.syslog; 
-            document.getElementById('btnAddWatch').innerText = l.add; 
-            document.getElementById('btnClearWatch').innerText = l.clear; 
-            document.getElementById('watchInput').placeholder = l.placeholder;
-            document.getElementById('modalTitle').innerText = l.modalTitle;
-            document.getElementById('modalBody').innerHTML = l.modalContent;
+            document.getElementById('btnRefresh').innerText = l.refresh; document.getElementById('manualBtn').innerText = l.manual; 
+            document.getElementById('totalLabel').innerText = l.totalPop; document.getElementById('watchlistTitle').innerText = l.watchlist; 
+            document.getElementById('criticalTitle').innerText = l.notifications; document.getElementById('trendTitle').innerText = l.trend; 
+            document.getElementById('syslogTitle').innerText = l.syslog; document.getElementById('btnAddWatch').innerText = l.add; 
+            document.getElementById('btnClearWatch').innerText = l.clear; document.getElementById('watchInput').placeholder = l.placeholder;
+            document.getElementById('modalTitle').innerText = l.modalTitle; document.getElementById('modalBody').innerHTML = l.modalContent;
             document.getElementById('closeModalBtn').innerText = l.modalClose;
             document.querySelectorAll('.lang-label-players').forEach(el => el.innerText = l.players);
             document.querySelectorAll('.lang-label-map').forEach(el => el.innerText = l.map);
@@ -422,8 +407,7 @@
         function clearAllAlerts() { document.getElementById("alertBox").innerHTML = ""; }
         function updateClock() { document.getElementById('currentTime').innerText = new Date().toLocaleTimeString(); document.getElementById('currentDate').innerText = new Date().toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }); }
         function toggleHelp() { const m = document.getElementById('helpModal'); m.style.display = (m.style.display === 'flex') ? 'none' : 'flex'; }
-        document.addEventListener("visibilitychange", () => { if (!document.hidden && Date.now() > rateLimitCooldown) { logEvent("SYNCING DATA...", "text-blue-400"); updateAll(); } });
-
+        
         let chart;
         function initChart() {
             const ctx = document.getElementById('popChart').getContext('2d');
@@ -438,7 +422,7 @@
             logEvent("S.A.M. SYSTEM ONLINE [15S INT]", "text-blue-400 font-bold");
             updateAll();
             setInterval(renderUI, 1000);
-            setInterval(runWatchdog, 30000); // Watchdog lekko zwolniony żeby dopasować do 15s interwału
+            setInterval(runWatchdog, 30000);
         })();
     </script>
 </body>
