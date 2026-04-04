@@ -63,7 +63,6 @@
         .chart-container { position: relative; width: 100%; height: 180px; }
         canvas { width: 100% !important; height: 100% !important; }
 
-        /* PULSE BORDER DLA SERVER FULL */
         @keyframes pulse-border-red { 0%, 100% { box-shadow: 0 0 20px rgba(255,77,77,0.8); border-color: #ff4d4d; } 50% { box-shadow: 0 0 5px rgba(255,77,77,0.2); border-color: rgba(255,77,77,0.5); } }
         .soc-border-pulse { border: 3px solid #ff4d4d; animation: pulse-border-red 1s infinite; transition: all 0.3s ease; }
     </style>
@@ -233,6 +232,7 @@
         let ALL_SQUADS = JSON.parse(localStorage.getItem('jsoc_all_squads')) || { 1:[], 2:[], 3:[], 4:[], 5:[], 6:[], 7:[], 8:[] };
         let previous = { EU1: [], EU2: [], EU3: [] };
         let prevMaps = { EU1: "", EU2: "", EU3: "" };
+        let prevUptime = { EU1: -1, EU2: -1, EU3: -1 }; // WD State dla sekund misji
         let cache = {}; let historyData = []; let historyLabels = []; 
         let isFirstLoad = true;
         let isMuted = localStorage.getItem('jsoc_muted') === 'true';
@@ -242,10 +242,11 @@
         let restartFlags = { EU1: false, EU2: false, EU3: false };
         let wdLogCounter = 0;
         let rateLimitCooldown = 0;
-        const BASE_INTERVAL = 8000; 
+        const BASE_INTERVAL = 5000; // ZMIENIONE NA 5 SEKUND
 
         const soundJoin = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
         const soundLeave = new Audio("https://actions.google.com/sounds/v1/cartoon/pop.ogg");
+        const soundRestart = new Audio("https://actions.google.com/sounds/v1/alarms/os_computer_beep.ogg"); 
 
         function logEvent(text, color = "text-green-500") {
             const log = document.getElementById("logBox"); if (!log) return;
@@ -261,13 +262,32 @@
                 const json = await res.json();
                 const attr = json.data.attributes;
                 const players = (json.included || []).filter(x => x.type === "player").map(p => p.attributes.name);
+                
                 const currentMap = attr.details?.map || "Unknown";
+                const currentUptime = attr.details?.time || 0; // Czas trwania misji w sekundach
 
+                // --- GŁÓWNY WATCHDOG (UPTIME RESET) ---
+                if (!isFirstLoad && prevUptime[name] !== -1) {
+                    // Jeśli obecny uptime jest mniejszy niż poprzedni i mały (nowa misja)
+                    if (currentUptime < prevUptime[name] && currentUptime < 300) {
+                        logEvent(`[WD] RESTART DETECTED: ${name} (UPTIME RESET)`, "text-cyan-400 font-bold");
+                        addAlert(`<span class="text-yellow-500">RESTART: ${name}</span>`, name, false);
+                        playAlert(soundRestart);
+                        restartFlags[name] = true;
+                        setTimeout(() => { restartFlags[name] = false; startClock(name); }, 15000);
+                    }
+                }
+                prevUptime[name] = currentUptime;
+
+                // --- ZAPASOWY WATCHDOG (ZMIANA MAPY) ---
                 if (!isFirstLoad && prevMaps[name] && prevMaps[name] !== currentMap) {
-                    logEvent(`[WD] RESTART DETECTED: ${name}`, "text-cyan-400 font-bold");
-                    addAlert(`<span class="text-yellow-500">RESTART: ${name}</span>`);
-                    restartFlags[name] = true;
-                    setTimeout(() => { restartFlags[name] = false; startClock(name); }, 15000);
+                    if (!restartFlags[name]) { // Tylko jeśli uptime jeszcze nie wyłapał restartu
+                        logEvent(`[WD] RESTART DETECTED: ${name} (MAP CHANGE)`, "text-cyan-400 font-bold");
+                        addAlert(`<span class="text-yellow-500">RESTART: ${name}</span>`, name, false);
+                        playAlert(soundRestart);
+                        restartFlags[name] = true;
+                        setTimeout(() => { restartFlags[name] = false; startClock(name); }, 15000);
+                    }
                 }
                 prevMaps[name] = currentMap;
 
@@ -308,11 +328,9 @@
                     totalPlayers += c.players; totalMax += c.maxPlayers;
                     const perc = c.maxPlayers > 0 ? Math.round((c.players / c.maxPlayers) * 100) : 0;
                     document.getElementById(`perc${n}`).innerText = `${perc}%`;
-                    
                     const bar = document.getElementById(`bar${n}`);
                     bar.className = "cap-bar-fill " + (perc >= 100 ? "bg-red-500" : perc >= 86 ? "bg-yellow-500" : "bg-green-500");
                     bar.style.width = `${perc}%`;
-                    
                     document.getElementById(`full${n}`).style.display = perc >= 100 ? "block" : "none";
                 });
                 document.getElementById("totalStat").innerText = totalPlayers;
@@ -333,26 +351,21 @@
                 const sEl = document.getElementById(`status${name}`);
                 const container = document.getElementById(`container${name}`);
                 const isFull = c.players >= c.maxPlayers && c.maxPlayers > 0;
-                
                 if (c.status === 'online') {
                     if (isFull) {
                         sEl.innerText = "SERVER FULL";
                         sEl.className = "text-[10px] px-2 py-0.5 rounded border border-red-500 text-right w-full text-red-500 full-text-blink font-bold uppercase";
-                        container.classList.remove('soc-border');
-                        container.classList.add('soc-border-pulse');
+                        container.classList.remove('soc-border'); container.classList.add('soc-border-pulse');
                     } else {
                         sEl.innerText = "ONLINE";
                         sEl.className = "text-[10px] px-2 py-0.5 rounded border border-green-500 text-right w-full uppercase text-green-500";
-                        container.classList.add('soc-border');
-                        container.classList.remove('soc-border-pulse');
+                        container.classList.add('soc-border'); container.classList.remove('soc-border-pulse');
                     }
                 } else {
                     sEl.innerText = "OFFLINE";
                     sEl.className = "text-[10px] px-2 py-0.5 rounded border border-red-500 text-right w-full uppercase opacity-50";
-                    container.classList.add('soc-border');
-                    container.classList.remove('soc-border-pulse');
+                    container.classList.add('soc-border'); container.classList.remove('soc-border-pulse');
                 }
-                
                 document.getElementById(`players${name}`).innerText = `${c.players}/${c.maxPlayers}`;
                 document.getElementById(`map${name}`).innerText = c.details?.map || "Altis";
                 document.getElementById(`ping${name}`).innerText = `${c.ping}ms`;
@@ -426,18 +439,8 @@
             chart = new Chart(ctx, { 
                 type: 'line', 
                 data: { labels: historyLabels, datasets: [{ data: historyData, borderColor: '#00ff9c', backgroundColor: 'rgba(0, 255, 156, 0.05)', fill: true, tension: 0.4, pointRadius: 0 }] },
-                options: { 
-                    responsive: true, 
-                    maintainAspectRatio: false, 
-                    animation: false, 
-                    plugins: { legend: { display: false } }, 
-                    scales: { 
-                        x: { grid: { color: '#004400' }, ticks: { color: '#00ff9c', font: { size: 9 } } }, 
-                        y: { beginAtZero: true, grid: { color: '#004400' }, ticks: { color: '#00ff9c', font: { size: 10 } } } 
-                    } 
-                }
+                options: { responsive: true, maintainAspectRatio: false, animation: false, plugins: { legend: { display: false } }, scales: { x: { grid: { color: '#004400' }, ticks: { color: '#00ff9c', font: { size: 9 } } }, y: { beginAtZero: true, grid: { color: '#004400' }, ticks: { color: '#00ff9c', font: { size: 10 } } } } }
             });
-
             const resizeObserver = new ResizeObserver(() => { chart.resize(); });
             resizeObserver.observe(document.getElementById('chartParent'));
         }
