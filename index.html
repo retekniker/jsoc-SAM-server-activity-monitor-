@@ -8,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        body { background-color: #0b0f14; color: #00ff9c; font-family: 'JetBrains Mono', monospace; overflow-x: hidden; }
+        body { background-color: #0b0f14; color: #00ff9c; font-family: 'JetBrains Mono', monospace; overflow-x: hidden; position: relative; z-index: 0; }
         
         .soc-border { 
             border: 4px solid #00ff9c; 
@@ -26,29 +26,32 @@
         }
         .soc-border-pulse { border: 4px solid #ff4d4d; animation: pulse-border-red-strong 1s infinite; transition: all 0.3s ease; }
 
+        /* CYBERPUNK DATA CABLES */
+        @keyframes data-flow {
+            0%, 100% { opacity: 0.1; box-shadow: 0 0 5px #00ff9c; }
+            50% { opacity: 0.8; box-shadow: 0 0 20px #00ff9c, 0 0 30px rgba(0,255,156,0.6); }
+        }
+        @keyframes data-flow-red {
+            0%, 100% { opacity: 0.1; box-shadow: 0 0 5px #ff4d4d; }
+            50% { opacity: 0.8; box-shadow: 0 0 20px #ff4d4d, 0 0 30px rgba(255,77,77,0.6); }
+        }
+        .cyber-cable { background: #00ff9c; position: absolute; z-index: -10; animation: data-flow 2s infinite ease-in-out; border-radius: 4px; }
+        .cyber-cable-red { background: #ff4d4d; animation: data-flow-red 1.5s infinite ease-in-out; }
+        .delay-1 { animation-delay: 0.3s; }
+        .delay-2 { animation-delay: 0.6s; }
+        .delay-3 { animation-delay: 0.9s; }
+
         .glow-text { text-shadow: 0 0 12px rgba(0, 255, 156, 0.8), 0 0 20px rgba(0, 255, 156, 0.4); }
         .bottom-logo { max-width: 200px; width: 100%; height: auto; margin-top: 20px; filter: drop-shadow(0 0 10px rgba(0, 255, 156, 0.3)); opacity: 0.8; }
         .players-count-glow { font-size: 1.75rem; color: #ffffff; text-shadow: 0 0 10px rgba(0, 255, 156, 0.8), 0 0 20px rgba(0, 255, 156, 0.4); font-weight: 700; line-height: 1; }
         .cap-bar-bg { background: rgba(255, 255, 255, 0.05); height: 12px; border: 1px solid rgba(0, 255, 156, 0.2); border-radius: 2px; overflow: hidden; }
         .cap-bar-fill { height: 100%; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s; }
         
-        .btn-system-led { 
-            font-size: 10px; letter-spacing: 0.15em; padding: 5px 12px; 
-            border: 1px solid #00ff9c; 
-            background: rgba(0, 255, 156, 0.1); color: #00ff9c; 
-            box-shadow: 0 0 8px rgba(0, 255, 156, 0.2); 
-            transition: all 0.2s ease; text-transform: uppercase; cursor: pointer; font-weight: 900;
-        }
+        .btn-system-led { font-size: 10px; letter-spacing: 0.15em; padding: 5px 12px; border: 1px solid #00ff9c; background: rgba(0, 255, 156, 0.1); color: #00ff9c; box-shadow: 0 0 8px rgba(0, 255, 156, 0.2); transition: all 0.2s ease; text-transform: uppercase; cursor: pointer; font-weight: 900; }
         .btn-system-led:hover { background: #00ff9c; color: #0b0f14; box-shadow: 0 0 15px rgba(0, 255, 156, 0.6); }
         .btn-system-led:active { background: rgba(0, 255, 156, 0.2) !important; color: #00ff9c !important; box-shadow: inset 0 0 10px rgba(0, 255, 156, 0.4) !important; }
 
-        .btn-system-led-red { 
-            font-size: 10px; letter-spacing: 0.15em; padding: 5px 12px; 
-            border: 1px solid #ff4d4d; 
-            background: rgba(255, 77, 77, 0.1); color: #ff4d4d; 
-            box-shadow: 0 0 8px rgba(255, 77, 77, 0.2); 
-            transition: all 0.2s ease; text-transform: uppercase; cursor: pointer; font-weight: 900;
-        }
+        .btn-system-led-red { font-size: 10px; letter-spacing: 0.15em; padding: 5px 12px; border: 1px solid #ff4d4d; background: rgba(255, 77, 77, 0.1); color: #ff4d4d; box-shadow: 0 0 8px rgba(255, 77, 77, 0.2); transition: all 0.2s ease; text-transform: uppercase; cursor: pointer; font-weight: 900; }
         .btn-system-led-red:hover { background: #ff4d4d; color: #0b0f14; box-shadow: 0 0 15px rgba(255, 77, 77, 0.6); }
         .btn-system-led-red:active { background: rgba(255, 77, 77, 0.2) !important; color: #ff4d4d !important; box-shadow: inset 0 0 10px rgba(255, 77, 77, 0.4) !important; }
         .btn-system-led-red.active-adv { background: #ff4d4d; color: #0b0f14; box-shadow: 0 0 15px rgba(255, 77, 77, 0.6); }
@@ -99,7 +102,7 @@
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #00ff9c; }
     </style>
 </head>
-<body class="p-4 md:p-6">
+<body class="p-4 md:p-6 relative">
 
     <div id="helpModal">
         <div class="modal-content">
@@ -112,7 +115,7 @@
         </div>
     </div>
 
-    <div class="flex flex-col md:flex-row justify-between items-center md:items-end mb-8 border-b border-green-900 pb-6 gap-6 relative">
+    <div class="flex flex-col md:flex-row justify-between items-center md:items-end mb-8 border-b border-green-900 pb-6 gap-6 relative z-10">
         <div class="flex flex-col md:flex-row items-center gap-6">
             <div class="flex flex-col items-center md:items-start">
                 <button onclick="location.reload()" id="btnRefresh" class="btn-system-led mb-2">System Refresh</button>
@@ -169,31 +172,43 @@
         </div>
     </div>
 
-    <div class="flex flex-col lg:flex-row gap-6 items-start w-full">
-        <div class="flex flex-col gap-6 w-full lg:w-auto shrink-0">
-            <div class="flex flex-col md:flex-row gap-4 w-full">
-                <div id="containerEU1" class="soc-border p-4 bg-black/40 w-full md:w-64 shrink-0">
+    <div class="flex flex-col lg:flex-row gap-6 items-start w-full relative z-10">
+        
+        <div class="flex flex-col gap-6 w-full lg:w-auto shrink-0 relative">
+            <div class="flex flex-col md:flex-row gap-4 w-full relative z-10">
+                
+                <div class="hidden md:block cyber-cable w-[4px] h-[12px] -bottom-[12px] left-[16.6%] delay-1"></div>
+                <div class="hidden md:block cyber-cable w-[4px] h-[12px] -bottom-[12px] left-[50%] delay-2"></div>
+                <div class="hidden md:block cyber-cable w-[4px] h-[12px] -bottom-[12px] left-[83.3%] delay-3"></div>
+                
+                <div class="hidden md:block cyber-cable h-[4px] -bottom-[12px] left-[16.6%] w-[66.7%]"></div>
+                
+                <div class="hidden md:block cyber-cable w-[8px] h-[12px] -bottom-[24px] left-[50%] -translate-x-1/2"></div>
+
+                <div id="containerEU1" class="soc-border p-4 bg-black/40 w-full md:w-64 shrink-0 relative z-20">
                     <div class="flex items-center justify-between mb-3"><h2 class="font-bold text-lg">EU-1</h2><div id="alertEU1" class="alert-icon">!</div><button onclick="addAllToWatch('EU1')" class="btn-system-led" style="font-size:8px; padding: 3px 6px;">ADD ALL</button></div>
                     <div id="statusEU1" class="text-[10px] px-2 py-0.5 rounded border border-current uppercase w-full text-right mb-3">Loading</div>
                     <div class="grid grid-cols-2 gap-2 text-sm mb-4 items-center"><div class="lang-label-players opacity-70">Players:</div> <div id="playersEU1" class="text-right players-count-glow">-/-</div><div class="lang-label-map opacity-70">Map:</div> <div id="mapEU1" class="text-right truncate text-[11px]">-</div><div class="lang-label-ping opacity-70">Ping:</div> <div id="pingEU1" class="text-right font-bold">-ms</div></div>
-                    <div id="listEU1" class="h-[400px] md:h-[500px] overflow-y-auto text-xs space-y-1"></div>
+                    <div id="listEU1" class="h-[400px] md:h-[500px] overflow-y-auto text-xs space-y-1 custom-scrollbar pr-1"></div>
                 </div>
-                <div id="containerEU2" class="soc-border p-4 bg-black/40 w-full md:w-64 shrink-0">
+                <div id="containerEU2" class="soc-border p-4 bg-black/40 w-full md:w-64 shrink-0 relative z-20">
                     <div class="flex items-center justify-between mb-3"><h2 class="font-bold text-lg">EU-2</h2><div id="alertEU2" class="alert-icon">!</div><button onclick="addAllToWatch('EU2')" class="btn-system-led" style="font-size:8px; padding: 3px 6px;">ADD ALL</button></div>
                     <div id="statusEU2" class="text-[10px] px-2 py-0.5 rounded border border-current uppercase w-full text-right mb-3">Loading</div>
                     <div class="grid grid-cols-2 gap-2 text-sm mb-4 items-center"><div class="lang-label-players opacity-70">Players:</div> <div id="playersEU2" class="text-right players-count-glow">-/-</div><div class="lang-label-map opacity-70">Map:</div> <div id="mapEU2" class="text-right truncate text-[11px]">-</div><div class="lang-label-ping opacity-70">Ping:</div> <div id="pingEU2" class="text-right font-bold">-ms</div></div>
-                    <div id="listEU2" class="h-[400px] md:h-[500px] overflow-y-auto text-xs space-y-1"></div>
+                    <div id="listEU2" class="h-[400px] md:h-[500px] overflow-y-auto text-xs space-y-1 custom-scrollbar pr-1"></div>
                 </div>
-                <div id="containerEU3" class="soc-border p-4 bg-black/40 w-full md:w-64 shrink-0">
+                <div id="containerEU3" class="soc-border p-4 bg-black/40 w-full md:w-64 shrink-0 relative z-20">
                     <div class="flex items-center justify-between mb-3"><h2 class="font-bold text-lg">EU-3</h2><div id="alertEU3" class="alert-icon">!</div><button onclick="addAllToWatch('EU3')" class="btn-system-led" style="font-size:8px; padding: 3px 6px;">ADD ALL</button></div>
                     <div id="statusEU3" class="text-[10px] px-2 py-0.5 rounded border border-current uppercase w-full text-right mb-3">Loading</div>
                     <div class="grid grid-cols-2 gap-2 text-sm mb-4 items-center"><div class="lang-label-players opacity-70">Players:</div> <div id="playersEU3" class="text-right players-count-glow">-/-</div><div class="lang-label-map opacity-70">Map:</div> <div id="mapEU3" class="text-right truncate text-[11px]">-</div><div class="lang-label-ping opacity-70">Ping:</div> <div id="pingEU3" class="text-right font-bold">-ms</div></div>
-                    <div id="listEU3" class="h-[400px] md:h-[500px] overflow-y-auto text-xs space-y-1"></div>
+                    <div id="listEU3" class="h-[400px] md:h-[500px] overflow-y-auto text-xs space-y-1 custom-scrollbar pr-1"></div>
                 </div>
             </div>
             
-            <div class="soc-border p-5 md:p-8 bg-black/60 flex flex-row items-center justify-between w-full min-h-[260px]">
-                <div class="flex flex-col gap-6 w-[45%] pl-2">
+            <div class="soc-border p-5 md:p-8 bg-black/60 flex flex-row items-center justify-between w-full min-h-[260px] relative z-10">
+                <div class="hidden lg:block cyber-cable h-[6px] w-[32px] top-[50%] -right-[28px] delay-1"></div>
+
+                <div class="flex flex-col gap-6 w-[45%] pl-2 relative z-20">
                     <div class="text-left">
                         <div class="text-xs md:text-sm text-green-400 uppercase flex items-center mb-2 font-bold tracking-widest drop-shadow-md"><span id="led-EU1-side" class="led-indicator w-3 h-3 md:w-4 md:h-4 mr-3 border-2"></span>EU1 REBOOT</div>
                         <div id="clock-EU1-side" class="text-4xl md:text-5xl font-black clock-wait text-white drop-shadow-[0_0_12px_rgba(0,255,156,0.8)] tracking-widest">--:--:--</div>
@@ -207,7 +222,7 @@
                         <div id="clock-EU3-side" class="text-4xl md:text-5xl font-black clock-wait text-white drop-shadow-[0_0_12px_rgba(0,255,156,0.8)] tracking-widest">--:--:--</div>
                     </div>
                 </div>
-                <div class="flex flex-col items-center justify-center flex-1 w-[55%] border-l border-green-900/40 pl-4 md:pl-8">
+                <div class="flex flex-col items-center justify-center flex-1 w-[55%] border-l border-green-900/40 pl-4 md:pl-8 relative z-20">
                     <div id="totalLabel" class="text-xs md:text-sm opacity-60 uppercase tracking-[0.2em] md:tracking-[0.4em] mb-3 text-center text-green-400">Total Population</div>
                     <div class="text-7xl md:text-8xl font-bold text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.4)] leading-none" id="totalStat">0</div>
                     <img src="Adobe Express - file.png" alt="77th JSOC Logo" class="bottom-logo mt-5 max-w-[140px] md:max-w-[180px]">
@@ -215,13 +230,16 @@
             </div>
         </div>
 
-        <div class="flex flex-col gap-6 flex-1 w-full min-w-0">
-            <div class="soc-border p-4 bg-black/40">
-                <div class="flex justify-between items-center mb-4">
+        <div class="flex flex-col gap-6 flex-1 w-full min-w-0 relative">
+            <div class="soc-border p-4 bg-black/40 relative z-10">
+                <div class="hidden md:block cyber-cable w-[4px] h-[24px] -bottom-[24px] left-[10%] delay-2"></div>
+                <div class="hidden md:block cyber-cable w-[4px] h-[24px] -bottom-[24px] right-[10%] delay-1"></div>
+
+                <div class="flex justify-between items-center mb-4 relative z-20">
                     <h3 id="watchlistTitle" class="text-sm font-bold uppercase opacity-80">SQUAD MANAGEMENT</h3>
                     <div id="squadCounter" class="squad-count">0/11</div>
                 </div>
-                <div class="grid grid-cols-4 gap-1.5 mb-4">
+                <div class="grid grid-cols-4 gap-1.5 mb-4 relative z-20">
                     <button onclick="switchSquad(1)" id="sq-btn-1" class="squad-btn active">Alfa</button>
                     <button onclick="switchSquad(2)" id="sq-btn-2" class="squad-btn">Bravo</button>
                     <button onclick="switchSquad(3)" id="sq-btn-3" class="squad-btn">Charlie</button>
@@ -231,31 +249,37 @@
                     <button onclick="switchSquad(7)" id="sq-btn-7" class="squad-btn">Golf</button>
                     <button onclick="switchSquad(8)" id="sq-btn-8" class="squad-btn">FAV</button>
                 </div>
-                <div class="flex gap-2 mb-4">
+                <div class="flex gap-2 mb-4 relative z-20">
                     <input id="watchInput" type="text" placeholder="Nickname..." class="bg-black border border-green-900 text-xs p-2 flex-1 outline-none" onkeypress="if(event.key === 'Enter') addWatch()">
                     <button onclick="addWatch()" id="btnAddWatch" class="btn-system-led">ADD</button>
                     <button onclick="clearAllWatch()" id="btnClearWatch" class="btn-system-led">Clear</button>
                 </div>
-                <div id="watchList" class="text-xs space-y-2 max-h-40 overflow-y-auto"></div>
+                <div id="watchList" class="text-xs space-y-2 max-h-40 overflow-y-auto custom-scrollbar relative z-20"></div>
             </div>
             
-            <div class="soc-border-red p-4 bg-red-950/10">
-                <div class="flex justify-between items-center mb-3"><h3 id="criticalTitle" class="text-sm font-bold uppercase text-white">Notifications</h3><button onclick="clearAllAlerts()" id="btnClearAlerts" class="btn-system-led" style="padding: 3px 8px; font-size: 9px;">Clear All</button></div>
-                <div id="alertBox" class="text-[11px] h-56 overflow-y-auto custom-scrollbar flex flex-col gap-0.5 pr-1"></div>
+            <div class="soc-border-red p-4 bg-red-950/10 relative z-10">
+                <div class="hidden md:block cyber-cable cyber-cable-red w-[4px] h-[24px] -bottom-[24px] left-[10%] delay-3"></div>
+                <div class="hidden md:block cyber-cable cyber-cable-red w-[4px] h-[24px] -bottom-[24px] right-[10%] delay-2"></div>
+
+                <div class="flex justify-between items-center mb-3 relative z-20"><h3 id="criticalTitle" class="text-sm font-bold uppercase text-white">Notifications</h3><button onclick="clearAllAlerts()" id="btnClearAlerts" class="btn-system-led" style="padding: 3px 8px; font-size: 9px;">Clear All</button></div>
+                <div id="alertBox" class="text-[11px] h-56 overflow-y-auto custom-scrollbar flex flex-col gap-0.5 pr-1 relative z-20"></div>
             </div>
 
-            <div class="soc-border p-4 bg-black flex-1 min-h-[380px] min-w-0">
-                <h3 id="trendTitle" class="text-sm font-bold uppercase opacity-80 mb-6">Population Trend</h3>
-                <div class="grid grid-cols-4 gap-4 mb-8">
+            <div class="soc-border p-4 bg-black flex-1 min-h-[380px] min-w-0 relative z-10">
+                <div class="hidden md:block cyber-cable w-[4px] h-[24px] -bottom-[24px] left-[10%] delay-1"></div>
+                <div class="hidden md:block cyber-cable w-[4px] h-[24px] -bottom-[24px] right-[10%] delay-3"></div>
+
+                <h3 id="trendTitle" class="text-sm font-bold uppercase opacity-80 mb-6 relative z-20">Population Trend</h3>
+                <div class="grid grid-cols-4 gap-4 mb-8 relative z-20">
                     <div class="text-center"><span class="cap-label-name text-green-400">EU1</span><br><span id="percEU1" class="cap-label-perc glow-text">0%</span><div class="cap-bar-bg"><div id="barEU1" class="cap-bar-fill bg-green-500" style="width: 0%"></div></div><span id="fullEU1" class="full-text-blink mt-1" style="display:none">SERVER FULL</span></div>
                     <div class="text-center"><span class="cap-label-name text-green-400">EU2</span><br><span id="percEU2" class="cap-label-perc glow-text">0%</span><div class="cap-bar-bg"><div id="barEU2" class="cap-bar-fill bg-green-500" style="width: 0%"></div></div><span id="fullEU2" class="full-text-blink mt-1" style="display:none">SERVER FULL</span></div>
                     <div class="text-center"><span class="cap-label-name text-green-400">EU3</span><br><span id="percEU3" class="cap-label-perc glow-text">0%</span><div class="cap-bar-bg"><div id="barEU3" class="cap-bar-fill bg-green-500" style="width: 0%"></div></div><span id="fullEU3" class="full-text-blink mt-1" style="display:none">SERVER FULL</span></div>
                     <div class="text-center"><span class="cap-label-name text-white">TOTAL</span><br><span id="percTOTAL" class="cap-label-perc text-white">0%</span><div class="cap-bar-bg"><div id="barTOTAL" class="cap-bar-fill bg-white" style="width: 0%"></div></div></div>
                 </div>
-                <div class="chart-container" id="chartParent"><canvas id="popChart"></canvas></div>
+                <div class="chart-container relative z-20" id="chartParent"><canvas id="popChart"></canvas></div>
             </div>
-            <div class="soc-border p-4 bg-black/40">
-                <div class="flex justify-between items-center mb-2">
+            <div class="soc-border p-4 bg-black/40 relative z-10">
+                <div class="flex justify-between items-center mb-2 relative z-20">
                     <h3 id="syslogTitle" class="text-sm font-bold uppercase opacity-80">System Log</h3>
                     <div class="flex gap-2">
                         <button id="advToggle" onclick="toggleAdvanced()" class="btn-system-led-red">Advanced: OFF</button>
@@ -263,7 +287,7 @@
                         <button onclick="saveLog()" class="btn-system-led">Save (.txt)</button>
                     </div>
                 </div>
-                <div id="logBox" class="text-[11px] h-32 overflow-y-auto font-mono opacity-80 bg-black/20 p-2 custom-scrollbar"></div>
+                <div id="logBox" class="text-[11px] h-32 overflow-y-auto font-mono opacity-80 bg-black/20 p-2 custom-scrollbar relative z-20"></div>
             </div>
         </div>
     </div>
