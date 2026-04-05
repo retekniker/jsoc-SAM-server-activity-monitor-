@@ -186,7 +186,7 @@
                     <span class="sam-highlight glow-text">A</span><span class="sam-rest glow-text">CTIVITY</span>
                     <span class="sam-highlight glow-text">M</span><span class="sam-rest glow-text">ONITOR</span>
                 </p>
-                <div class="by-komputer">by Komputer <span class="opacity-50 ml-2">v4.3.0</span></div>
+                <div class="by-komputer">by Komputer <span class="opacity-50 ml-2">v4.3.5</span></div>
             </div>
         </div>
     </div>
@@ -409,6 +409,13 @@
 
         function toggleVoice() {
             const btnInit = document.getElementById("btnInitAudio"); const statusEl = document.getElementById("audioStatus");
+            
+            // USUWANIE ALERTU STARTOWEGO
+            const startupAlert = document.getElementById("alert-startup-voice");
+            if (startupAlert) {
+                startupAlert.remove();
+            }
+
             if (!audioUnlocked) {
                 audioUnlocked = true; voiceEnabled = true; initVoice(); const msg = new SpeechSynthesisUtterance(""); window.speechSynthesis.speak(msg);
                 btnInit.innerText = "VOICE: ON"; btnInit.classList.remove("border-gray-500", "text-gray-500"); btnInit.classList.add("border-green-500", "text-green-500");
@@ -478,9 +485,10 @@
             b.insertBefore(d, b.firstChild); if (b.children.length > 80) b.removeChild(b.lastChild); 
         }
 
-        function addSystemAlert(message) {
+        function addSystemAlert(message, alertId = null) {
             const b = document.getElementById("alertBox"); const d = document.createElement("div"); const time = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
             d.className = `flex justify-between items-center border-l-4 border-red-500 pl-3 bg-red-950/80 py-2 soc-border-pulse mb-1`;
+            if (alertId) d.id = alertId;
             d.innerHTML = `<div class="flex items-center gap-3"><span class="opacity-70 text-[10px] text-white">[${time}]</span><span class="text-yellow-400 font-black text-xs md:text-sm tracking-widest uppercase text-shadow-sm">⚠️ ${message} ⚠️</span></div><span class="cursor-pointer text-white hover:text-red-500 px-2 text-lg" onclick="this.parentElement.remove()">✖</span>`;
             b.insertBefore(d, b.firstChild); if (b.children.length > 80) b.removeChild(b.lastChild); 
         }
@@ -502,6 +510,7 @@
                 const players = (json.included || []).filter(x => x.type === "player").map(p => p.attributes.name);
                 const currentPlayers = attr.players || 0;
                 const maxPlayers = attr.maxPlayers || 0;
+                const currentUptime = attr.details?.time || 0;
 
                 if (advMode) logEvent(`[ADV] ${name} SYNC OK | LAT: ${lat}MS | STAT: ${attr.status || 'UNKNOWN'}`, "text-gray-500", true);
 
@@ -509,20 +518,33 @@
                     let isCrash = false;
                     if (attr.status === 'dead' || attr.status === 'offline') { isCrash = true; }
 
+                    if (!isCrash && prevUptime[name] > 0 && currentUptime < prevUptime[name] && (prevUptime[name] - currentUptime) > 60) {
+                        isCrash = true;
+                        logEvent(`[WD] RESTART DETECTED VIA UPTIME RESET (${name})`, "text-cyan-400 font-bold");
+                    }
+
                     if (isCrash) {
                         if (!isBooting[name]) {
                             isBooting[name] = true;
-                            lastRestartData[name] = Date.now(); localStorage.setItem('jsoc_last_restarts', JSON.stringify(lastRestartData));
+                            if (currentUptime > 0) {
+                                lastRestartData[name] = Date.now() - (currentUptime * 1000);
+                            } else {
+                                lastRestartData[name] = Date.now();
+                            }
+                            localStorage.setItem('jsoc_last_restarts', JSON.stringify(lastRestartData));
                             logEvent(`[WD] CRITICAL: ${name} SERVER DOWN`, "text-red-500 font-bold"); addSystemAlert(`CRITICAL: ${name} SERVER DOWN`); queueSound(SOUND_SQUAD, currentVolume * 0.3);
                             if(audioUnlocked && voiceEnabled && !isMuted) { queueSpeech(`Critical alert. ${name.replace('EU1', 'EU One')} server down.`); }
                         }
-                    } else if (attr.status === 'online' && isBooting[name]) {
+                    } else if (attr.status === 'online' && isBooting[name] && currentUptime > 0) {
                         isBooting[name] = false;
-                        lastRestartData[name] = Date.now(); localStorage.setItem('jsoc_last_restarts', JSON.stringify(lastRestartData));
+                        lastRestartData[name] = Date.now() - (currentUptime * 1000); 
+                        localStorage.setItem('jsoc_last_restarts', JSON.stringify(lastRestartData));
                         logEvent(`[WD] CONFIRMED: ${name} ONLINE. CYCLE LOCKED.`, "text-cyan-400 font-bold"); addSystemAlert(`${name} SYSTEM ONLINE. CYCLE LOCKED.`);
                         if(audioUnlocked && voiceEnabled && !isMuted) { queueSpeech(`System online. ${name.replace('EU1', 'EU One')} cycle locked.`); }
                     }
                 }
+                
+                prevUptime[name] = currentUptime;
 
                 if (maxPlayers > 0 && currentPlayers >= maxPlayers) {
                     if (!isServerFullAlerted[name]) {
@@ -760,6 +782,11 @@
 
         (async function init() {
             switchSquad(currentSquadIdx); initChart(); updateMuteUI(); updateVolumeUI(); initAdvButton(); setInterval(updateClock, 1000); updateAll(); setInterval(renderUI, 1000);
+            
+            // ALERT STARTOWY O VOICE COMMS (Z unikalnym ID)
+            addSystemAlert("VOICE COMMS STANDBY. CLICK [INIT COMM] TO ACTIVATE.", "alert-startup-voice");
+            logEvent("VOICE ENGINE DISABLED. AWAITING MANUAL OVERRIDE.", "text-yellow-400 font-bold");
+            
             logEvent(`[WD] SYSTEM BOOT COMPLETE`, "text-cyan-400 font-bold");
         })();
     </script>
