@@ -199,25 +199,20 @@
         .chart-container { position: relative; width: 100%; height: 180px; } canvas { width: 100% !important; height: 100% !important; }
         .custom-scrollbar::-webkit-scrollbar { width: 6px; } .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0, 255, 156, 0.05); border-radius: 3px; } .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0, 255, 156, 0.3); border-radius: 3px; } .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #00ff9c; }
         
-        /* ELASTYCZNA, RESPONSYWNA SIATKA CSS GRID */
+        /* TWARDA SIATKA CSS GRID Z WIĘKSZĄ ILOŚCIĄ MIEJSCA DLA PRZEŁĄCZNIKÓW */
         .server-grid-row {
             display: grid;
-            grid-template-columns: minmax(180px, 220px) 90px minmax(100px, 1fr);
-            gap: 1rem;
+            grid-template-columns: 210px 85px minmax(0, 1fr);
+            gap: 0.5rem;
             align-items: stretch;
             width: 100%;
-            height: 100px;
+            height: 110px;
         }
-        
-        /* Stackowanie na bardzo małych ekranach / potężnym zoomie */
-        @media (max-width: 768px) {
+        @media (min-width: 1024px) {
             .server-grid-row {
-                grid-template-columns: 1fr;
-                grid-template-rows: auto auto 100px;
-                height: auto;
-                gap: 0.5rem;
+                grid-template-columns: 240px 100px minmax(0, 1fr);
+                gap: 1rem;
             }
-            .vfd-container { height: 60px; flex-direction: row; align-items: center; justify-content: space-around; gap: 1rem;}
         }
     </style>
 </head>
@@ -251,7 +246,7 @@
                 <span class="text-xs font-light opacity-80 tracking-[0.2em] m-0 leading-none">
                     <span class="sam-highlight glow-text">S</span>.A.M. <span class="sam-rest glow-text ml-1">TACTICAL MONITOR</span>
                 </span>
-                <span class="by-komputer ml-2">by Komputer v4.8.6</span>
+                <span class="by-komputer ml-2">by Komputer v4.8.7</span>
             </div>
         </div>
 
@@ -552,7 +547,12 @@
 
         let advMode = localStorage.getItem('jsoc_adv_mode') === 'true';
         let audioUnlocked = false; let voiceEnabled = false; let ttsVoice = null;
-        let audioQueue = []; let isPlayingQueue = false; let currentAudioObj = null;
+        
+        // Zabezpieczenie kolejki Audio i Chrome TTS Bug
+        let audioQueue = []; 
+        let isPlayingQueue = false; 
+        let currentAudioObj = null;
+        let ttsUtterances = []; // Globalny bufor ratujący Chrome TTS przed usunięciem z RAM
 
         let forceSeed = new Date();
         forceSeed.setHours(23, 32, 0, 0);
@@ -643,6 +643,7 @@
                 isPlayingQueue = false;
                 if (currentAudioObj) { currentAudioObj.pause(); currentAudioObj = null; }
                 if (window.speechSynthesis) window.speechSynthesis.cancel();
+                ttsUtterances = [];
                 return;
             }
 
@@ -658,10 +659,17 @@
             if (item.type === 'speech') {
                 if(window.speechSynthesis) {
                     let msg = new SpeechSynthesisUtterance(item.text); 
+                    ttsUtterances.push(msg); // Zapobiega usuwaniu z RAM w trakcie mówienia (Chrome Bug)
                     if (ttsVoice) { msg.voice = ttsVoice; }
                     msg.volume = currentVolume; msg.lang = 'en-US'; msg.rate = 0.9; msg.pitch = 0.85;
-                    msg.onend = () => { setTimeout(processAudioQueue, 300); }; 
-                    msg.onerror = () => { setTimeout(processAudioQueue, 300); };
+                    msg.onend = () => { 
+                        ttsUtterances = ttsUtterances.filter(u => u !== msg);
+                        setTimeout(processAudioQueue, 300); 
+                    }; 
+                    msg.onerror = () => { 
+                        ttsUtterances = ttsUtterances.filter(u => u !== msg);
+                        setTimeout(processAudioQueue, 300); 
+                    };
                     window.speechSynthesis.speak(msg);
                 } else {
                     processAudioQueue();
@@ -734,6 +742,7 @@
                     audioQueue = [];
                     if (currentAudioObj) { currentAudioObj.pause(); currentAudioObj = null; }
                     if (window.speechSynthesis) window.speechSynthesis.cancel();
+                    ttsUtterances = [];
                 }
             }
         }
@@ -890,37 +899,63 @@
                 
                 prevUptime[name] = currentUptime;
 
+                // TWARDA HISTEREZA (ZABEZPIECZENIE PRZED SKAKANIEM 99/100 I SPAMOWANIEM ALARMU)
                 if (maxPlayers > 0 && currentPlayers >= maxPlayers) {
                     if (!isServerFullAlerted[name]) {
-                        isServerFullAlerted[name] = true; logEvent(`[ALERT] ${name} IS FULL`, "text-yellow-400 font-bold"); addSystemAlert(`${name} SERVER FULL`);
-                        if (voiceEnabled) { queueSpeech(`Warning. ${name.replace('EU1', 'EU One')} is full.`); } else { queueSound(SOUND_SQUAD, currentVolume * 0.2); }
+                        isServerFullAlerted[name] = true; 
+                        logEvent(`[ALERT] ${name} IS FULL`, "text-yellow-400 font-bold"); 
+                        addSystemAlert(`${name} SERVER FULL`);
+                        if (voiceEnabled) { queueSpeech(`Warning. ${name.replace('EU1', 'EU One')} is full.`); } 
+                        else { queueSound(SOUND_SQUAD, currentVolume * 0.2); }
                     }
-                } else { isServerFullAlerted[name] = false; }
+                } else if (currentPlayers <= maxPlayers - 2) {
+                    // Serwer musi stracić przynajmniej 2 graczy, żeby alarm uzbroił się ponownie
+                    isServerFullAlerted[name] = false; 
+                }
 
                 if (isFirstLoad) {
                     players.forEach(pName => { if (!playerSessions[pName]) playerSessions[pName] = Date.now(); });
                 } else {
+                    
+                    // ZABEZPIECZENIE PRZED "API DROP" (MASOWE ROZŁĄCZENIA)
+                    let joinedPlayers = [];
+                    let leftPlayers = [];
+
                     players.forEach(pName => {
-                        if (!previous[name].includes(pName)) {
-                            playerSessions[pName] = Date.now(); const squadDetails = getWatchedSquadDetails(pName);
-                            if (squadDetails) { announceAction(squadDetails, name, true); }
-                            addPlayerAlert(pName, name, true, squadDetails); logEvent(`${pName} JOINED ${name}`, squadDetails ? "text-red-500 font-bold" : "text-gray-400");
-                        }
+                        if (!previous[name].includes(pName)) joinedPlayers.push(pName);
                     });
                     
                     if (state === 'ON' || state === 'AUTO') {
                         if (name !== "EU1" || !isBooting[name]) {
                             previous[name].forEach(pName => {
-                                if (!players.includes(pName)) {
-                                    const squadDetails = getWatchedSquadDetails(pName);
-                                    if (squadDetails) { announceAction(squadDetails, name, false); }
-                                    let joinedAt = playerSessions[pName];
-                                    addPlayerAlert(pName, name, false, squadDetails, joinedAt);
-                                    delete playerSessions[pName];
-                                    logEvent(`${pName} LEFT ${name}`, squadDetails ? "text-red-500 font-bold" : "text-gray-600");
-                                }
+                                if (!players.includes(pName)) leftPlayers.push(pName);
                             });
                         }
+                    }
+
+                    // Jeśli ponad 10 osób dołączy lub wyjdzie w jednym skanie (10 sekund), to anomalia. Wyciągamy wtyczkę audio.
+                    let isMassEvent = (joinedPlayers.length > 10 || leftPlayers.length > 10);
+
+                    joinedPlayers.forEach(pName => {
+                        playerSessions[pName] = Date.now(); 
+                        const squadDetails = getWatchedSquadDetails(pName);
+                        if (!isMassEvent) announceAction(squadDetails, name, true);
+                        addPlayerAlert(pName, name, true, squadDetails); 
+                        logEvent(`${pName} JOINED ${name}`, squadDetails ? "text-red-500 font-bold" : "text-gray-400");
+                    });
+                    
+                    leftPlayers.forEach(pName => {
+                        const squadDetails = getWatchedSquadDetails(pName);
+                        if (!isMassEvent) announceAction(squadDetails, name, false);
+                        let joinedAt = playerSessions[pName];
+                        addPlayerAlert(pName, name, false, squadDetails, joinedAt);
+                        delete playerSessions[pName];
+                        logEvent(`${pName} LEFT ${name}`, squadDetails ? "text-red-500 font-bold" : "text-gray-600");
+                    });
+
+                    if (isMassEvent && !isMuted) {
+                        logEvent(`[SYS] MASS DATA SHIFT: ${joinedPlayers.length} IN, ${leftPlayers.length} OUT. AUDIO THROTTLED.`, "text-yellow-500 font-bold");
+                        queueSound(SOUND_SQUAD, currentVolume * 0.3); // Jedno, pojedyncze piknięcie zamiast setek.
                     }
                 }
                 previous[name] = players;
