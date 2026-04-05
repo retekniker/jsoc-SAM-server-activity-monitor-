@@ -124,10 +124,10 @@
         .sq-color-8 { color: #9ca3af; border: 1px solid rgba(156, 163, 175, 0.4); }
         .sq-color-8:hover, .sq-color-8.active { background: #9ca3af; color: #0b0f14; border-color: #9ca3af; box-shadow: 0 0 15px rgba(156, 163, 175, 0.6); }
 
-        /* PŁYNNE PULSOWANIE (SINUSOIDA) DLA WYBRANEGO ODDZIAŁU */
+        /* IDEALNA SINUSOIDA: 2 sekundy w górę (do 1.8x jasności), 2 sekundy w dół (do 0.5x jasności) */
         @keyframes active-squad-pulse { 
-            0%, 100% { filter: brightness(1); box-shadow: inset 0 0 0 transparent; } 
-            50% { filter: brightness(1.25); box-shadow: inset 0 0 8px currentColor; } 
+            0%, 100% { filter: brightness(0.5); box-shadow: inset 0 0 0 transparent; } 
+            50% { filter: brightness(1.8); box-shadow: inset 0 0 12px currentColor; } 
         }
         .active-squad-member { 
             animation: active-squad-pulse 4s ease-in-out infinite; 
@@ -143,7 +143,6 @@
         
         .led-green-blink { background-color: #00ff9c; box-shadow: 0 0 20px #00ff9c, 0 0 40px rgba(0,255,156,0.8); animation: alert-blink 1s infinite; }
         .led-red-blink { background-color: #ff4d4d; box-shadow: 0 0 20px #ff4d4d, 0 0 40px rgba(255,77,77,0.8); animation: alert-blink 0.4s infinite; }
-        .led-orange-blink { background-color: #f59e0b; box-shadow: 0 0 20px #f59e0b, 0 0 40px rgba(245,158,11,0.8); animation: alert-blink 1s infinite; }
         .led-green-solid { background-color: #00ff9c; box-shadow: 0 0 15px #00ff9c, 0 0 30px rgba(0,255,156,0.6); }
 
         .btn-clear-all-green { border: 1px solid #00ff9c; background: transparent; color: #00ff9c; font-size: 10px; padding: 2px 10px; cursor: pointer; text-transform: uppercase; }
@@ -378,15 +377,21 @@
         const SERVERS = { EU1: "14808491", EU2: "30137964", EU3: "28825461" };
         const SQUAD_NAMES = ["", "ALFA", "BRAVO", "CHARLIE", "DELTA", "ECHO", "FOXTROT", "GOLF", "FAV"];
         
-        // NOWE DŹWIĘKI BEZ SYRENY ALARMOWEJ DLA SERWERÓW
+        // NOWE AUDIO (Czyste dźwięki taktyczne)
         const SOUND_LEAVE = "https://actions.google.com/sounds/v1/cartoon/pop.ogg";
         const SOUND_SQUAD = "https://actions.google.com/sounds/v1/alarms/beep_short.ogg";
         const SOUND_FAV = "https://actions.google.com/sounds/v1/alarms/dosimeter_alarm.ogg";
         const SOUND_UNASSIGNED = "https://actions.google.com/sounds/v1/water/water_drop.ogg";
 
         const SQUAD_COLORS = {
-            1: { text: '#ef4444', bg: 'rgba(239, 68, 68, 0.1)', border: '#ef4444' }, 2: { text: '#3b82f6', bg: 'rgba(59, 130, 246, 0.1)', border: '#3b82f6' }, 3: { text: '#eab308', bg: 'rgba(234, 179, 8, 0.1)', border: '#eab308' }, 4: { text: '#a855f7', bg: 'rgba(168, 85, 247, 0.1)', border: '#a855f7' },
-            5: { text: '#06b6d4', bg: 'rgba(6, 182, 212, 0.1)', border: '#06b6d4' }, 6: { text: '#ec4899', bg: 'rgba(236, 72, 153, 0.1)', border: '#ec4899' }, 7: { text: '#f97316', bg: 'rgba(249, 115, 22, 0.1)', border: '#f97316' }, 8: { text: '#9ca3af', bg: 'rgba(156, 163, 175, 0.1)', border: '#9ca3af' }
+            1: { text: '#ef4444', bg: 'rgba(239, 68, 68, 0.1)', border: '#ef4444' },
+            2: { text: '#3b82f6', bg: 'rgba(59, 130, 246, 0.1)', border: '#3b82f6' },
+            3: { text: '#eab308', bg: 'rgba(234, 179, 8, 0.1)', border: '#eab308' },
+            4: { text: '#a855f7', bg: 'rgba(168, 85, 247, 0.1)', border: '#a855f7' },
+            5: { text: '#06b6d4', bg: 'rgba(6, 182, 212, 0.1)', border: '#06b6d4' },
+            6: { text: '#ec4899', bg: 'rgba(236, 72, 153, 0.1)', border: '#ec4899' },
+            7: { text: '#f97316', bg: 'rgba(249, 115, 22, 0.1)', border: '#f97316' },
+            8: { text: '#9ca3af', bg: 'rgba(156, 163, 175, 0.1)', border: '#9ca3af' }
         };
 
         let isServerFullAlerted = { EU1: false, EU2: false, EU3: false }; 
