@@ -49,7 +49,7 @@
         .sync-btn-wrapper {
             position: relative;
             display: inline-block;
-            padding: 1px; /* Grubość obramówki */
+            padding: 1px;
             overflow: hidden;
             border-radius: 2px;
             cursor: pointer;
@@ -67,7 +67,7 @@
         .sync-btn-inner {
             display: block;
             position: relative;
-            background: #0b0f14; /* Zatrzymuje widoczność gradientu na środku */
+            background: #0b0f14;
             z-index: 1;
         }
         @keyframes sync-spin {
@@ -296,7 +296,6 @@
             0%, 100% { color: #ff8c00; text-shadow: 0 0 10px rgba(255,140,0,0.6); transform: scale(1); } 
             50% { color: #ffffff; text-shadow: 0 0 20px #ff8c00, 0 0 30px #ff8c00; transform: scale(1.05); } 
         }
-        /* ZMIANA DLA EU3 - CYJAN */
         @keyframes perc-pulse-cyan { 
             0%, 100% { color: #00e5ff; text-shadow: 0 0 10px rgba(0,229,255,0.6); transform: scale(1); } 
             50% { color: #ffffff; text-shadow: 0 0 20px #00e5ff, 0 0 30px #00e5ff; transform: scale(1.05); } 
@@ -347,7 +346,7 @@
                 <span class="text-xs font-light opacity-80 tracking-[0.2em] m-0 leading-none">
                     <span class="sam-highlight glow-text">S</span>.A.M. <span class="sam-rest glow-text ml-1">TACTICAL MONITOR</span>
                 </span>
-                <span class="by-komputer ml-2">by Komputer v4.9.9</span>
+                <span class="by-komputer ml-2">by Komputer v4.9.10</span>
             </div>
         </div>
 
@@ -369,11 +368,11 @@
                 <span id="api-heat-display" class="text-sm md:text-base font-black text-green-400 tracking-widest drop-shadow-md">0/60</span>
             </div>
 
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-3">
                 <div class="sync-btn-wrapper" title="Force Sync">
-                    <button onclick="location.reload()" class="sync-btn-inner btn-system-led py-1 px-2 text-[9px] md:text-[10px] !border-none hover:!bg-[#00ff9c] hover:!text-[#0b0f14]">SYNC</button>
+                    <button onclick="location.reload()" class="sync-btn-inner btn-system-led py-1 px-3 text-[10px] md:text-[11px] font-black !border-none hover:!bg-[#00ff9c] hover:!text-[#0b0f14]">SYNC</button>
                 </div>
-                <button onclick="toggleHelp()" class="btn-system-led py-1 px-2 text-[9px] md:text-[10px]">GUIDE [?]</button>
+                <button onclick="toggleHelp()" class="btn-system-led py-1 px-3 text-[10px] md:text-[11px] font-black drop-shadow-[0_0_8px_rgba(0,255,156,0.8)] border-2 border-green-400">GUIDE [?]</button>
             </div>
             
             <div class="hidden md:block w-px h-6 bg-green-900/50 mx-1"></div>
@@ -994,7 +993,7 @@
             const actionText = isJoin ? "connected" : "disconnected";
             if (!isJoin) { queueSound(SOUND_LEAVE, currentVolume * 0.15); } 
             else { if (!squadDetails) { queueSound(SOUND_UNASSIGNED, currentVolume * 0.2); } else if (squadDetails.squadName === "FAV") { queueSound(SOUND_FAV, currentVolume * 0.4); } else { queueSound(SOUND_SQUAD, currentVolume * 0.15); } }
-            // ZMIANA V4.9.9: Blokada TTS dla oddziału FAV
+            
             if (voiceEnabled && squadDetails && squadDetails.squadName !== "FAV") { 
                 queueSpeech(`${squadDetails.squadName} ${squadDetails.playerNumber} ${actionText}`); 
             }
