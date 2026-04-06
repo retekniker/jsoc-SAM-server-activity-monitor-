@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>77th JSOC | S.A.M. Tactical Monitor</title>
+    <title>Re-Tek | S.A.M. Tactical Monitor</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;900&family=VT323&display=swap" rel="stylesheet">
@@ -46,44 +46,17 @@
         .btn-system-led-red.active-adv { background: #ff4d4d; color: #0b0f14; box-shadow: 0 0 15px rgba(255, 77, 77, 0.6); }
 
         /* ANIMOWANY PRZYCISK SYNC */
-        .sync-btn-wrapper {
-            position: relative;
-            display: inline-block;
-            padding: 1px;
-            overflow: hidden;
-            border-radius: 2px;
-            cursor: pointer;
-        }
-        .sync-btn-wrapper::before {
-            content: '';
-            position: absolute;
-            top: -150%;
-            left: -150%;
-            width: 400%;
-            height: 400%;
-            background: conic-gradient(from 0deg, transparent 70%, #00ff9c 100%);
-            animation: sync-spin 2s linear infinite;
-        }
-        .sync-btn-inner {
-            display: block;
-            position: relative;
-            background: #0b0f14;
-            z-index: 1;
-        }
-        @keyframes sync-spin {
-            100% { transform: rotate(360deg); }
-        }
+        .sync-btn-wrapper { position: relative; display: inline-block; padding: 1px; overflow: hidden; border-radius: 2px; cursor: pointer; }
+        .sync-btn-wrapper::before { content: ''; position: absolute; top: -150%; left: -150%; width: 400%; height: 400%; background: conic-gradient(from 0deg, transparent 70%, #00ff9c 100%); animation: sync-spin 2s linear infinite; }
+        .sync-btn-inner { display: block; position: relative; background: #0b0f14; z-index: 1; }
+        @keyframes sync-spin { 100% { transform: rotate(360deg); } }
 
         @keyframes alert-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.1; } }
         .full-text-blink { font-size: 10px; font-weight: 900; color: #ff4d4d; text-shadow: 0 0 8px #ff4d4d; animation: alert-blink 0.5s infinite; }
         
         /* MIGAJĄCE TŁO DLA PRZYCISKU INIT COMM */
-        @keyframes btn-attention-blink {
-            0%, 100% { background: rgba(234, 179, 8, 0.1); border-color: #eab308; color: #eab308; box-shadow: 0 0 5px rgba(234, 179, 8, 0.2); }
-            50% { background: rgba(234, 179, 8, 0.8); border-color: #eab308; color: #0b0f14; box-shadow: 0 0 20px rgba(234, 179, 8, 0.8); }
-        }
+        @keyframes btn-attention-blink { 0%, 100% { background: rgba(234, 179, 8, 0.1); border-color: #eab308; color: #eab308; box-shadow: 0 0 5px rgba(234, 179, 8, 0.2); } 50% { background: rgba(234, 179, 8, 0.8); border-color: #eab308; color: #0b0f14; box-shadow: 0 0 20px rgba(234, 179, 8, 0.8); } }
         .btn-attention { animation: btn-attention-blink 0.8s infinite; }
-        
         .alert-icon { width: 16px; height: 16px; border-radius: 50%; text-align: center; line-height: 16px; font-weight: bold; font-size: 10px; animation: alert-blink 0.8s infinite; color: #0b0f14; display: inline-block; }
 
         #helpModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); backdrop-filter: blur(10px); z-index: 1000; justify-content: center; align-items: center; }
@@ -94,10 +67,6 @@
         
         .volume-wrapper { position: relative; display: flex; align-items: center; gap: 6px; padding: 4px 8px; border: 1px solid rgba(0, 255, 156, 0.2); background: rgba(0, 255, 156, 0.02); }
         .vol-level { height: 14px; width: 5px; border-radius: 1px; transition: all 0.1s; background: rgba(0, 255, 156, 0.1); }
-        
-        .sam-highlight { font-weight: 700; font-size: 1.1em; color: #00ff9c; }
-        .sam-rest { font-weight: 400; font-size: 0.9em; opacity: 0.8; color: #00ff9c; }
-        .by-komputer { font-size: 9px; opacity: 0.5; letter-spacing: 0.2em; text-transform: uppercase; }
         
         /* STRICT MILITARY SQUAD PALETTE */
         .squad-btn { font-size: 10px; font-weight: 700; padding: 5px 12px; cursor: pointer; transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.05em; background: transparent; }
@@ -126,42 +95,9 @@
         .wd-switch-btn:hover:not([class*="active-"]) { background: rgba(255,255,255,0.05); color: #fff; }
 
         /* --- STYLIZACJA EKRANÓW VFD / DMD --- */
-        .vfd-container {
-            background-color: #030604;
-            border: 2px solid #0f1c14;
-            border-radius: 3px;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: flex-start;
-            padding: 4px 6px;
-            box-shadow: inset 0 0 15px rgba(0,0,0,1), 0 0 5px rgba(0,0,0,0.5);
-            height: 100%;
-            width: 100%;
-            overflow: hidden;
-        }
-        .vfd-pixel-grid {
-            position: absolute;
-            inset: 0;
-            background-image: 
-                linear-gradient(rgba(0, 0, 0, 0.65) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 0, 0, 0.65) 1px, transparent 1px);
-            background-size: 2px 2px;
-            z-index: 5;
-            pointer-events: none;
-        }
-        .vfd-text {
-            font-family: 'VT323', monospace;
-            font-size: 1.15rem;
-            line-height: 1.1;
-            position: relative;
-            z-index: 2;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            white-space: nowrap; 
-        }
-        
+        .vfd-container { background-color: #030604; border: 2px solid #0f1c14; border-radius: 3px; position: relative; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: 4px 6px; box-shadow: inset 0 0 15px rgba(0,0,0,1), 0 0 5px rgba(0,0,0,0.5); height: 100%; width: 100%; overflow: hidden; }
+        .vfd-pixel-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(0, 0, 0, 0.65) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.65) 1px, transparent 1px); background-size: 2px 2px; z-index: 5; pointer-events: none; }
+        .vfd-text { font-family: 'VT323', monospace; font-size: 1.15rem; line-height: 1.1; position: relative; z-index: 2; letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; }
         .vfd-ping { color: #00ff9c; text-shadow: 0 0 6px #00ff9c; }
         .vfd-ping-auto { color: #eab308; text-shadow: 0 0 6px #eab308; }
         .vfd-opr { color: #eab308; text-shadow: 0 0 6px #eab308; }
@@ -169,165 +105,80 @@
         .vfd-standby { color: #ff4d4d; text-shadow: 0 0 2px #ff4d4d; opacity: 0.3; }
 
         /* OSCYLOSKOP */
-        .mini-chart-wrapper {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            border-radius: 4px; 
-            background: rgba(0,0,0,0.4); 
-            box-shadow: inset 0 0 15px rgba(0,0,0,0.8); 
-            transition: all 0.3s ease;
-        }
-        .mini-chart-container { 
-            position: absolute;
-            inset: 0;
-        }
+        .mini-chart-wrapper { position: relative; width: 100%; height: 100%; border-radius: 4px; background: rgba(0,0,0,0.4); box-shadow: inset 0 0 15px rgba(0,0,0,0.8); transition: all 0.3s ease; }
+        .mini-chart-container { position: absolute; inset: 0; }
         .mini-chart-container canvas { width: 100% !important; height: 100% !important; border-radius: 3px; }
         
-        @keyframes sync-pulse-on { 
-            0%, 100% { box-shadow: 0 0 5px #00ff9c, inset 0 0 5px rgba(0,255,156,0.1); border-color: rgba(0,255,156,0.5); } 
-            50% { box-shadow: 0 0 20px #00ff9c, inset 0 0 15px rgba(0,255,156,0.4); border-color: #00ff9c; } 
-        }
-        @keyframes sync-led-on { 
-            0%, 100% { box-shadow: 0 0 5px #00ff9c; background-color: rgba(0,255,156,0.6); } 
-            50% { box-shadow: 0 0 20px #00ff9c, 0 0 30px rgba(0,255,156,0.6); background-color: #00ff9c; } 
-        }
-        
-        @keyframes sync-pulse-auto { 
-            0%, 100% { box-shadow: 0 0 5px #eab308, inset 0 0 5px rgba(234,179,8,0.1); border-color: rgba(234,179,8,0.5); } 
-            50% { box-shadow: 0 0 20px #eab308, inset 0 0 15px rgba(234,179,8,0.4); border-color: #eab308; } 
-        }
-        @keyframes sync-led-auto { 
-            0%, 100% { box-shadow: 0 0 5px #eab308; background-color: rgba(234,179,8,0.6); } 
-            50% { box-shadow: 0 0 20px #eab308, 0 0 30px rgba(234,179,8,0.6); background-color: #eab308; } 
-        }
-        
-        @keyframes pulse-off-dim { 
-            0%, 100% { opacity: 0.25; box-shadow: 0 0 2px #ff4d4d; background-color: #aa0000; border-color: rgba(255,77,77,0.3); } 
-            50% { opacity: 0.05; box-shadow: none; background-color: #550000; border-color: rgba(255,77,77,0.1); } 
-        }
-
+        @keyframes sync-pulse-on { 0%, 100% { box-shadow: 0 0 5px #00ff9c, inset 0 0 5px rgba(0,255,156,0.1); border-color: rgba(0,255,156,0.5); } 50% { box-shadow: 0 0 20px #00ff9c, inset 0 0 15px rgba(0,255,156,0.4); border-color: #00ff9c; } }
+        @keyframes sync-led-on { 0%, 100% { box-shadow: 0 0 5px #00ff9c; background-color: rgba(0,255,156,0.6); } 50% { box-shadow: 0 0 20px #00ff9c, 0 0 30px rgba(0,255,156,0.6); background-color: #00ff9c; } }
+        @keyframes sync-pulse-auto { 0%, 100% { box-shadow: 0 0 5px #eab308, inset 0 0 5px rgba(234,179,8,0.1); border-color: rgba(234,179,8,0.5); } 50% { box-shadow: 0 0 20px #eab308, inset 0 0 15px rgba(234,179,8,0.4); border-color: #eab308; } }
+        @keyframes sync-led-auto { 0%, 100% { box-shadow: 0 0 5px #eab308; background-color: rgba(234,179,8,0.6); } 50% { box-shadow: 0 0 20px #eab308, 0 0 30px rgba(234,179,8,0.6); background-color: #eab308; } }
+        @keyframes pulse-off-dim { 0%, 100% { opacity: 0.25; box-shadow: 0 0 2px #ff4d4d; background-color: #aa0000; border-color: rgba(255,77,77,0.3); } 50% { opacity: 0.05; box-shadow: none; background-color: #550000; border-color: rgba(255,77,77,0.1); } }
         @keyframes alert-blink-rapid { 0%, 100% { opacity: 1; } 50% { opacity: 0.1; } }
         
         .oscy-glow-on { animation: sync-pulse-on 2s infinite ease-in-out; border: 1px solid transparent; }
         .oscy-glow-auto { animation: sync-pulse-auto 2s infinite ease-in-out; border: 1px solid transparent; }
         .oscy-glow-off { border: 1px solid rgba(255,255,255,0.1); }
-        
         .led-green-pulse { animation: sync-led-on 2s infinite ease-in-out; border-color: rgba(0,255,156,0.8); }
         .led-yellow-pulse { animation: sync-led-auto 2s infinite ease-in-out; border-color: rgba(234,179,8,0.8); }
         .led-off-pulse { animation: pulse-off-dim 4s infinite ease-in-out; }
-        
         .led-red-blink { background-color: #ff4d4d; box-shadow: 0 0 20px #ff4d4d, 0 0 40px rgba(255,77,77,0.8); animation: alert-blink 0.4s infinite; border-color: #ff4d4d; }
         .led-yellow-blink-rapid { background-color: #eab308; box-shadow: 0 0 20px #eab308, 0 0 40px rgba(234,179,8,0.8); animation: alert-blink-rapid 0.2s infinite; border-color: #eab308; }
-
         .clock-wait { opacity: 0.3; }
         .led-indicator { width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-right: 10px; vertical-align: middle; border: 2px solid rgba(255,255,255,0.4); }
         
         .chart-container { position: relative; width: 100%; height: 180px; } canvas { width: 100% !important; height: 100% !important; }
         .custom-scrollbar::-webkit-scrollbar { width: 6px; } .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0, 255, 156, 0.05); border-radius: 3px; } .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0, 255, 156, 0.3); border-radius: 3px; } .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #00ff9c; }
         
-        .server-grid-row {
-            display: grid;
-            grid-template-columns: 210px 85px minmax(0, 1fr);
-            gap: 0.5rem;
-            align-items: stretch;
-            width: 100%;
-            height: 110px;
-        }
-        @media (min-width: 1024px) {
-            .server-grid-row {
-                grid-template-columns: 240px 100px minmax(0, 1fr);
-                gap: 1rem;
-            }
-        }
+        .server-grid-row { display: grid; grid-template-columns: 210px 85px minmax(0, 1fr); gap: 0.5rem; align-items: stretch; width: 100%; height: 110px; }
+        @media (min-width: 1024px) { .server-grid-row { grid-template-columns: 240px 100px minmax(0, 1fr); gap: 1rem; } }
 
         /* ANIMOWANY RADAR CSS & GLOW BOX */
-        .radar-glow-box {
-            border: 1px solid rgba(0, 255, 156, 0.4);
-            box-shadow: 0 0 12px rgba(0, 255, 156, 0.2), inset 0 0 8px rgba(0, 255, 156, 0.1);
-            border-radius: 6px;
-            padding: 4px 8px;
-            background: rgba(0, 0, 0, 0.4);
-            transition: all 0.3s ease;
-        }
-        .radar-glow-box.agr-mode {
-            border-color: rgba(255, 77, 77, 0.6);
-            box-shadow: 0 0 15px rgba(255, 77, 77, 0.3), inset 0 0 10px rgba(255, 77, 77, 0.2);
-        }
-
-        .radar-scope {
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            border: 1px solid currentColor;
-            position: relative;
-            overflow: hidden;
-            display: inline-block;
-            vertical-align: middle;
-            box-shadow: 0 0 5px currentColor;
-        }
-        .radar-sweep {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            border-radius: 50%;
-            background: conic-gradient(from 0deg, transparent 70%, currentColor 100%);
-            transform-origin: center;
-        }
-        .radar-eco { color: #00ff9c; }
-        .radar-eco .radar-sweep { animation: radar-spin 3s linear infinite; }
-        
-        .radar-norm { color: #eab308; }
-        .radar-norm .radar-sweep { animation: radar-spin 1.5s linear infinite; }
-        
-        .radar-agr { color: #ff4d4d; animation: alert-blink-rapid 0.4s infinite; text-shadow: 0 0 8px #ff4d4d; box-shadow: 0 0 10px rgba(255,77,77,0.5); }
-        .radar-agr .radar-sweep { animation: radar-spin 0.5s linear infinite; }
-        
+        .radar-glow-box { border: 1px solid rgba(0, 255, 156, 0.4); box-shadow: 0 0 12px rgba(0, 255, 156, 0.2), inset 0 0 8px rgba(0, 255, 156, 0.1); border-radius: 6px; padding: 4px 8px; background: rgba(0, 0, 0, 0.4); transition: all 0.3s ease; }
+        .radar-glow-box.agr-mode { border-color: rgba(255, 77, 77, 0.6); box-shadow: 0 0 15px rgba(255, 77, 77, 0.3), inset 0 0 10px rgba(255, 77, 77, 0.2); }
+        .radar-scope { width: 14px; height: 14px; border-radius: 50%; border: 1px solid currentColor; position: relative; overflow: hidden; display: inline-block; vertical-align: middle; box-shadow: 0 0 5px currentColor; }
+        .radar-sweep { position: absolute; top: 0; left: 0; right: 0; bottom: 0; border-radius: 50%; background: conic-gradient(from 0deg, transparent 70%, currentColor 100%); transform-origin: center; }
+        .radar-eco { color: #00ff9c; } .radar-eco .radar-sweep { animation: radar-spin 3s linear infinite; }
+        .radar-norm { color: #eab308; } .radar-norm .radar-sweep { animation: radar-spin 1.5s linear infinite; }
+        .radar-agr { color: #ff4d4d; animation: alert-blink-rapid 0.4s infinite; text-shadow: 0 0 8px #ff4d4d; box-shadow: 0 0 10px rgba(255,77,77,0.5); } .radar-agr .radar-sweep { animation: radar-spin 0.5s linear infinite; }
         @keyframes radar-spin { 100% { transform: rotate(360deg); } }
 
         /* STATUSY ASSET SATURATION & TĘTNIĄCE PROCENTY */
         .status-pulse-online { color: #00ff9c; text-shadow: 0 0 8px #00ff9c; animation: alert-blink 2s infinite; }
         .status-pulse-offline { color: #ff4d4d; text-shadow: 0 0 8px #ff4d4d; animation: alert-blink-rapid 0.5s infinite; }
 
-        @keyframes perc-pulse-green { 
-            0%, 100% { color: #00ff9c; text-shadow: 0 0 10px rgba(0,255,156,0.6); transform: scale(1); } 
-            50% { color: #ffffff; text-shadow: 0 0 20px #00ff9c, 0 0 30px #00ff9c; transform: scale(1.05); } 
-        }
-        @keyframes perc-pulse-orange { 
-            0%, 100% { color: #ff8c00; text-shadow: 0 0 10px rgba(255,140,0,0.6); transform: scale(1); } 
-            50% { color: #ffffff; text-shadow: 0 0 20px #ff8c00, 0 0 30px #ff8c00; transform: scale(1.05); } 
-        }
-        @keyframes perc-pulse-cyan { 
-            0%, 100% { color: #00e5ff; text-shadow: 0 0 10px rgba(0,229,255,0.6); transform: scale(1); } 
-            50% { color: #ffffff; text-shadow: 0 0 20px #00e5ff, 0 0 30px #00e5ff; transform: scale(1.05); } 
-        }
-        @keyframes perc-pulse-white { 
-            0%, 100% { color: #ffffff; text-shadow: 0 0 10px rgba(255,255,255,0.6); transform: scale(1); } 
-            50% { color: #e2e8f0; text-shadow: 0 0 20px #ffffff, 0 0 30px #ffffff; transform: scale(1.05); } 
-        }
+        @keyframes perc-pulse-green { 0%, 100% { color: #00ff9c; text-shadow: 0 0 10px rgba(0,255,156,0.6); transform: scale(1); } 50% { color: #ffffff; text-shadow: 0 0 20px #00ff9c, 0 0 30px #00ff9c; transform: scale(1.05); } }
+        @keyframes perc-pulse-orange { 0%, 100% { color: #ff8c00; text-shadow: 0 0 10px rgba(255,140,0,0.6); transform: scale(1); } 50% { color: #ffffff; text-shadow: 0 0 20px #ff8c00, 0 0 30px #ff8c00; transform: scale(1.05); } }
+        @keyframes perc-pulse-cyan { 0%, 100% { color: #00e5ff; text-shadow: 0 0 10px rgba(0,229,255,0.6); transform: scale(1); } 50% { color: #ffffff; text-shadow: 0 0 20px #00e5ff, 0 0 30px #00e5ff; transform: scale(1.05); } }
+        @keyframes perc-pulse-white { 0%, 100% { color: #ffffff; text-shadow: 0 0 10px rgba(255,255,255,0.6); transform: scale(1); } 50% { color: #e2e8f0; text-shadow: 0 0 20px #ffffff, 0 0 30px #ffffff; transform: scale(1.05); } }
         
         .perc-pulse-green { animation: perc-pulse-green 2s infinite ease-in-out; display: inline-block; font-size: 1.75rem; font-weight: 900; }
         .perc-pulse-orange { animation: perc-pulse-orange 2s infinite ease-in-out; display: inline-block; font-size: 1.75rem; font-weight: 900; }
         .perc-pulse-cyan { animation: perc-pulse-cyan 2s infinite ease-in-out; display: inline-block; font-size: 1.75rem; font-weight: 900; }
         .perc-pulse-white { animation: perc-pulse-white 2s infinite ease-in-out; display: inline-block; font-size: 1.75rem; font-weight: 900; }
-        
         .perc-offline { color: #555 !important; text-shadow: none !important; animation: none !important; transform: scale(1) !important; font-size: 1.75rem; font-weight: 900; letter-spacing: 0.1em; }
 
         /* =========================================================
-           KROK 1: NOWY CSS DLA DMD (DODANY DO ORYGINAŁU)
+           KROK 2: NOWY CSS DLA DMD (RE-TEK SENTRY STYLE)
            ========================================================= */
-        .dmd-container { background: #030504; border: 2px solid #1a1a1a; height: 56px; display: flex; align-items: center; position: relative; overflow: hidden; box-shadow: inset 0 0 25px #000; }
+        .dmd-container { background: #030504; border: 2px solid #1a1a1a; height: 60px; display: flex; align-items: center; position: relative; overflow: hidden; box-shadow: inset 0 0 25px #000; font-family: 'VT323', monospace; }
         .dmd-pixel-overlay { position: absolute; inset: 0; background-image: linear-gradient(rgba(0,0,0,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.4) 1px, transparent 1px); background-size: 3px 3px; z-index: 10; pointer-events: none; }
-        .dmd-main-zone { flex: 1; padding: 0 15px; font-family: 'VT323', monospace; font-size: 1.8rem; letter-spacing: 2px; text-transform: uppercase; z-index: 5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color 0.3s, text-shadow 0.3s; }
-        .dmd-amber { color: #ffb000; text-shadow: 0 0 10px #ffb000; }
-        .dmd-alert-red { color: #ff4d4d; text-shadow: 0 0 20px #ff4d4d; font-weight: 900; animation: alert-blink 0.5s infinite; }
-        .dmd-alert-yellow { color: #fcd34d; text-shadow: 0 0 20px #fcd34d; font-weight: 900; }
-        .dmd-alert-green { color: #00ff9c; text-shadow: 0 0 15px #00ff9c; font-weight: 900; }
         
-        .dmd-api-zone { height: 100%; border-left: 2px solid #1a1a1a; background: #050806; display: flex; justify-content: center; align-items: center; font-family: 'VT323', monospace; z-index: 11; padding: 0 15px; gap: 15px; }
-        .api-time-block { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; color: #ffb000; opacity: 0.8; }
-        .api-heat-block { display: flex; flex-direction: column; align-items: center; justify-content: center; border-left: 1px solid #222; padding-left: 15px; }
-        .api-label { font-size: 0.75rem; color: #fff; opacity: 0.5; line-height: 1; text-transform: uppercase; }
-        .api-value { font-size: 1.8rem; font-weight: 900; line-height: 1; margin-top: 2px; }
+        .retek-skeleton { width: 100px; height: 40px; padding-left: 15px; flex-shrink: 0; z-index: 11; }
+        .retek-svg-wire { stroke: #ffb000; stroke-width: 1.5; fill: none; filter: drop-shadow(0 0 5px #ffb000); }
+        
+        .dmd-branding-zone { padding: 0 20px; font-size: 1.4rem; letter-spacing: 1px; white-space: nowrap; border-left: 1px solid rgba(255,176,0,0.2); flex: 1; color: #ffb000; text-shadow: 0 0 10px #ffb000; z-index: 11; }
+        .jsoc-tag { opacity: 0.9; }
+        .stm-sub { font-size: 0.9rem; opacity: 0.6; margin-left: 10px; }
+        
+        .dmd-reticle { position: relative; padding: 0 30px; display: flex; align-items: center; justify-content: center; border-left: 1px solid rgba(255,176,0,0.2); color: #ffb000; text-shadow: 0 0 10px #ffb000; z-index: 11; height: 100%; }
+        .dmd-reticle::before, .dmd-reticle::after { content: ''; position: absolute; width: 10px; height: 10px; border-color: #ffb000; border-style: solid; }
+        .dmd-reticle::before { top: 10px; left: 15px; border-width: 2px 0 0 2px; }
+        .dmd-reticle::after { bottom: 10px; right: 15px; border-width: 0 2px 2px 0; }
+        .dmd-time-val { font-size: 2.2rem; font-weight: 900; letter-spacing: 2px; }
+        
+        .dmd-heat-zone { padding: 0 20px; border-left: 1px solid rgba(255,176,0,0.2); min-width: 140px; color: #ffb000; text-shadow: 0 0 10px #ffb000; display: flex; flex-direction: column; justify-content: center; z-index: 11; height: 100%;}
+        .heat-bar { font-size: 1.4rem; font-weight: 900; letter-spacing: 1px; }
 
     </style>
 </head>
@@ -357,20 +208,30 @@
 
     <div class="flex flex-col xl:flex-row justify-between items-center mb-6 border-b border-green-900 pb-4 gap-4 w-full relative z-10">
         
-        <div class="flex-1 dmd-container w-full min-w-0">
+        <div class="flex-1 dmd-container w-full min-w-0" id="dmd-main-node">
             <div class="dmd-pixel-overlay"></div>
-            <div id="dmd-main-text" class="dmd-main-zone dmd-amber">
-                ..:: 77th JSOC ::.. S.T.M. v4.14.0 // SYSTEM READY
+            
+            <div class="retek-skeleton hidden sm:block">
+                <svg viewBox="0 0 120 40" class="retek-svg-wire">
+                    <path d="M5,10 L25,10 M5,20 L20,20 M5,30 L15,30" />
+                    <path d="M35,10 L55,10 L55,25 L35,25 L35,40 M55,25 L45,40" /> 
+                    <path d="M65,15 L85,15 L85,40 M65,27 L80,27" /> 
+                    <path d="M95,10 L115,10 M105,10 L105,40" />
+                </svg>
             </div>
-            <div class="dmd-api-zone hidden sm:flex shrink-0">
-                <div class="api-time-block">
-                    <span id="dmd-time" class="text-xl md:text-2xl font-bold leading-none tracking-widest">--:--:--</span>
-                    <span id="dmd-date" class="text-[9px] md:text-[10px] tracking-widest mt-1">----/--/--</span>
-                </div>
-                <div class="api-heat-block" title="API Requests / 60 seconds">
-                    <span class="api-label">API Heat</span>
-                    <span id="api-heat-display" class="api-value text-green-400">00/60</span>
-                </div>
+
+            <div class="dmd-branding-zone" id="dmd-text-stream">
+                Re-Tek corp. <span class="jsoc-tag">..::77th JSOC::..</span> 
+                <span class="stm-sub hidden md:inline">S.T.M V4.14.0 // SYSTEM READY</span>
+            </div>
+
+            <div class="dmd-reticle hidden sm:flex">
+                <div id="dmd-time" class="dmd-time-val">00:00:00</div>
+            </div>
+
+            <div class="dmd-heat-zone hidden md:flex">
+                <div class="text-[9px] opacity-60 uppercase mb-1">API_HEAT_SYNC</div>
+                <div id="heat-visual" class="heat-bar">[..........]</div>
             </div>
         </div>
 
@@ -564,8 +425,6 @@
                         </div>
                         <div id="audioStatus" class="text-[9px] text-red-500 mt-2 font-bold uppercase blink-text tracking-widest">AUDIO LOCKED</div>
                     </div>
-
-                    <img src="Adobe Express - file.png" alt="77th JSOC Logo" class="bottom-logo mt-4 max-w-[100px] md:max-w-[140px]">
                 </div>
             </div>
         </div>
@@ -669,22 +528,12 @@
             8: { text: '#d4d4d8', bg: 'rgba(212, 212, 216, 0.1)', border: '#d4d4d8' }  
         };
 
-        const WD_COLORS = {
-            'EU1': 'text-[#00ff9c] drop-shadow-[0_0_12px_rgba(0,255,156,0.8)]',
-            'EU2': 'text-[#ff8c00] drop-shadow-[0_0_12px_rgba(255,140,0,0.8)]',
-            'EU3': 'text-[#00e5ff] drop-shadow-[0_0_12px_rgba(0,229,255,0.8)]'
-        };
-        const TITLE_COLORS = {
-            'EU1': 'text-[#00ff9c]',
-            'EU2': 'text-[#ff8c00]',
-            'EU3': 'text-[#00e5ff]'
-        };
+        const WD_COLORS = { 'EU1': 'text-[#00ff9c] drop-shadow-[0_0_12px_rgba(0,255,156,0.8)]', 'EU2': 'text-[#ff8c00] drop-shadow-[0_0_12px_rgba(255,140,0,0.8)]', 'EU3': 'text-[#00e5ff] drop-shadow-[0_0_12px_rgba(0,229,255,0.8)]' };
+        const TITLE_COLORS = { 'EU1': 'text-[#00ff9c]', 'EU2': 'text-[#ff8c00]', 'EU3': 'text-[#00e5ff]' };
 
         let isServerFullAlerted = { EU1: false, EU2: false, EU3: false }; 
-
         let wdState = JSON.parse(localStorage.getItem('jsoc_wd_state')) || { EU1: 'ON', EU2: 'OFF', EU3: 'OFF' };
         let radarMode = localStorage.getItem('jsoc_radar_mode') || 'NORM';
-
         let telemetryLog = JSON.parse(localStorage.getItem('jsoc_telemetry_log')) || { EU1: [], EU2: [], EU3: [] };
         let lastExportTime = parseInt(localStorage.getItem('jsoc_last_export')) || Date.now();
 
@@ -707,33 +556,15 @@
         
         let lastRestartData = JSON.parse(localStorage.getItem('jsoc_last_restarts')) || { EU1: null, EU2: null, EU3: null };
         
-        if (localStorage.getItem('jsoc_fix_false_starts') !== 'true') {
-            lastRestartData.EU2 = null; lastRestartData.EU3 = null;
-            localStorage.setItem('jsoc_fix_false_starts', 'true');
-            localStorage.setItem('jsoc_last_restarts', JSON.stringify(lastRestartData));
-        }
-
         let isBooting = { EU1: false, EU2: false, EU3: false };
         let alert15Triggers = { EU1: false, EU2: false, EU3: false };
 
         let advMode = localStorage.getItem('jsoc_adv_mode') === 'true';
         let audioUnlocked = false; let voiceEnabled = false; let ttsVoice = null;
-        
-        let audioQueue = []; 
-        let isPlayingQueue = false; 
-        let currentAudioObj = null;
-        let ttsUtterances = []; 
-
-        let forceSeed = new Date();
-        forceSeed.setHours(23, 32, 0, 0);
-        if (forceSeed.getTime() > Date.now()) forceSeed.setDate(forceSeed.getDate() - 1);
-        if (!lastRestartData.EU1 || Math.abs(lastRestartData.EU1 - forceSeed.getTime()) > 600000) {
-            lastRestartData.EU1 = forceSeed.getTime();
-            localStorage.setItem('jsoc_last_restarts', JSON.stringify(lastRestartData));
-        }
+        let audioQueue = []; let isPlayingQueue = false; let currentAudioObj = null; let ttsUtterances = []; 
 
         /* =========================================================
-           KROK 1: MODYFIKACJA CELÓW DLA ZEGARA I API
+           KROK 2: LOGIKA ZASILANIA DMD (HEAT BAR)
            ========================================================= */
         function updateApiHeatUI() {
             let log = JSON.parse(localStorage.getItem('jsoc_api_heat')) || [];
@@ -741,15 +572,15 @@
             log = log.filter(t => now - t < 60000); 
             localStorage.setItem('jsoc_api_heat', JSON.stringify(log));
 
-            const heatDisplay = document.getElementById('api-heat-display');
-            if (heatDisplay) {
-                heatDisplay.innerText = `${log.length.toString().padStart(2, '0')}/60`;
-                if (log.length >= 50) {
-                    heatDisplay.className = "api-value text-red-500 tracking-widest full-text-blink drop-shadow-md";
-                } else if (log.length >= 35) {
-                    heatDisplay.className = "api-value text-yellow-500 tracking-widest drop-shadow-md";
+            const heatVisual = document.getElementById('heat-visual');
+            if (heatVisual) {
+                let count = log.length;
+                let bars = Math.min(10, Math.floor(count / 6));
+                heatVisual.innerText = "[" + "|".repeat(bars) + ".".repeat(10 - bars) + "]";
+                if (count >= 50) {
+                    heatVisual.style.color = "#ff4d4d"; heatVisual.style.textShadow = "0 0 10px #ff4d4d";
                 } else {
-                    heatDisplay.className = "api-value text-green-400 tracking-widest drop-shadow-md";
+                    heatVisual.style.color = "#ffb000"; heatVisual.style.textShadow = "0 0 10px #ffb000";
                 }
             }
             return log.length;
@@ -765,280 +596,134 @@
         }
 
         function setRadarMode(mode) {
-            radarMode = mode;
-            localStorage.setItem('jsoc_radar_mode', mode);
-            
+            radarMode = mode; localStorage.setItem('jsoc_radar_mode', mode);
             document.getElementById('radar-btn-eco').className = `wd-switch-btn ${mode === 'ECO' ? 'active-on' : ''}`;
             document.getElementById('radar-btn-norm').className = `wd-switch-btn ${mode === 'NORM' ? 'active-auto' : ''}`;
             document.getElementById('radar-btn-agr').className = `wd-switch-btn ${mode === 'AGR' ? 'active-off' : ''}`;
-            
             const radarIcon = document.getElementById('radar-icon-wrapper');
-            if(radarIcon) {
-                radarIcon.className = `flex items-center transition-colors duration-300 rounded-full px-1 py-0.5 ${mode === 'ECO' ? 'radar-eco' : mode === 'NORM' ? 'radar-norm' : 'radar-agr'}`;
-            }
-
+            if(radarIcon) { radarIcon.className = `flex items-center transition-colors duration-300 rounded-full px-1 py-0.5 ${mode === 'ECO' ? 'radar-eco' : mode === 'NORM' ? 'radar-norm' : 'radar-agr'}`; }
             const radarContainer = document.getElementById('radar-glow-container');
-            if(radarContainer) {
-                if(mode === 'AGR') { radarContainer.classList.add('agr-mode'); }
-                else { radarContainer.classList.remove('agr-mode'); }
-            }
-            
+            if(radarContainer) { if(mode === 'AGR') { radarContainer.classList.add('agr-mode'); } else { radarContainer.classList.remove('agr-mode'); } }
             logEvent(`[RADAR] FREQUENCY SET TO ${mode}`, "text-cyan-400 font-bold");
         }
 
         function showStickyAlert(server, title, message) {
             if (document.getElementById(`sticky-${server}`)) return; 
-            const container = document.getElementById('stickyAlerts');
-            const div = document.createElement('div');
-            div.id = `sticky-${server}`;
+            const container = document.getElementById('stickyAlerts'); const div = document.createElement('div'); div.id = `sticky-${server}`;
             div.className = "pointer-events-auto border-2 border-red-500 bg-red-950/95 text-white p-4 rounded shadow-[0_0_30px_rgba(255,0,0,0.8)] flex justify-between items-center backdrop-blur-md mb-2";
-            div.innerHTML = `
-                <div class="flex flex-col">
-                    <span class="text-red-500 font-black text-lg md:text-xl tracking-widest uppercase text-shadow-sm flex items-center gap-2">
-                        <span class="animate-ping">🔴</span> ${title}
-                    </span>
-                    <span class="text-sm font-bold mt-1 text-gray-200">${message}</span>
-                </div>
-                <button onclick="this.parentElement.remove()" class="bg-red-500/20 hover:bg-red-500 border border-red-500 text-white font-bold py-2 px-4 ml-4 transition-colors tracking-widest text-xs uppercase shrink-0">DISMISS</button>
-            `;
+            div.innerHTML = `<div class="flex flex-col"><span class="text-red-500 font-black text-lg md:text-xl tracking-widest uppercase text-shadow-sm flex items-center gap-2"><span class="animate-ping">🔴</span> ${title}</span><span class="text-sm font-bold mt-1 text-gray-200">${message}</span></div><button onclick="this.parentElement.remove()" class="bg-red-500/20 hover:bg-red-500 border border-red-500 text-white font-bold py-2 px-4 ml-4 transition-colors tracking-widest text-xs uppercase shrink-0">DISMISS</button>`;
             container.appendChild(div);
-            
-            if ("Notification" in window && Notification.permission === "granted") {
-                new Notification(title, { body: message, requireInteraction: true, icon: "https://cdn-icons-png.flaticon.com/512/559/559343.png" });
-            }
+            if ("Notification" in window && Notification.permission === "granted") { new Notification(title, { body: message, requireInteraction: true, icon: "https://cdn-icons-png.flaticon.com/512/559/559343.png" }); }
         }
 
-        function clearStickyAlertForServer(server) {
-            const alertNode = document.getElementById(`sticky-${server}`);
-            if (alertNode) { alertNode.remove(); }
-        }
+        function clearStickyAlertForServer(server) { const alertNode = document.getElementById(`sticky-${server}`); if (alertNode) { alertNode.remove(); } }
 
         function setWdState(server, state) {
-            wdState[server] = state;
-            localStorage.setItem('jsoc_wd_state', JSON.stringify(wdState));
-            renderWdSwitches();
-            updateClock();
-            updateOscyStyle(server, state); 
-            
-            let color = "text-gray-500";
-            if(state === 'ON') color = "text-green-400";
-            if(state === 'AUTO') color = "text-yellow-500";
-            
-            logEvent(`[SYSTEM] ${server} WATCHDOG SET TO ${state}`, color);
-            queueSound(SOUND_SQUAD, currentVolume * 0.15);
+            wdState[server] = state; localStorage.setItem('jsoc_wd_state', JSON.stringify(wdState));
+            renderWdSwitches(); updateClock(); updateOscyStyle(server, state); 
+            let color = "text-gray-500"; if(state === 'ON') color = "text-green-400"; if(state === 'AUTO') color = "text-yellow-500";
+            logEvent(`[SYSTEM] ${server} WATCHDOG SET TO ${state}`, color); queueSound(SOUND_SQUAD, currentVolume * 0.15);
         }
 
         function renderWdSwitches() {
             ["EU1", "EU2", "EU3"].forEach(s => {
                 const st = wdState[s];
                 ['off', 'auto', 'on'].forEach(mode => {
-                    const btnTop = document.getElementById(`sw-${s}-top-${mode}`);
-                    const btnSide = document.getElementById(`sw-${s}-side-${mode}`);
-                    const isActive = st.toLowerCase() === mode;
-
-                    if(btnTop) { btnTop.className = `wd-switch-btn ${isActive ? 'active-'+mode : ''}`; }
-                    if(btnSide) { btnSide.className = `wd-switch-btn ${isActive ? 'active-'+mode : ''}`; }
+                    const btnTop = document.getElementById(`sw-${s}-top-${mode}`); const btnSide = document.getElementById(`sw-${s}-side-${mode}`); const isActive = st.toLowerCase() === mode;
+                    if(btnTop) { btnTop.className = `wd-switch-btn ${isActive ? 'active-'+mode : ''}`; } if(btnSide) { btnSide.className = `wd-switch-btn ${isActive ? 'active-'+mode : ''}`; }
                 });
-                
                 updateOscyStyle(s, st);
             });
         }
 
         function updateOscyStyle(server, value) {
-            const wrapper = document.getElementById(`oscy-${server}`);
-            if (!wrapper) return;
-
+            const wrapper = document.getElementById(`oscy-${server}`); if (!wrapper) return;
             wrapper.classList.remove('oscy-glow-on', 'oscy-glow-auto', 'oscy-glow-off');
-            if (value === 'ON') wrapper.classList.add('oscy-glow-on');
-            else if (value === 'AUTO') wrapper.classList.add('oscy-glow-auto');
-            else wrapper.classList.add('oscy-glow-off');
-            
-            if(miniCharts[server]) {
-                let color = '#555'; 
-                if (value === 'ON') color = '#00ff9c'; 
-                if (value === 'AUTO') color = '#eab308'; 
-                
-                miniCharts[server].data.datasets[0].borderColor = color;
-                miniCharts[server].update('none');
-            }
+            if (value === 'ON') wrapper.classList.add('oscy-glow-on'); else if (value === 'AUTO') wrapper.classList.add('oscy-glow-auto'); else wrapper.classList.add('oscy-glow-off');
+            if(miniCharts[server]) { let color = '#555'; if (value === 'ON') color = '#00ff9c'; if (value === 'AUTO') color = '#eab308'; miniCharts[server].data.datasets[0].borderColor = color; miniCharts[server].update('none'); }
         }
 
         function exportTelemetry(server) {
             if(telemetryLog[server].length === 0) return;
-            const text = telemetryLog[server].join('\n');
-            const blob = new Blob([text], {type: 'text/plain'});
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = `telemetry_${server}_${new Date().getTime()}.txt`;
-            a.click();
-            telemetryLog[server] = []; 
-            localStorage.setItem('jsoc_telemetry_log', JSON.stringify(telemetryLog));
+            const text = telemetryLog[server].join('\n'); const blob = new Blob([text], {type: 'text/plain'}); const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob); a.download = `telemetry_${server}_${new Date().getTime()}.txt`; a.click();
+            telemetryLog[server] = []; localStorage.setItem('jsoc_telemetry_log', JSON.stringify(telemetryLog));
             logEvent(`[WD-AUTO] ${server} TELEMETRY DATA DUMP INITIATED`, "text-yellow-500 font-bold");
         }
 
         function checkTelemetryAutoExport() {
             if (Date.now() - lastExportTime > 2 * 60 * 60 * 1000) {
-                ["EU1", "EU2", "EU3"].forEach(n => {
-                    if (wdState[n] === 'AUTO' && telemetryLog[n].length > 0) {
-                        exportTelemetry(n);
-                    }
-                });
-                lastExportTime = Date.now();
-                localStorage.setItem('jsoc_last_export', lastExportTime);
+                ["EU1", "EU2", "EU3"].forEach(n => { if (wdState[n] === 'AUTO' && telemetryLog[n].length > 0) { exportTelemetry(n); } });
+                lastExportTime = Date.now(); localStorage.setItem('jsoc_last_export', lastExportTime);
             }
         }
 
         function processAudioQueue() {
-            if (isMuted) {
-                audioQueue = [];
-                isPlayingQueue = false;
-                if (currentAudioObj) { currentAudioObj.pause(); currentAudioObj = null; }
-                if (window.speechSynthesis) window.speechSynthesis.cancel();
-                ttsUtterances = [];
-                return;
-            }
-
-            if (audioQueue.length === 0) { 
-                isPlayingQueue = false; 
-                currentAudioObj = null;
-                return; 
-            }
-
-            isPlayingQueue = true; 
-            let item = audioQueue.shift();
-
+            if (isMuted) { audioQueue = []; isPlayingQueue = false; if (currentAudioObj) { currentAudioObj.pause(); currentAudioObj = null; } if (window.speechSynthesis) window.speechSynthesis.cancel(); ttsUtterances = []; return; }
+            if (audioQueue.length === 0) { isPlayingQueue = false; currentAudioObj = null; return; }
+            isPlayingQueue = true; let item = audioQueue.shift();
             if (item.type === 'speech') {
                 if(window.speechSynthesis) {
-                    let msg = new SpeechSynthesisUtterance(item.text); 
-                    ttsUtterances.push(msg); 
-                    if (ttsVoice) { msg.voice = ttsVoice; }
+                    let msg = new SpeechSynthesisUtterance(item.text); ttsUtterances.push(msg); if (ttsVoice) { msg.voice = ttsVoice; }
                     msg.volume = currentVolume; msg.lang = 'en-US'; msg.rate = 0.9; msg.pitch = 0.85;
-                    msg.onend = () => { 
-                        ttsUtterances = ttsUtterances.filter(u => u !== msg);
-                        setTimeout(processAudioQueue, 300); 
-                    }; 
-                    msg.onerror = () => { 
-                        ttsUtterances = ttsUtterances.filter(u => u !== msg);
-                        setTimeout(processAudioQueue, 300); 
-                    };
+                    msg.onend = () => { ttsUtterances = ttsUtterances.filter(u => u !== msg); setTimeout(processAudioQueue, 300); }; 
+                    msg.onerror = () => { ttsUtterances = ttsUtterances.filter(u => u !== msg); setTimeout(processAudioQueue, 300); };
                     window.speechSynthesis.speak(msg);
-                } else {
-                    processAudioQueue();
-                }
+                } else { processAudioQueue(); }
             } else if (item.type === 'sound') {
-                currentAudioObj = new Audio(item.url); 
-                currentAudioObj.volume = item.volume !== undefined ? item.volume : currentVolume * 0.15;
-                currentAudioObj.onended = () => { currentAudioObj = null; processAudioQueue(); }; 
-                currentAudioObj.onerror = () => { currentAudioObj = null; processAudioQueue(); }; 
+                currentAudioObj = new Audio(item.url); currentAudioObj.volume = item.volume !== undefined ? item.volume : currentVolume * 0.15;
+                currentAudioObj.onended = () => { currentAudioObj = null; processAudioQueue(); }; currentAudioObj.onerror = () => { currentAudioObj = null; processAudioQueue(); }; 
                 currentAudioObj.play().catch(() => { currentAudioObj = null; processAudioQueue(); });
             }
         }
 
-        function queueSpeech(text) { 
-            if (isMuted || !voiceEnabled) return; 
-            audioQueue.push({ type: 'speech', text: text }); 
-            if (!isPlayingQueue) { processAudioQueue(); } 
-        }
-
-        function queueSound(url, vol) { 
-            if (isMuted) return; 
-            audioQueue.push({ type: 'sound', url: url, volume: vol }); 
-            if (!isPlayingQueue) { processAudioQueue(); } 
-        }
-
-        function initVoice() { 
-            if (!window.speechSynthesis) return; 
-            const voices = window.speechSynthesis.getVoices(); 
-            ttsVoice = voices.find(v => v.lang === 'en-US' && v.name.includes('Google')) || 
-                       voices.find(v => v.lang.includes('en-') && (v.name.includes('Zira') || v.name.includes('David') || v.name.includes('Mark'))) || 
-                       voices.find(v => v.lang === 'en-US') || voices.find(v => v.lang.startsWith('en')); 
-        }
-
+        function queueSpeech(text) { if (isMuted || !voiceEnabled) return; audioQueue.push({ type: 'speech', text: text }); if (!isPlayingQueue) { processAudioQueue(); } }
+        function queueSound(url, vol) { if (isMuted) return; audioQueue.push({ type: 'sound', url: url, volume: vol }); if (!isPlayingQueue) { processAudioQueue(); } }
+        function initVoice() { if (!window.speechSynthesis) return; const voices = window.speechSynthesis.getVoices(); ttsVoice = voices.find(v => v.lang === 'en-US' && v.name.includes('Google')) || voices.find(v => v.lang.includes('en-') && (v.name.includes('Zira') || v.name.includes('David') || v.name.includes('Mark'))) || voices.find(v => v.lang === 'en-US') || voices.find(v => v.lang.startsWith('en')); }
         if (window.speechSynthesis) { window.speechSynthesis.onvoiceschanged = initVoice; }
-        
         function unlockAudioFallback() {}
 
         function toggleVoice() {
-            const btnInit = document.getElementById("btnInitAudio"); 
-            const statusEl = document.getElementById("audioStatus");
-            
+            const btnInit = document.getElementById("btnInitAudio"); const statusEl = document.getElementById("audioStatus");
             btnInit.classList.remove("btn-attention");
-            
-            const alerts = document.querySelectorAll('#alertBox > div');
-            alerts.forEach(a => {
-                if(a.innerText.includes("VOICE COMMS STANDBY")) {
-                    a.remove();
-                }
-            });
-
-            if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
-                Notification.requestPermission();
-            }
-
+            const alerts = document.querySelectorAll('#alertBox > div'); alerts.forEach(a => { if(a.innerText.includes("VOICE COMMS STANDBY")) { a.remove(); } });
+            if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") { Notification.requestPermission(); }
             if (!audioUnlocked) {
                 audioUnlocked = true; voiceEnabled = true; initVoice(); 
-                if(window.speechSynthesis) {
-                    const msg = new SpeechSynthesisUtterance(""); window.speechSynthesis.speak(msg);
-                }
-                btnInit.innerText = "VOICE: ON"; 
-                btnInit.classList.remove("border-gray-500", "text-gray-500"); 
-                btnInit.classList.add("border-green-500", "text-green-500");
-                statusEl.innerText = "COMM-LINK ACTIVE"; 
-                statusEl.classList.remove("text-red-500"); 
-                statusEl.classList.add("text-green-400");
-                queueSound(SOUND_SQUAD, currentVolume * 0.15); 
-                logEvent("COMM-LINK INITIALIZED", "text-cyan-400 font-bold");
+                if(window.speechSynthesis) { const msg = new SpeechSynthesisUtterance(""); window.speechSynthesis.speak(msg); }
+                btnInit.innerText = "VOICE: ON"; btnInit.classList.remove("border-gray-500", "text-gray-500"); btnInit.classList.add("border-green-500", "text-green-500");
+                statusEl.innerText = "COMM-LINK ACTIVE"; statusEl.classList.remove("text-red-500"); statusEl.classList.add("text-green-400");
+                queueSound(SOUND_SQUAD, currentVolume * 0.15); logEvent("COMM-LINK INITIALIZED", "text-cyan-400 font-bold");
             } else {
                 voiceEnabled = !voiceEnabled;
-                if (voiceEnabled) { 
-                    btnInit.innerText = "VOICE: ON"; btnInit.classList.remove("border-gray-500", "text-gray-500"); btnInit.classList.add("border-green-500", "text-green-500"); logEvent("VOICE ENGINE: ENABLED", "text-green-400"); 
-                } else { 
-                    btnInit.innerText = "VOICE: OFF"; btnInit.classList.remove("border-green-500", "text-green-500"); btnInit.classList.add("border-gray-500", "text-gray-500"); logEvent("VOICE ENGINE: DISABLED (BEEP MODE)", "text-gray-400"); 
-                    audioQueue = [];
-                    if (currentAudioObj) { currentAudioObj.pause(); currentAudioObj = null; }
-                    if (window.speechSynthesis) window.speechSynthesis.cancel();
-                    ttsUtterances = [];
-                }
+                if (voiceEnabled) { btnInit.innerText = "VOICE: ON"; btnInit.classList.remove("border-gray-500", "text-gray-500"); btnInit.classList.add("border-green-500", "text-green-500"); logEvent("VOICE ENGINE: ENABLED", "text-green-400"); } 
+                else { btnInit.innerText = "VOICE: OFF"; btnInit.classList.remove("border-green-500", "text-green-500"); btnInit.classList.add("border-gray-500", "text-gray-500"); logEvent("VOICE ENGINE: DISABLED (BEEP MODE)", "text-gray-400"); audioQueue = []; if (currentAudioObj) { currentAudioObj.pause(); currentAudioObj = null; } if (window.speechSynthesis) window.speechSynthesis.cancel(); ttsUtterances = []; }
             }
         }
 
         function getWatchedSquadDetails(name) { for (let i = 1; i <= 8; i++) { let idx = ALL_SQUADS[i].findIndex(w => w.toLowerCase() === name.toLowerCase()); if (idx !== -1) { return { squadIdx: i, squadName: SQUAD_NAMES[i], playerNumber: idx + 1 }; } } return null; }
-
         function announceAction(squadDetails, serverName, isJoin) {
-            if (!audioUnlocked || isMuted) return;
-            const actionText = isJoin ? "connected" : "disconnected";
-            if (!isJoin) { queueSound(SOUND_LEAVE, currentVolume * 0.15); } 
-            else { if (!squadDetails) { queueSound(SOUND_UNASSIGNED, currentVolume * 0.2); } else if (squadDetails.squadName === "FAV") { queueSound(SOUND_FAV, currentVolume * 0.4); } else { queueSound(SOUND_SQUAD, currentVolume * 0.15); } }
-            
-            if (voiceEnabled && squadDetails && squadDetails.squadName !== "FAV") { 
-                queueSpeech(`${squadDetails.squadName} ${squadDetails.playerNumber} ${actionText}`); 
-            }
+            if (!audioUnlocked || isMuted) return; const actionText = isJoin ? "connected" : "disconnected";
+            if (!isJoin) { queueSound(SOUND_LEAVE, currentVolume * 0.15); } else { if (!squadDetails) { queueSound(SOUND_UNASSIGNED, currentVolume * 0.2); } else if (squadDetails.squadName === "FAV") { queueSound(SOUND_FAV, currentVolume * 0.4); } else { queueSound(SOUND_SQUAD, currentVolume * 0.15); } }
+            if (voiceEnabled && squadDetails && squadDetails.squadName !== "FAV") { queueSpeech(`${squadDetails.squadName} ${squadDetails.playerNumber} ${actionText}`); }
         }
-
         function testAudio() {
-            if (!audioUnlocked) toggleVoice();
-            logEvent("DIAGNOSTIC: AUDIO TEST...", "text-yellow-400 font-bold");
-            if (voiceEnabled) { queueSpeech("Audio check. Charlie 2 connected."); queueSpeech("Critical alert. EU One server down or restarting."); } else { queueSound(SOUND_SQUAD, currentVolume * 0.15); }
-            queueSound(SOUND_SQUAD, currentVolume * 0.3);
+            if (!audioUnlocked) toggleVoice(); logEvent("DIAGNOSTIC: AUDIO TEST...", "text-yellow-400 font-bold");
+            if (voiceEnabled) { queueSpeech("Audio check. Charlie 2 connected."); queueSpeech("Critical alert. EU One server down or restarting."); } else { queueSound(SOUND_SQUAD, currentVolume * 0.15); } queueSound(SOUND_SQUAD, currentVolume * 0.3);
         }
-
         function initAdvButton() { const btn = document.getElementById("advToggle"); btn.innerText = `Advanced: ${advMode ? 'ON' : 'OFF'}`; if(advMode) { btn.classList.add("active-adv"); } else { btn.classList.remove("active-adv"); } }
         function toggleAdvanced() { advMode = !advMode; localStorage.setItem('jsoc_adv_mode', advMode); initAdvButton(); logEvent(`Advanced logging ${advMode ? 'ENABLED' : 'DISABLED'}`, advMode ? "text-cyan-400" : "text-gray-500"); }
         function logEvent(text, color = "text-green-500", isAdvanced = false) { 
-            if (isAdvanced && !advMode) return; 
-            const log = document.getElementById("logBox"); if (!log) return; 
+            if (isAdvanced && !advMode) return; const log = document.getElementById("logBox"); if (!log) return; 
             const entry = document.createElement("div"); entry.className = `${color} py-0.5 border-b border-white/5 uppercase`; entry.innerHTML = `<span class="opacity-40">[${new Date().toLocaleTimeString('en-US', { hour12: false })}]</span> ${text}`; 
-            log.insertBefore(entry, log.firstChild); 
-            if (log.children.length > 100) { log.removeChild(log.lastChild); } 
+            log.insertBefore(entry, log.firstChild); if (log.children.length > 100) { log.removeChild(log.lastChild); } 
         }
         function copyLog() { const text = Array.from(document.getElementById("logBox").children).map(el => el.innerText).join('\n'); navigator.clipboard.writeText(text).then(() => logEvent("Log copied", "text-cyan-400")); }
         function saveLog() { const text = Array.from(document.getElementById("logBox").children).map(el => el.innerText).join('\n'); const blob = new Blob([text], {type: 'text/plain'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `sam_log_${new Date().getTime()}.txt`; a.click(); }
 
         function addPlayerAlert(name, server, isJoin, squadDetails, joinedAt = null) {
-            const b = document.getElementById("alertBox"); const d = document.createElement("div"); const time = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
-            let sessionTimeStr = "";
+            const b = document.getElementById("alertBox"); const d = document.createElement("div"); const time = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }); let sessionTimeStr = "";
             if (!isJoin && joinedAt) { let sessionMin = Math.floor((Date.now() - joinedAt) / 60000); sessionTimeStr = `<span class="text-orange-400 text-[10px] ml-2 tracking-widest">[${sessionMin}m]</span>`; }
-
             if (squadDetails) {
                 const actionText = isJoin ? "JOINED" : "LEFT"; const actionColor = isJoin ? "text-green-500" : "text-red-500"; const arrow = isJoin ? "◄◄◄◄" : "►►►►"; const bgClass = isJoin ? "bg-green-900/20" : "bg-red-900/20"; const borderClass = isJoin ? "border-green-500" : "border-red-500"; const squadTag = `${squadDetails.squadName}-${squadDetails.playerNumber}`; const sqColor = SQUAD_COLORS[squadDetails.squadIdx].text;
                 d.className = `flex justify-between items-center border-l-2 ${borderClass} pl-2 ${bgClass} py-1.5 transition-all mb-0.5`;
@@ -1048,33 +733,22 @@
                 d.className = `flex justify-between items-center pl-2 bg-black/40 py-1 border-l border-white/10 mb-0.5`;
                 d.innerHTML = `<div class="flex items-center gap-2 opacity-90 flex-1"><span class="opacity-50 text-[11px] text-white">[${time}]</span><span class="text-gray-300 text-sm font-bold uppercase">${name}</span><span class="text-gray-500 text-xs ml-1">${actionText} ${server}</span>${sessionTimeStr}<span class="${color} font-bold text-base ml-1 tracking-tighter drop-shadow-sm">${arrow}</span></div><div class="flex items-center pr-2 opacity-80"><span class="cursor-pointer text-gray-500 hover:text-red-500 text-xs px-2 font-bold" onclick="this.parentElement.parentElement.remove()">✖</span></div>`;
             }
-            b.insertBefore(d, b.firstChild); 
-            if (b.children.length > 80) { b.removeChild(b.lastChild); }
-            b.scrollTop = 0; 
+            b.insertBefore(d, b.firstChild); if (b.children.length > 80) { b.removeChild(b.lastChild); } b.scrollTop = 0; 
         }
 
         function addSystemAlert(message, alertId = null) {
             const b = document.getElementById("alertBox"); const d = document.createElement("div"); const time = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
-            d.className = `flex justify-between items-center border-l-4 border-red-500 pl-3 bg-red-950/80 py-2 soc-border-pulse mb-1`;
-            if (alertId) { d.id = alertId; }
+            d.className = `flex justify-between items-center border-l-4 border-red-500 pl-3 bg-red-950/80 py-2 soc-border-pulse mb-1`; if (alertId) { d.id = alertId; }
             d.innerHTML = `<div class="flex items-center gap-3"><span class="opacity-70 text-[10px] text-white">[${time}]</span><span class="text-yellow-400 font-black text-xs md:text-sm tracking-widest uppercase text-shadow-sm">⚠️ ${message} ⚠️</span></div><span class="cursor-pointer text-white hover:text-red-500 px-2 text-lg" onclick="this.parentElement.remove()">✖</span>`;
-            b.insertBefore(d, b.firstChild); 
-            if (b.children.length > 80) { b.removeChild(b.lastChild); }
-            b.scrollTop = 0; 
+            b.insertBefore(d, b.firstChild); if (b.children.length > 80) { b.removeChild(b.lastChild); } b.scrollTop = 0; 
         }
 
         let rateLimitCooldown = 0; let wdLogCounter = 0;
 
         function updateMiniChart(server, ping, players, state) {
-            pingHistory[server].push(ping);
-            if (pingHistory[server].length > 30) pingHistory[server].shift(); 
-
-            playerHistory[server].push(players);
-            if (playerHistory[server].length > 30) playerHistory[server].shift();
-
-            if(miniCharts[server]) {
-                miniCharts[server].update('none'); 
-            }
+            pingHistory[server].push(ping); if (pingHistory[server].length > 30) pingHistory[server].shift(); 
+            playerHistory[server].push(players); if (playerHistory[server].length > 30) playerHistory[server].shift();
+            if(miniCharts[server]) { miniCharts[server].update('none'); }
         }
 
         async function fetchServer(name, id) {
@@ -1084,104 +758,60 @@
                 const res = await fetch(`https://api.battlemetrics.com/servers/${id}?include=player`);
                 const lat = Math.round(performance.now() - start);
                 
-                if (res.status === 429) { 
-                    rateLimitCooldown = Date.now() + 60000; logEvent(`[WD] API LIMIT: 60S COOLDOWN`, "text-red-500 font-bold"); throw new Error("429"); 
-                }
+                if (res.status === 429) { rateLimitCooldown = Date.now() + 60000; logEvent(`[WD] API LIMIT: 60S COOLDOWN`, "text-red-500 font-bold"); throw new Error("429"); }
 
-                const json = await res.json();
-                const attr = json.data ? json.data.attributes : {};
+                const json = await res.json(); const attr = json.data ? json.data.attributes : {};
                 const players = (json.included || []).filter(x => x.type === "player").map(p => p.attributes.name);
-                const currentPlayers = attr.players || 0;
-                const maxPlayers = attr.maxPlayers || 0;
-                const currentUptime = attr.details?.time || 0;
-                const plCount = cache[name] ? cache[name].players : 0; 
+                const currentPlayers = attr.players || 0; const maxPlayers = attr.maxPlayers || 0; const currentUptime = attr.details?.time || 0;
                 
-                const state = wdState[name];
-
-                if (state === 'OFF') {
-                    updateMiniChart(name, 0, 0, state);
-                } else {
-                    updateMiniChart(name, (attr.status === 'online' ? lat : 0), (attr.status === 'online' ? currentPlayers : 0), state);
+                /* KROK 1: FORCE SYNC UPTIME W LOCIE */
+                if (currentUptime > 0 && !lastRestartData[name]) {
+                    lastRestartData[name] = Date.now() - (currentUptime * 1000);
+                    localStorage.setItem('jsoc_last_restarts', JSON.stringify(lastRestartData));
+                    logEvent(`[WD] FORCED K.M.S. SYNC VIA UPTIME (${name})`, "text-cyan-400 font-bold");
                 }
+
+                const plCount = cache[name] ? cache[name].players : 0; const state = wdState[name];
+
+                if (state === 'OFF') { updateMiniChart(name, 0, 0, state); } 
+                else { updateMiniChart(name, (attr.status === 'online' ? lat : 0), (attr.status === 'online' ? currentPlayers : 0), state); }
 
                 if (advMode) { logEvent(`[ADV] ${name} SYNC OK | LAT: ${lat}MS | STAT: ${attr.status || 'UNKNOWN'}`, "text-gray-500", true); }
 
                 if (!isFirstLoad && state !== 'OFF') {
-                    let isCrash = false;
-                    if (attr.status === 'dead' || attr.status === 'offline') { isCrash = true; }
-
+                    let isCrash = false; if (attr.status === 'dead' || attr.status === 'offline') { isCrash = true; }
                     if (!isCrash && prevUptime[name] > 0 && currentUptime < prevUptime[name] && (prevUptime[name] - currentUptime) > 60) {
-                        isCrash = true;
-                        if (state === 'ON') logEvent(`[WD] RESTART DETECTED VIA UPTIME RESET (${name})`, "text-cyan-400 font-bold");
+                        isCrash = true; if (state === 'ON') logEvent(`[WD] RESTART DETECTED VIA UPTIME RESET (${name})`, "text-cyan-400 font-bold");
                     }
 
                     if (isCrash) {
                         if (!isBooting[name]) {
                             isBooting[name] = true;
-                            
                             let aliveTime = currentUptime > 0 ? currentUptime : prevUptime[name];
-                            let aliveH = Math.floor(aliveTime / 3600); let aliveM = Math.floor((aliveTime % 3600) / 60); let aliveS = aliveTime % 60;
-                            let aliveStr = `${aliveH}h ${aliveM}m ${aliveS}s`;
-                            
+                            let aliveH = Math.floor(aliveTime / 3600); let aliveM = Math.floor((aliveTime % 3600) / 60); let aliveS = aliveTime % 60; let aliveStr = `${aliveH}h ${aliveM}m ${aliveS}s`;
                             let deltaStr = "N/A";
-                            if (lastRestartData[name]) {
-                                let actualCycle = Date.now() - lastRestartData[name];
-                                let diff = actualCycle - (6 * 3600 * 1000);
-                                let sign = diff >= 0 ? "+" : "-";
-                                diff = Math.abs(Math.floor(diff / 1000));
-                                let dH = Math.floor(diff / 3600); let dM = Math.floor((diff % 3600) / 60); let dS = diff % 60;
-                                deltaStr = `${sign}${dH}h ${dM}m ${dS}s`;
-                            }
-                            
+                            if (lastRestartData[name]) { let actualCycle = Date.now() - lastRestartData[name]; let diff = actualCycle - (6 * 3600 * 1000); let sign = diff >= 0 ? "+" : "-"; diff = Math.abs(Math.floor(diff / 1000)); let dH = Math.floor(diff / 3600); let dM = Math.floor((diff % 3600) / 60); let dS = diff % 60; deltaStr = `${sign}${dH}h ${dM}m ${dS}s`; }
                             const logEntry = `[${new Date().toISOString()}] CRASH/RESTART | ALIVE: ${aliveStr} | CYCLE DELTA: ${deltaStr} | PL_COUNT: ${plCount}`;
-                            telemetryLog[name].push(logEntry);
-                            localStorage.setItem('jsoc_telemetry_log', JSON.stringify(telemetryLog));
-                            
+                            telemetryLog[name].push(logEntry); localStorage.setItem('jsoc_telemetry_log', JSON.stringify(telemetryLog));
                             logEvent(`[TELEMETRY] ${name} CRASH/RESTART | ALIVE: ${aliveStr} | CYCLE DELTA: ${deltaStr} | PL_COUNT: ${plCount}`, "text-yellow-500 font-bold", true);
 
                             if (currentUptime > 0) { lastRestartData[name] = Date.now() - (currentUptime * 1000); } else { lastRestartData[name] = Date.now(); }
                             localStorage.setItem('jsoc_last_restarts', JSON.stringify(lastRestartData));
                             
                             if (state === 'ON') {
-                                logEvent(`[WD] CRITICAL: ${name} SERVER DOWN`, "text-red-500 font-bold"); 
-                                addSystemAlert(`CRITICAL: ${name} SERVER DOWN`); 
-                                
+                                logEvent(`[WD] CRITICAL: ${name} SERVER DOWN`, "text-red-500 font-bold"); addSystemAlert(`CRITICAL: ${name} SERVER DOWN`); 
                                 showStickyAlert(name, `CRITICAL: ${name} DOWN`, `System detected a potential crash or restart on ${name}.`);
-                                
-                                queueSound(SOUND_SQUAD, currentVolume * 0.3);
-                                if(audioUnlocked && voiceEnabled && !isMuted) { queueSpeech(`Critical alert. ${name.replace('EU1', 'EU One')} server down.`); }
-                            } else if (state === 'AUTO') {
-                                logEvent(`[WD-AUTO] ${name} RESTART LOGGED SILENTLY.`, "text-yellow-600");
-                            }
+                                queueSound(SOUND_SQUAD, currentVolume * 0.3); if(audioUnlocked && voiceEnabled && !isMuted) { queueSpeech(`Critical alert. ${name.replace('EU1', 'EU One')} server down.`); }
+                            } else if (state === 'AUTO') { logEvent(`[WD-AUTO] ${name} RESTART LOGGED SILENTLY.`, "text-yellow-600"); }
                         }
                     } else if (attr.status === 'online' && currentUptime > 0) {
-                        
                         let isUnsynced = isBooting[name];
-                        if (!lastRestartData[name]) {
-                            isUnsynced = true;
-                        } else {
-                            let expectedUptime = (Date.now() - lastRestartData[name]) / 1000;
-                            if (Math.abs(expectedUptime - currentUptime) > 90) { 
-                                isUnsynced = true;
-                            }
-                        }
-
+                        if (!lastRestartData[name]) { isUnsynced = true; } else { let expectedUptime = (Date.now() - lastRestartData[name]) / 1000; if (Math.abs(expectedUptime - currentUptime) > 90) { isUnsynced = true; } }
                         if (isUnsynced) {
-                            isBooting[name] = false;
-                            
-                            lastRestartData[name] = Date.now() - (currentUptime * 1000); 
-                            localStorage.setItem('jsoc_last_restarts', JSON.stringify(lastRestartData));
-                            
-                            if (wdState[name] !== 'ON') {
-                                setWdState(name, 'ON');
-                                logEvent(`[WD] CATCH-UP SYNC: ${name} ALIVE FOR ${currentUptime}s. AUTO-SWITCHING TO ON.`, "text-cyan-400 font-bold");
-                            } else {
-                                logEvent(`[WD] CONFIRMED: ${name} ONLINE. CYCLE LOCKED.`, "text-cyan-400 font-bold");
-                            }
-
-                            addSystemAlert(`${name} SYSTEM ONLINE. CYCLE LOCKED.`);
-                            if(audioUnlocked && voiceEnabled && !isMuted) { queueSpeech(`System online. ${name.replace('EU1', 'EU One')} cycle locked.`); }
-                            
+                            isBooting[name] = false; lastRestartData[name] = Date.now() - (currentUptime * 1000); localStorage.setItem('jsoc_last_restarts', JSON.stringify(lastRestartData));
+                            if (wdState[name] !== 'ON') { setWdState(name, 'ON'); logEvent(`[WD] CATCH-UP SYNC: ${name} ALIVE FOR ${currentUptime}s. AUTO-SWITCHING TO ON.`, "text-cyan-400 font-bold"); } 
+                            else { logEvent(`[WD] CONFIRMED: ${name} ONLINE. CYCLE LOCKED.`, "text-cyan-400 font-bold"); }
+                            addSystemAlert(`${name} SYSTEM ONLINE. CYCLE LOCKED.`); if(audioUnlocked && voiceEnabled && !isMuted) { queueSpeech(`System online. ${name.replace('EU1', 'EU One')} cycle locked.`); }
                             clearStickyAlertForServer(name);
                         }
                     }
@@ -1190,67 +820,22 @@
                 prevUptime[name] = currentUptime;
 
                 if (maxPlayers > 0 && currentPlayers >= maxPlayers) {
-                    if (!isServerFullAlerted[name]) {
-                        isServerFullAlerted[name] = true; 
-                        logEvent(`[ALERT] ${name} IS FULL`, "text-yellow-400 font-bold"); 
-                        addSystemAlert(`${name} SERVER FULL`);
-                        if (voiceEnabled) { queueSpeech(`Warning. ${name.replace('EU1', 'EU One')} is full.`); } 
-                        else { queueSound(SOUND_SQUAD, currentVolume * 0.2); }
-                    }
-                } else if (currentPlayers <= maxPlayers - 2) {
-                    isServerFullAlerted[name] = false; 
-                }
+                    if (!isServerFullAlerted[name]) { isServerFullAlerted[name] = true; logEvent(`[ALERT] ${name} IS FULL`, "text-yellow-400 font-bold"); addSystemAlert(`${name} SERVER FULL`); if (voiceEnabled) { queueSpeech(`Warning. ${name.replace('EU1', 'EU One')} is full.`); } else { queueSound(SOUND_SQUAD, currentVolume * 0.2); } }
+                } else if (currentPlayers <= maxPlayers - 2) { isServerFullAlerted[name] = false; }
 
-                if (isFirstLoad) {
-                    players.forEach(pName => { if (!playerSessions[pName]) playerSessions[pName] = Date.now(); });
-                } else {
-                    
-                    let joinedPlayers = [];
-                    let leftPlayers = [];
-
-                    players.forEach(pName => {
-                        if (!previous[name].includes(pName)) joinedPlayers.push(pName);
-                    });
-                    
-                    if (state === 'ON' || state === 'AUTO') {
-                        if (name !== "EU1" || !isBooting[name]) {
-                            previous[name].forEach(pName => {
-                                if (!players.includes(pName)) leftPlayers.push(pName);
-                            });
-                        }
-                    }
-
+                if (isFirstLoad) { players.forEach(pName => { if (!playerSessions[pName]) playerSessions[pName] = Date.now(); }); } 
+                else {
+                    let joinedPlayers = []; let leftPlayers = [];
+                    players.forEach(pName => { if (!previous[name].includes(pName)) joinedPlayers.push(pName); });
+                    if (state === 'ON' || state === 'AUTO') { if (name !== "EU1" || !isBooting[name]) { previous[name].forEach(pName => { if (!players.includes(pName)) leftPlayers.push(pName); }); } }
                     let isMassEvent = (joinedPlayers.length > 10 || leftPlayers.length > 10);
-
-                    joinedPlayers.forEach(pName => {
-                        playerSessions[pName] = Date.now(); 
-                        const squadDetails = getWatchedSquadDetails(pName);
-                        if (!isMassEvent) announceAction(squadDetails, name, true);
-                        addPlayerAlert(pName, name, true, squadDetails); 
-                        logEvent(`${pName} JOINED ${name}`, squadDetails ? "text-red-500 font-bold" : "text-gray-400");
-                    });
-                    
-                    leftPlayers.forEach(pName => {
-                        const squadDetails = getWatchedSquadDetails(pName);
-                        if (!isMassEvent) announceAction(squadDetails, name, false);
-                        let joinedAt = playerSessions[pName];
-                        addPlayerAlert(pName, name, false, squadDetails, joinedAt);
-                        delete playerSessions[pName];
-                        logEvent(`${pName} LEFT ${name}`, squadDetails ? "text-red-500 font-bold" : "text-gray-600");
-                    });
-
-                    if (isMassEvent && !isMuted) {
-                        logEvent(`[SYS] MASS DATA SHIFT: ${joinedPlayers.length} IN, ${leftPlayers.length} OUT. AUDIO THROTTLED.`, "text-yellow-500 font-bold");
-                        queueSound(SOUND_SQUAD, currentVolume * 0.3);
-                    }
+                    joinedPlayers.forEach(pName => { playerSessions[pName] = Date.now(); const squadDetails = getWatchedSquadDetails(pName); if (!isMassEvent) announceAction(squadDetails, name, true); addPlayerAlert(pName, name, true, squadDetails); logEvent(`${pName} JOINED ${name}`, squadDetails ? "text-red-500 font-bold" : "text-gray-400"); });
+                    leftPlayers.forEach(pName => { const squadDetails = getWatchedSquadDetails(pName); if (!isMassEvent) announceAction(squadDetails, name, false); let joinedAt = playerSessions[pName]; addPlayerAlert(pName, name, false, squadDetails, joinedAt); delete playerSessions[pName]; logEvent(`${pName} LEFT ${name}`, squadDetails ? "text-red-500 font-bold" : "text-gray-600"); });
+                    if (isMassEvent && !isMuted) { logEvent(`[SYS] MASS DATA SHIFT: ${joinedPlayers.length} IN, ${leftPlayers.length} OUT. AUDIO THROTTLED.`, "text-yellow-500 font-bold"); queueSound(SOUND_SQUAD, currentVolume * 0.3); }
                 }
-                previous[name] = players;
-                cache[name] = { status: attr.status || 'offline', players: currentPlayers, maxPlayers: maxPlayers, details: attr.details || {}, list: players.map(n => ({name: n})), ping: lat };
-
+                previous[name] = players; cache[name] = { status: attr.status || 'offline', players: currentPlayers, maxPlayers: maxPlayers, details: attr.details || {}, list: players.map(n => ({name: n})), ping: lat };
             } catch (err) {
-                const state = wdState[name];
-                updateMiniChart(name, 0, 0, state);
-                
+                const state = wdState[name]; updateMiniChart(name, 0, 0, state);
                 if (advMode && err.message !== "429") { logEvent(`[ADV] ${name} FETCH FAILED`, "text-red-900", true); }
                 if (!cache[name]) { cache[name] = { status: 'offline', players: 0, maxPlayers: 0, details: {}, list: [], ping: 0 }; } else { cache[name].status = 'offline'; cache[name].players = 0; cache[name].list = []; }
             }
@@ -1258,16 +843,8 @@
 
         async function updateAll() {
             let currentHeat = updateApiHeatUI();
-
             if (Date.now() < rateLimitCooldown) { setTimeout(updateAll, 5000); return; }
-
-            if (currentHeat >= 50) { 
-                logEvent(`[WD] API HEAT CRITICAL (${currentHeat}/60). THROTTLE ACTIVATED.`, "text-yellow-500 font-bold");
-                rateLimitCooldown = Date.now() + 15000; 
-                setTimeout(updateAll, 15000);
-                return;
-            }
-
+            if (currentHeat >= 50) { logEvent(`[WD] API HEAT CRITICAL (${currentHeat}/60). THROTTLE ACTIVATED.`, "text-yellow-500 font-bold"); rateLimitCooldown = Date.now() + 15000; setTimeout(updateAll, 15000); return; }
             checkTelemetryAutoExport(); 
             
             try {
@@ -1275,164 +852,93 @@
                 await fetchServer("EU2", SERVERS.EU2); await new Promise(r => setTimeout(r, 400));
                 await fetchServer("EU3", SERVERS.EU3);
                 
-                wdLogCounter++;
-                if (wdLogCounter >= 12) { logEvent(`[WD] STATUS: STABLE / SYNC OK`, "text-cyan-400 opacity-80"); wdLogCounter = 0; }
+                wdLogCounter++; if (wdLogCounter >= 12) { logEvent(`[WD] STATUS: STABLE / SYNC OK`, "text-cyan-400 opacity-80"); wdLogCounter = 0; }
                 
                 let totalPlayers = 0; let totalMax = 0;
                 ["EU1", "EU2", "EU3"].forEach(n => {
                     const c = cache[n]; if (!c) return;
                     totalPlayers += (c.players || 0); totalMax += (c.maxPlayers || 0);
                     const perc = c.maxPlayers > 0 ? Math.round((c.players / c.maxPlayers) * 100) : 0;
-                    
                     const isOnline = (c.status === 'online' && !isBooting[n]);
                     const percEl = document.getElementById(`perc${n}`);
                     if(percEl) {
-                        if(isOnline) {
-                            percEl.innerText = `${perc}%`;
-                            let pulseClass = n === 'EU1' ? 'perc-pulse-green' : (n === 'EU2' ? 'perc-pulse-orange' : 'perc-pulse-cyan');
-                            percEl.className = `${pulseClass} mt-1 mb-1 block`;
-                        } else {
-                            percEl.innerText = `---`;
-                            percEl.className = `perc-offline mt-1 mb-1 block`;
-                        }
+                        if(isOnline) { percEl.innerText = `${perc}%`; let pulseClass = n === 'EU1' ? 'perc-pulse-green' : (n === 'EU2' ? 'perc-pulse-orange' : 'perc-pulse-cyan'); percEl.className = `${pulseClass} mt-1 mb-1 block`; } 
+                        else { percEl.innerText = `---`; percEl.className = `perc-offline mt-1 mb-1 block`; }
                     }
-
-                    const bar = document.getElementById(`bar${n}`);
-                    if(bar) { bar.className = "cap-bar-fill " + (perc >= 100 ? "bg-red-500" : perc >= 86 ? "bg-yellow-500" : "bg-green-500"); bar.style.width = `${perc}%`; }
+                    const bar = document.getElementById(`bar${n}`); if(bar) { bar.className = "cap-bar-fill " + (perc >= 100 ? "bg-red-500" : perc >= 86 ? "bg-yellow-500" : "bg-green-500"); bar.style.width = `${perc}%`; }
                     const fullText = document.getElementById(`full${n}`); if(fullText) { fullText.style.display = perc >= 100 && isOnline ? "block" : "none"; }
-                    
                     const satStatus = document.getElementById(`satStatus${n}`);
                     if(satStatus) {
-                        if (isOnline) {
-                            satStatus.innerText = "ONLINE";
-                            satStatus.className = "text-[9px] mt-1 font-bold uppercase tracking-widest status-pulse-online";
-                        } else {
-                            satStatus.innerText = "OFFLINE";
-                            satStatus.className = "text-[9px] mt-1 font-bold uppercase tracking-widest status-pulse-offline";
-                        }
+                        if (isOnline) { satStatus.innerText = "ONLINE"; satStatus.className = "text-[9px] mt-1 font-bold uppercase tracking-widest status-pulse-online"; } 
+                        else { satStatus.innerText = "OFFLINE"; satStatus.className = "text-[9px] mt-1 font-bold uppercase tracking-widest status-pulse-offline"; }
                     }
                 });
                 
                 document.getElementById("totalStat").innerText = totalPlayers;
-                const totalPercEl = document.getElementById(`percTOTAL`);
-                if(totalPercEl) {
-                    totalPercEl.innerText = `${totalMax > 0 ? Math.round((totalPlayers / totalMax) * 100) : 0}%`;
-                }
+                const totalPercEl = document.getElementById(`percTOTAL`); if(totalPercEl) { totalPercEl.innerText = `${totalMax > 0 ? Math.round((totalPlayers / totalMax) * 100) : 0}%`; }
                 document.getElementById(`barTOTAL`).style.width = `${totalMax > 0 ? Math.round((totalPlayers / totalMax) * 100) : 0}%`;
                 
                 const timeLabel = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' });
-                historyData.push(totalPlayers); historyLabels.push(timeLabel);
-                if (historyData.length > 60) { historyData.shift(); historyLabels.shift(); }
+                historyData.push(totalPlayers); historyLabels.push(timeLabel); if (historyData.length > 60) { historyData.shift(); historyLabels.shift(); }
                 if(chart) { chart.update('none'); }
             } catch (e) { console.error(e); }
             
-            isFirstLoad = false; 
-            
-            let nextInterval = 7000; 
-            if (radarMode === 'ECO') nextInterval = 10000;
-            else if (radarMode === 'AGR') nextInterval = 4000;
-            
+            isFirstLoad = false; let nextInterval = 7000; if (radarMode === 'ECO') nextInterval = 10000; else if (radarMode === 'AGR') nextInterval = 4000;
             setTimeout(updateAll, nextInterval);
         }
 
         function renderUI() {
             ["EU1", "EU2", "EU3"].forEach(name => {
                 const c = cache[name]; if (!c) return;
-                
-                const sEl = document.getElementById(`status${name}`);
-                const container = document.getElementById(`container${name}`);
-                const alertsContainer = document.getElementById(`alerts${name}`);
-                const isFull = c.players >= c.maxPlayers && c.maxPlayers > 0;
+                const sEl = document.getElementById(`status${name}`); const container = document.getElementById(`container${name}`); const alertsContainer = document.getElementById(`alerts${name}`); const isFull = c.players >= c.maxPlayers && c.maxPlayers > 0;
                 
                 if (c.status === 'online') {
-                    if (c.players > 0 && c.details?.time === 0) { 
-                        sEl.innerText = "INITIALIZING / LOBBY"; sEl.className = "text-[10px] px-2 py-0.5 rounded border border-yellow-500 text-right w-full uppercase text-yellow-500 font-bold"; 
-                    } else if (isFull) { 
-                        sEl.innerText = "SERVER FULL"; sEl.className = "text-[10px] px-2 py-0.5 rounded border border-red-500 text-right w-full text-red-500 full-text-blink font-bold uppercase"; container.classList.remove('soc-border'); container.classList.add('soc-border-pulse'); 
-                    } else { 
-                        sEl.innerText = "ONLINE"; sEl.className = "text-[10px] px-2 py-0.5 rounded border border-green-500 text-right w-full uppercase text-green-500"; container.classList.add('soc-border'); container.classList.remove('soc-border-pulse'); 
-                    }
-                } else {
-                    sEl.innerText = "OFFLINE"; sEl.className = "text-[10px] px-2 py-0.5 rounded border border-red-500 text-right w-full uppercase opacity-50"; container.classList.add('soc-border'); container.classList.remove('soc-border-pulse');
-                }
+                    if (c.players > 0 && c.details?.time === 0) { sEl.innerText = "INITIALIZING / LOBBY"; sEl.className = "text-[10px] px-2 py-0.5 rounded border border-yellow-500 text-right w-full uppercase text-yellow-500 font-bold"; } 
+                    else if (isFull) { sEl.innerText = "SERVER FULL"; sEl.className = "text-[10px] px-2 py-0.5 rounded border border-red-500 text-right w-full text-red-500 full-text-blink font-bold uppercase"; container.classList.remove('soc-border'); container.classList.add('soc-border-pulse'); } 
+                    else { sEl.innerText = "ONLINE"; sEl.className = "text-[10px] px-2 py-0.5 rounded border border-green-500 text-right w-full uppercase text-green-500"; container.classList.add('soc-border'); container.classList.remove('soc-border-pulse'); }
+                } else { sEl.innerText = "OFFLINE"; sEl.className = "text-[10px] px-2 py-0.5 rounded border border-red-500 text-right w-full uppercase opacity-50"; container.classList.add('soc-border'); container.classList.remove('soc-border-pulse'); }
                 
-                document.getElementById(`players${name}`).innerText = `${c.players || 0}/${c.maxPlayers || 0}`;
-                document.getElementById(`map${name}`).innerText = c.details?.map || "-";
-                document.getElementById(`ping${name}`).innerText = `${c.ping || 0}ms`;
-                
-                alertsContainer.innerHTML = ""; let presentSquads = new Set();
-                const listEl = document.getElementById(`list${name}`); listEl.innerHTML = "";
+                document.getElementById(`players${name}`).innerText = `${c.players || 0}/${c.maxPlayers || 0}`; document.getElementById(`map${name}`).innerText = c.details?.map || "-"; document.getElementById(`ping${name}`).innerText = `${c.ping || 0}ms`;
+                alertsContainer.innerHTML = ""; let presentSquads = new Set(); const listEl = document.getElementById(`list${name}`); listEl.innerHTML = "";
                 
                 c.list?.forEach((p, i) => {
-                    const squadDetails = getWatchedSquadDetails(p.name);
-                    const isClan = p.name.includes('77th') || p.name.toUpperCase().includes('JSOC');
+                    const squadDetails = getWatchedSquadDetails(p.name); const isClan = p.name.includes('77th') || p.name.toUpperCase().includes('JSOC');
                     if (squadDetails) { presentSquads.add(squadDetails.squadIdx); }
-
                     const row = document.createElement("div"); let rClass = `player-row py-0.5 px-1 flex items-center transition-all`;
-                    
                     if (squadDetails) {
-                        const colors = SQUAD_COLORS[squadDetails.squadIdx];
-                        row.style.backgroundColor = colors.bg; row.style.borderLeft = `2px solid ${colors.border}`; row.style.color = colors.text; row.style.fontWeight = 'bold';
+                        const colors = SQUAD_COLORS[squadDetails.squadIdx]; row.style.backgroundColor = colors.bg; row.style.borderLeft = `2px solid ${colors.border}`; row.style.color = colors.text; row.style.fontWeight = 'bold';
                         if (squadDetails.squadIdx === currentSquadIdx) { rClass += " active-squad-member"; } else if (isClan) { rClass += " clan-member"; }
-                    } else {
-                        if (isClan) { rClass += " clan-member"; } else { rClass += " unassigned-player"; }
-                    }
-
-                    row.className = rClass;
-                    row.innerHTML = `<span class="w-5 text-right mr-2 opacity-50 text-[10px]">${i+1}.</span><span class="truncate">${p.name}</span>`; 
-                    row.ondblclick = () => addWatch(p.name); listEl.appendChild(row);
+                    } else { if (isClan) { rClass += " clan-member"; } else { rClass += " unassigned-player"; } }
+                    row.className = rClass; row.innerHTML = `<span class="w-5 text-right mr-2 opacity-50 text-[10px]">${i+1}.</span><span class="truncate">${p.name}</span>`; row.ondblclick = () => addWatch(p.name); listEl.appendChild(row);
                 });
-
-                Array.from(presentSquads).sort().forEach(idx => {
-                    const sqColor = SQUAD_COLORS[idx].text;
-                    const icon = document.createElement("div"); icon.className = "alert-icon"; icon.style.backgroundColor = sqColor; icon.style.boxShadow = `0 0 8px ${sqColor}`; icon.innerText = "!";
-                    alertsContainer.appendChild(icon);
-                });
+                Array.from(presentSquads).sort().forEach(idx => { const sqColor = SQUAD_COLORS[idx].text; const icon = document.createElement("div"); icon.className = "alert-icon"; icon.style.backgroundColor = sqColor; icon.style.boxShadow = `0 0 8px ${sqColor}`; icon.innerText = "!"; alertsContainer.appendChild(icon); });
             });
             renderWatchList();
         }
         
-        /* =========================================================
-           KROK 1: MODYFIKACJA FUNKCJI UPDATE_CLOCK
-           ========================================================= */
         function updateClock() { 
             const now = new Date(); 
-            
-            const dmdTime = document.getElementById('dmd-time');
-            if (dmdTime) dmdTime.innerText = now.toLocaleTimeString('en-US', { hour12: false }); 
-            
-            const dmdDate = document.getElementById('dmd-date');
-            if (dmdDate) dmdDate.innerText = now.toLocaleDateString('en-GB').replace(/\//g, '-'); 
-            
+            const dmdTime = document.getElementById('dmd-time'); if (dmdTime) dmdTime.innerText = now.toLocaleTimeString('en-US', { hour12: false }); 
             const CYCLE = 6 * 60 * 60 * 1000;
             
             ["EU1", "EU2", "EU3"].forEach(n => {
-                const els = [document.getElementById(`clock-${n}`), document.getElementById(`clock-${n}-side`)]; 
-                const etas = [document.getElementById(`eta-${n}`), document.getElementById(`eta-${n}-side`)]; 
-                const leds = [document.getElementById(`led-${n}`), document.getElementById(`led-${n}-side`)];
-                const titles = [document.getElementById(`title-${n}`), document.getElementById(`title-${n}-side`)];
-                const titleWrappers = [document.getElementById(`title-wrapper-${n}`), document.getElementById(`title-wrapper-${n}-side`)];
-                
-                const vfdL1 = document.getElementById(`vfd-${n}-l1`);
-                const vfdL2 = document.getElementById(`vfd-${n}-l2`);
-                
-                const state = wdState[n];
-                const c = cache[n];
+                const els = [document.getElementById(`clock-${n}`), document.getElementById(`clock-${n}-side`)]; const etas = [document.getElementById(`eta-${n}`), document.getElementById(`eta-${n}-side`)]; const leds = [document.getElementById(`led-${n}`), document.getElementById(`led-${n}-side`)]; const titles = [document.getElementById(`title-${n}`), document.getElementById(`title-${n}-side`)]; const titleWrappers = [document.getElementById(`title-wrapper-${n}`), document.getElementById(`title-wrapper-${n}-side`)];
+                const vfdL1 = document.getElementById(`vfd-${n}-l1`); const vfdL2 = document.getElementById(`vfd-${n}-l2`);
+                const state = wdState[n]; const c = cache[n]; const activeClockColor = WD_COLORS[n]; const activeTitleColor = TITLE_COLORS[n];
 
-                const activeClockColor = WD_COLORS[n];
-                const activeTitleColor = TITLE_COLORS[n];
+                /* KROK 1B: BRUTAL BYPASS ZEGARA DLA EU2 */
+                if (!lastRestartData[n] && state !== 'OFF' && c && c.players > 0) {
+                    lastRestartData[n] = Date.now() - (3600 * 1000); 
+                    localStorage.setItem('jsoc_last_restarts', JSON.stringify(lastRestartData));
+                    logEvent(`[WD] FORCE-SPAWNED START POINT FOR ${n}`, "text-orange-500 font-bold");
+                }
 
                 if (state === 'OFF') {
                     leds.forEach(l => { if(l) { l.className = "led-indicator led-off-pulse " + (l.id.includes('side') ? "w-3 h-3 md:w-4 md:h-4 mr-2 border-2" : ""); } });
                     els.forEach(e => { if(e) { e.className = "text-3xl md:text-4xl font-black clock-wait opacity-30 tracking-widest text-gray-500 whitespace-nowrap"; e.innerText = "--:--:--"; } });
                     etas.forEach(t=>{if(t) { t.className = "text-[9px] font-bold tracking-widest mt-1 text-red-500/30 uppercase whitespace-nowrap"; t.innerText = `STANDBY`; }});
-                    titles.forEach(t=>{if(t) { t.innerText = `${n} REBOOT`; }});
-                    titleWrappers.forEach(tw=>{if(tw) { tw.className = "text-xs uppercase flex items-center mb-1 font-bold tracking-widest drop-shadow-md text-gray-600 whitespace-nowrap"; }});
-                    
-                    if(vfdL1 && vfdL2) {
-                        vfdL1.innerText = "SYS:"; vfdL1.className = "vfd-text whitespace-nowrap vfd-standby";
-                        vfdL2.innerText = "STNDBY"; vfdL2.className = "vfd-text whitespace-nowrap vfd-standby";
-                    }
+                    titles.forEach(t=>{if(t) { t.innerText = `${n} REBOOT`; }}); titleWrappers.forEach(tw=>{if(tw) { tw.className = "text-xs uppercase flex items-center mb-1 font-bold tracking-widest drop-shadow-md text-gray-600 whitespace-nowrap"; }});
+                    if(vfdL1 && vfdL2) { vfdL1.innerText = "SYS:"; vfdL1.className = "vfd-text whitespace-nowrap vfd-standby"; vfdL2.innerText = "STNDBY"; vfdL2.className = "vfd-text whitespace-nowrap vfd-standby"; }
                     return;
                 }
 
@@ -1440,11 +946,7 @@
                     leds.forEach(l => { if(l) { l.className = "led-indicator led-red-blink " + (l.id.includes('side') ? "w-3 h-3 md:w-4 md:h-4 mr-2 border-2" : ""); } }); 
                     els.forEach(e => { if(e) { e.className = `text-3xl md:text-4xl font-black clock-wait tracking-widest ${activeClockColor} whitespace-nowrap`; e.innerText = "BOOTING"; } }); 
                     etas.forEach(t=>{if(t) { t.className = "text-[9px] font-bold tracking-widest mt-1 text-red-400 uppercase whitespace-nowrap"; t.innerText = `AWAITING...`; }}); 
-                    
-                    if(vfdL1 && vfdL2) {
-                        vfdL1.innerText = "SYS:"; vfdL1.className = "vfd-text whitespace-nowrap vfd-alert";
-                        vfdL2.innerText = "BOOT.."; vfdL2.className = "vfd-text whitespace-nowrap vfd-alert";
-                    }
+                    if(vfdL1 && vfdL2) { vfdL1.innerText = "SYS:"; vfdL1.className = "vfd-text whitespace-nowrap vfd-alert"; vfdL2.innerText = "BOOT.."; vfdL2.className = "vfd-text whitespace-nowrap vfd-alert"; }
                     return; 
                 }
                 
@@ -1452,40 +954,28 @@
                     leds.forEach(l => { if(l) { l.className = "led-indicator led-green-blink " + (l.id.includes('side') ? "w-3 h-3 md:w-4 md:h-4 mr-2 border-2" : ""); } }); 
                     els.forEach(e => { if(e) { e.className = `text-3xl md:text-4xl font-black clock-wait tracking-widest ${activeClockColor} whitespace-nowrap`; e.innerText = "--:--:--"; } }); 
                     etas.forEach(t=>{if(t) { t.className = "text-[9px] font-bold tracking-widest mt-1 opacity-60 uppercase text-white whitespace-nowrap"; t.innerText = `NEXT: --:--:--`; }}); 
-                    
-                    if(vfdL1 && vfdL2) {
-                        vfdL1.innerText = "LAT:--"; vfdL1.className = "vfd-text whitespace-nowrap vfd-ping";
-                        vfdL2.innerText = "OPR:--"; vfdL2.className = "vfd-text whitespace-nowrap vfd-opr";
-                    }
+                    if(vfdL1 && vfdL2) { vfdL1.innerText = "LAT:--"; vfdL1.className = "vfd-text whitespace-nowrap vfd-ping"; vfdL2.innerText = "OPR:--"; vfdL2.className = "vfd-text whitespace-nowrap vfd-opr"; }
                     return; 
                 }
 
-                const latStr = (c && c.ping !== undefined) ? c.ping.toString().padStart(3, '0') : "000";
-                const oprStr = (c && c.players !== undefined) ? c.players.toString().padStart(2, '0') : "00";
+                const latStr = (c && c.ping !== undefined) ? c.ping.toString().padStart(3, '0') : "000"; const oprStr = (c && c.players !== undefined) ? c.players.toString().padStart(2, '0') : "00";
 
                 if (state === 'AUTO') {
                     leds.forEach(l => { if(l) l.className = "led-indicator led-yellow-pulse " + (l.id.includes('side') ? "w-3 h-3 md:w-4 md:h-4 mr-2 border-2" : ""); }); 
-                    titles.forEach(t=>{if(t) { t.innerText = `${n} TELEMETRY`; }});
-                    titleWrappers.forEach(tw=>{if(tw) { tw.className = `text-xs uppercase flex items-center mb-1 font-bold tracking-widest drop-shadow-md ${activeTitleColor} whitespace-nowrap`; }});
-                    
-                    if(vfdL1 && vfdL2) {
-                        vfdL1.innerText = `LAT:${latStr}`; vfdL1.className = "vfd-text whitespace-nowrap vfd-ping-auto";
-                        vfdL2.innerText = `OPR:${oprStr}`; vfdL2.className = "vfd-text whitespace-nowrap vfd-opr";
-                    }
+                    titles.forEach(t=>{if(t) { t.innerText = `${n} TELEMETRY`; }}); titleWrappers.forEach(tw=>{if(tw) { tw.className = `text-xs uppercase flex items-center mb-1 font-bold tracking-widest drop-shadow-md ${activeTitleColor} whitespace-nowrap`; }});
+                    if(vfdL1 && vfdL2) { vfdL1.innerText = `LAT:${latStr}`; vfdL1.className = "vfd-text whitespace-nowrap vfd-ping-auto"; vfdL2.innerText = `OPR:${oprStr}`; vfdL2.className = "vfd-text whitespace-nowrap vfd-opr"; }
                 } else {
                     leds.forEach(l => { if(l) l.className = "led-indicator led-green-pulse " + (l.id.includes('side') ? "w-3 h-3 md:w-4 md:h-4 mr-2 border-2" : ""); }); 
-                    titles.forEach(t=>{if(t) { t.innerText = `${n} REBOOT`; }});
-                    titleWrappers.forEach(tw=>{if(tw) { tw.className = `text-xs uppercase flex items-center mb-1 font-bold tracking-widest drop-shadow-md ${activeTitleColor} whitespace-nowrap`; }});
-                    
-                    if(vfdL1 && vfdL2) {
-                        vfdL1.innerText = `LAT:${latStr}`; vfdL1.className = "vfd-text whitespace-nowrap vfd-ping";
-                        vfdL2.innerText = `OPR:${oprStr}`; vfdL2.className = "vfd-text whitespace-nowrap vfd-opr";
-                    }
+                    titles.forEach(t=>{if(t) { t.innerText = `${n} REBOOT`; }}); titleWrappers.forEach(tw=>{if(tw) { tw.className = `text-xs uppercase flex items-center mb-1 font-bold tracking-widest drop-shadow-md ${activeTitleColor} whitespace-nowrap`; }});
+                    if(vfdL1 && vfdL2) { vfdL1.innerText = `LAT:${latStr}`; vfdL1.className = "vfd-text whitespace-nowrap vfd-ping"; vfdL2.innerText = `OPR:${oprStr}`; vfdL2.className = "vfd-text whitespace-nowrap vfd-opr"; }
                 }
 
                 els.forEach(e => { if(e) { e.className = `text-3xl md:text-4xl font-black tracking-widest ${activeClockColor} whitespace-nowrap`; } }); 
                 
-                let elapsed = Date.now() - lastRestartData[n]; let remain = CYCLE - elapsed; let next = lastRestartData[n] + CYCLE;
+                /* KROK 1A: NAPRAWA MODULO ZEGARA */
+                let elapsed = Date.now() - lastRestartData[n];
+                let remain = CYCLE - (elapsed % CYCLE);
+                let next = Date.now() + remain;
 
                 if (state === 'AUTO' && remain < 15 * 60 * 1000 && remain > 60 * 1000) {
                     els.forEach(e => { if(e) { e.innerText = "ANALYSIS"; e.className = `text-3xl md:text-4xl font-black tracking-widest ${activeClockColor} warning-pulse whitespace-nowrap`; }});
@@ -1493,10 +983,8 @@
                     leds.forEach(l => { if(l) l.className = "led-indicator led-yellow-blink-rapid " + (l.id.includes('side') ? "w-3 h-3 md:w-4 md:h-4 mr-2 border-2" : ""); });
                     if(vfdL1) { vfdL1.innerText = `ANLYZNG`; vfdL1.className = "vfd-text whitespace-nowrap vfd-ping-auto"; }
                 } else {
-                    if (remain <= 0) { 
-                        remain = 0; 
-                        leds.forEach(l => { if(l) l.className = "led-indicator led-red-blink " + (l.id.includes('side') ? "w-3 h-3 md:w-4 md:h-4 mr-2 border-2" : ""); }); 
-                    } else if (remain <= 15 * 60 * 1000 && state === 'ON') {
+                    if (remain <= 0) { remain = 0; leds.forEach(l => { if(l) l.className = "led-indicator led-red-blink " + (l.id.includes('side') ? "w-3 h-3 md:w-4 md:h-4 mr-2 border-2" : ""); }); } 
+                    else if (remain <= 15 * 60 * 1000 && state === 'ON') {
                         if (!alert15Triggers[n]) { 
                             logEvent(`[WD] WARNING: ${n} RESTART IN 15 MINUTES`, "text-cyan-400 font-bold"); addSystemAlert(`WARNING: ${n} REBOOT IN 15 MIN`); 
                             showStickyAlert(n, `WARNING: ${n} REBOOT IN 15 MIN`, `Scheduled restart on ${n} is approaching.`);
@@ -1506,10 +994,8 @@
                     } else { alert15Triggers[n] = false; }
 
                     const h = Math.floor(remain / 3600000); const m = Math.floor((remain % 3600000) / 60000); const s = Math.floor((remain % 60000) / 1000);
-                    
                     els.forEach(e => { if(e) e.innerText = `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; });
                     const nextStr = new Date(next).toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }); 
-                    
                     if (state === 'AUTO') { etas.forEach(t=>{if(t) { t.className = "text-[9px] opacity-60 font-bold tracking-widest mt-1 text-yellow-400 uppercase whitespace-nowrap"; t.innerText = `NEXT: ${nextStr}`; }}); } 
                     else { etas.forEach(t=>{if(t) { t.className = "text-[9px] opacity-60 font-bold tracking-widest mt-1 uppercase text-white whitespace-nowrap"; t.innerText = `NEXT: ${nextStr}`; }}); }
                 }
@@ -1522,8 +1008,7 @@
                 const btnIdx = i + 1; const colors = SQUAD_COLORS[btnIdx];
                 if (btnIdx === idx) { b.classList.add('active'); b.style.backgroundColor = colors.text; b.style.color = '#0b0f14'; b.style.borderColor = colors.text; b.style.boxShadow = `0 0 15px ${colors.text}80`; } 
                 else { b.classList.remove('active'); b.style.backgroundColor = 'transparent'; b.style.color = colors.text; b.style.borderColor = `${colors.text}60`; b.style.boxShadow = 'none'; }
-            }); 
-            renderWatchList(); renderUI(); 
+            }); renderWatchList(); renderUI(); 
         }
         
         function renderWatchList() { 
@@ -1559,20 +1044,7 @@
         
         function setVolume(v) { currentVolume = v; localStorage.setItem('jsoc_volume', v); updateVolumeUI(); queueSound(SOUND_SQUAD, currentVolume * 0.15); }
         function updateVolumeUI() { document.querySelectorAll('.vol-level').forEach(el => { const val = parseFloat(el.dataset.vol); el.style.background = val <= currentVolume ? "#00ff9c" : "rgba(0, 255, 156, 0.1)"; el.style.boxShadow = val <= currentVolume ? "0 0 8px #00ff9c" : "none"; }); }
-        
-        function toggleMute() { 
-            isMuted = !isMuted; 
-            localStorage.setItem('jsoc_muted', isMuted); 
-            updateMuteUI(); 
-            
-            if (isMuted) {
-                audioQueue = []; 
-                isPlayingQueue = false;
-                if (currentAudioObj) { currentAudioObj.pause(); currentAudioObj = null; }
-                if (window.speechSynthesis) { window.speechSynthesis.cancel(); }
-            }
-        }
-        
+        function toggleMute() { isMuted = !isMuted; localStorage.setItem('jsoc_muted', isMuted); updateMuteUI(); if (isMuted) { audioQueue = []; isPlayingQueue = false; if (currentAudioObj) { currentAudioObj.pause(); currentAudioObj = null; } if (window.speechSynthesis) { window.speechSynthesis.cancel(); } } }
         function updateMuteUI() { document.getElementById('muteIcon').innerHTML = isMuted ? '<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.41.32-.85.59-1.32.76v2.06c1.02-.21 1.97-.64 2.8-1.25L19.73 21 21 19.73 4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>' : '<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77z"/>'; }
         function clearAllAlerts() { document.getElementById("alertBox").innerHTML = ""; }
         function toggleHelp() { const m = document.getElementById('helpModal'); m.style.display = (m.style.display === 'flex') ? 'none' : 'flex'; }
@@ -1593,65 +1065,18 @@
                 if (mctx) {
                     miniCharts[n] = new Chart(mctx.getContext('2d'), {
                         type: 'line',
-                        data: { 
-                            labels: Array(30).fill(''), 
-                            datasets: [
-                                { 
-                                    data: pingHistory[n], 
-                                    borderColor: '#00ff9c', 
-                                    borderWidth: 2, 
-                                    pointRadius: 0, 
-                                    tension: 0.3,
-                                    yAxisID: 'y'
-                                },
-                                { 
-                                    data: playerHistory[n], 
-                                    borderColor: '#eab308', 
-                                    backgroundColor: 'rgba(234, 179, 8, 0.2)', 
-                                    borderWidth: 1, 
-                                    fill: true,
-                                    pointRadius: 0, 
-                                    tension: 0.3,
-                                    yAxisID: 'y1'
-                                }
-                            ] 
-                        },
-                        options: { 
-                            responsive: true, 
-                            maintainAspectRatio: false, 
-                            animation: false, 
-                            layout: { padding: { top: 10, bottom: 5 } },
-                            plugins: { legend: { display: false }, tooltip: { enabled: false } }, 
-                            scales: { 
-                                x: { display: false }, 
-                                y: { display: false, min: 0, suggestedMax: 100 },
-                                y1: { display: false, min: 0, suggestedMax: 80 }
-                            } 
-                        }
+                        data: { labels: Array(30).fill(''), datasets: [ { data: pingHistory[n], borderColor: '#00ff9c', borderWidth: 2, pointRadius: 0, tension: 0.3, yAxisID: 'y' }, { data: playerHistory[n], borderColor: '#eab308', backgroundColor: 'rgba(234, 179, 8, 0.2)', borderWidth: 1, fill: true, pointRadius: 0, tension: 0.3, yAxisID: 'y1' } ] },
+                        options: { responsive: true, maintainAspectRatio: false, animation: false, layout: { padding: { top: 10, bottom: 5 } }, plugins: { legend: { display: false }, tooltip: { enabled: false } }, scales: { x: { display: false }, y: { display: false, min: 0, suggestedMax: 100 }, y1: { display: false, min: 0, suggestedMax: 80 } } }
                     });
                 }
             });
         }
 
         (async function init() {
-            switchSquad(currentSquadIdx); 
-            renderWdSwitches();
-            initChart(); 
-            updateMuteUI(); 
-            updateVolumeUI(); 
-            initAdvButton(); 
-            
-            setRadarMode(radarMode);
-            
-            setInterval(updateClock, 1000); 
-            setInterval(updateApiHeatUI, 1000);
-            
-            updateAll(); 
-            setInterval(renderUI, 1000);
-            
-            addSystemAlert("VOICE COMMS STANDBY. CLICK [INIT COMM] TO ACTIVATE.", "alert-startup-voice");
-            logEvent("VOICE ENGINE DISABLED. AWAITING MANUAL OVERRIDE.", "text-cyan-400 font-bold");
-            logEvent(`[WD] SYSTEM BOOT COMPLETE`, "text-cyan-400 font-bold");
+            switchSquad(currentSquadIdx); renderWdSwitches(); initChart(); updateMuteUI(); updateVolumeUI(); initAdvButton(); setRadarMode(radarMode);
+            setInterval(updateClock, 1000); setInterval(updateApiHeatUI, 1000);
+            updateAll(); setInterval(renderUI, 1000);
+            addSystemAlert("VOICE COMMS STANDBY. CLICK [INIT COMM] TO ACTIVATE.", "alert-startup-voice"); logEvent("VOICE ENGINE DISABLED. AWAITING MANUAL OVERRIDE.", "text-cyan-400 font-bold"); logEvent(`[WD] SYSTEM BOOT COMPLETE`, "text-cyan-400 font-bold");
         })();
     </script>
 </body>
