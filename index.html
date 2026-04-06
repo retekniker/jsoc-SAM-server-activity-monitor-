@@ -38,12 +38,11 @@
         .cap-bar-fill { height: 100%; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s; }
         
         .btn-system-led { font-size: 10px; letter-spacing: 0.15em; padding: 5px 12px; border: 1px solid #00ff9c; background: rgba(0, 255, 156, 0.1); color: #00ff9c; box-shadow: 0 0 8px rgba(0, 255, 156, 0.2); transition: all 0.2s ease; text-transform: uppercase; cursor: pointer; font-weight: 900; }
-        .btn-system-led:hover { background: #00ff9c; color: #0b0f14; box-shadow: 0 0 15px rgba(0, 255, 156, 0.6); }
+        .btn-system-led:hover, .btn-system-led.active { background: #00ff9c; color: #0b0f14; box-shadow: 0 0 15px rgba(0, 255, 156, 0.6); }
         .btn-system-led:active { background: rgba(0, 255, 156, 0.2) !important; color: #00ff9c !important; box-shadow: inset 0 0 10px rgba(0, 255, 156, 0.4) !important; }
 
         .btn-system-led-red { font-size: 10px; letter-spacing: 0.15em; padding: 5px 12px; border: 1px solid #ff4d4d; background: rgba(255, 77, 77, 0.1); color: #ff4d4d; box-shadow: 0 0 8px rgba(255, 77, 77, 0.2); transition: all 0.2s ease; text-transform: uppercase; cursor: pointer; font-weight: 900; }
-        .btn-system-led-red:hover { background: #ff4d4d; color: #0b0f14; box-shadow: 0 0 15px rgba(255, 77, 77, 0.6); }
-        .btn-system-led-red.active-adv { background: #ff4d4d; color: #0b0f14; box-shadow: 0 0 15px rgba(255, 77, 77, 0.6); }
+        .btn-system-led-red:hover, .btn-system-led-red.active-adv { background: #ff4d4d; color: #0b0f14; box-shadow: 0 0 15px rgba(255, 77, 77, 0.6); }
 
         /* ANIMOWANY PRZYCISK SYNC */
         .sync-btn-wrapper { position: relative; display: inline-block; padding: 1px; overflow: hidden; border-radius: 2px; cursor: pointer; }
@@ -62,14 +61,14 @@
         #helpModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); backdrop-filter: blur(10px); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: #0b0f14; border: 4px solid #00ff9c; box-shadow: 0 0 40px rgba(0, 255, 156, 0.4); max-width: 800px; width: 95%; padding: 3rem; max-height: 85vh; overflow-y: auto; }
         
-        .player-row { font-size: 0.875rem; font-weight: 500; transition: all 0.2s; border-left: 2px solid transparent; }
+        .player-row { font-size: 0.875rem; font-weight: 500; transition: all 0.2s; border-left: 2px solid transparent; position: relative; overflow: hidden; }
         .player-row:hover { background: rgba(255, 255, 255, 0.05); cursor: cell; }
         
         .volume-wrapper { position: relative; display: flex; align-items: center; gap: 6px; padding: 4px 8px; border: 1px solid rgba(0, 255, 156, 0.2); background: rgba(0, 255, 156, 0.02); }
         .vol-level { height: 14px; width: 5px; border-radius: 1px; transition: all 0.1s; background: rgba(0, 255, 156, 0.1); }
         
         /* STRICT MILITARY SQUAD PALETTE */
-        .squad-btn { font-size: 10px; font-weight: 700; padding: 5px 12px; cursor: pointer; transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.05em; background: transparent; }
+        .squad-btn { font-size: 10px; font-weight: 700; padding: 5px 12px; cursor: transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.05em; background: transparent; }
         .sq-color-1 { color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.4); } .sq-color-1:hover, .sq-color-1.active { background: #ef4444; color: #0b0f14; border-color: #ef4444; box-shadow: 0 0 15px rgba(239, 68, 68, 0.6); }
         .sq-color-2 { color: #fcd34d; border: 1px solid rgba(252, 211, 77, 0.4); } .sq-color-2:hover, .sq-color-2.active { background: #fcd34d; color: #0b0f14; border-color: #fcd34d; box-shadow: 0 0 15px rgba(252, 211, 77, 0.6); }
         .sq-color-3 { color: #a3e635; border: 1px solid rgba(163, 230, 53, 0.4); } .sq-color-3:hover, .sq-color-3.active { background: #a3e635; color: #0b0f14; border-color: #a3e635; box-shadow: 0 0 15px rgba(163, 230, 53, 0.6); }
@@ -163,24 +162,32 @@
         .perc-offline { color: #555 !important; text-shadow: none !important; animation: none !important; transform: scale(1) !important; font-size: 1.75rem; font-weight: 900; letter-spacing: 0.1em; }
 
         /* =========================================================
-           NOWY CSS DLA DMD (RE-TEK SENTRY STYLE & KOLEJKA)
+           CSS DLA DMD (RE-TEK SENTRY STYLE & KOLEJKA)
            ========================================================= */
-        .dmd-container { background: #030504; border: 2px solid #1a1a1a; height: 60px; display: flex; align-items: center; position: relative; overflow: hidden; box-shadow: inset 0 0 25px #000; font-family: 'VT323', monospace; }
+        .dmd-container { background: #030504; border: 2px solid #1a1a1a; height: 60px; display: flex; align-items: center; position: relative; overflow: hidden; box-shadow: inset 0 0 25px #000; font-family: 'VT323', monospace; transition: all 0.3s ease; }
         .dmd-pixel-overlay { position: absolute; inset: 0; background-image: linear-gradient(rgba(0,0,0,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.4) 1px, transparent 1px); background-size: 3px 3px; z-index: 10; pointer-events: none; }
         
-        .dmd-branding-zone { padding: 0 20px; font-size: 1.4rem; letter-spacing: 1px; white-space: pre; border-left: 1px solid rgba(255,176,0,0.2); flex: 1; color: #ffb000; text-shadow: 0 0 10px #ffb000; z-index: 11; overflow: hidden; text-overflow: ellipsis; }
+        .dmd-branding-zone { padding: 0 20px; font-size: 1.4rem; letter-spacing: 1px; white-space: pre; border-left: 1px solid rgba(255,176,0,0.2); flex: 1; color: #ffb000; text-shadow: 0 0 10px #ffb000; z-index: 11; overflow: hidden; text-overflow: ellipsis; transition: opacity 0.3s ease; }
         
         @keyframes cursor-blink-anim { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
         .cursor-blink { animation: cursor-blink-anim 1s infinite; font-weight: 900; }
 
-        .dmd-reticle { position: relative; padding: 0 30px; display: flex; align-items: center; justify-content: center; border-left: 1px solid rgba(255,176,0,0.2); color: #ffb000; text-shadow: 0 0 10px #ffb000; z-index: 11; height: 100%; }
+        .dmd-reticle { position: relative; padding: 0 30px; display: flex; align-items: center; justify-content: center; border-left: 1px solid rgba(255,176,0,0.2); color: #ffb000; text-shadow: 0 0 10px #ffb000; z-index: 11; height: 100%; transition: opacity 0.3s ease;}
         .dmd-reticle::before, .dmd-reticle::after { content: ''; position: absolute; width: 10px; height: 10px; border-color: #ffb000; border-style: solid; }
         .dmd-reticle::before { top: 10px; left: 15px; border-width: 2px 0 0 2px; }
         .dmd-reticle::after { bottom: 10px; right: 15px; border-width: 0 2px 2px 0; }
         .dmd-time-val { font-size: 2.2rem; font-weight: 900; letter-spacing: 2px; }
         
-        .dmd-heat-zone { padding: 0 20px; border-left: 1px solid rgba(255,176,0,0.2); min-width: 140px; display: flex; flex-direction: column; justify-content: center; z-index: 11; height: 100%; transition: color 0.3s, text-shadow 0.3s; }
+        .dmd-heat-zone { padding: 0 20px; border-left: 1px solid rgba(255,176,0,0.2); min-width: 140px; display: flex; flex-direction: column; justify-content: center; z-index: 11; height: 100%; transition: opacity 0.3s ease, color 0.3s, text-shadow 0.3s; }
         .heat-bar { font-size: 1.4rem; font-weight: 900; letter-spacing: 1px; }
+
+        /* DMD ALARMS */
+        .dmd-alarm-red { border-color: #ff4d4d !important; background-color: rgba(255,0,0,0.15) !important; box-shadow: inset 0 0 40px rgba(255,0,0,0.5) !important; }
+        .dmd-alarm-yellow { border-color: #eab308 !important; background-color: rgba(234,179,8,0.15) !important; box-shadow: inset 0 0 40px rgba(234,179,8,0.4) !important; }
+        .dmd-alarm-green { border-color: #00ff9c !important; background-color: rgba(0,255,156,0.1) !important; }
+
+        /* CSS DLA STATS OVERLAY */
+        .stats-bar-fill { position: absolute; left: 0; top: 0; height: 100%; z-index: 0; transition: width 1s ease-in-out; }
 
     </style>
 </head>
@@ -194,9 +201,18 @@
                 <h2 class="text-2xl md:text-3xl font-black glow-text uppercase tracking-tighter">S.A.M. OPERATIONAL GUIDE</h2>
                 <button onclick="toggleHelp()" class="text-green-500 hover:text-white text-4xl">&times;</button>
             </div>
+            
+            <div class="mb-6 p-4 border border-green-500/30 bg-green-900/10 rounded">
+                <h3 class="font-bold text-white mb-2 uppercase tracking-widest">Voice Architect (TTS Engine)</h3>
+                <p class="text-xs opacity-70 mb-3 text-green-300">Wybierz syntezator mowy z systemu. Głosy z tagiem "Male/David" są obniżane dla taktycznego efektu.</p>
+                <select id="voiceSelect" class="w-full bg-black border border-green-500 text-green-400 p-2 outline-none font-mono text-sm custom-scrollbar focus:border-[#00ff9c] focus:ring-1 focus:ring-[#00ff9c]"></select>
+            </div>
+
             <div class="space-y-8 text-base md:text-lg leading-loose text-green-300">
                 <strong>1. VOICE COMMS:</strong> Click [INIT COMM] to activate the module.<br><br>
-                <strong>2. SQUAD TRACKING:</strong> Operators are color-coded by squad. The [DRAFT UNLINKED] function targets and assigns only unlinked players.<br><br>
+                <strong>2. SQUAD TRACKING:</strong> Operators are color-coded by squad. The [DRAFT UNLINKED] function targets and assigns only unlinked players.<br>
+                <span class="text-sm opacity-80">- <b>AUTO-FAV:</b> Automatically adds new, unassigned players to Squad 8 (FAV).</span><br>
+                <span class="text-sm opacity-80">- <b>STATS:</b> Displays session time as a background progress bar for each player.</span><br><br>
                 <strong>3. ASSET TELEMETRY (WATCHDOG):</strong> Real-time persistent tracking of server stability. <br>
                 <ul class="list-disc ml-8 mt-2 space-y-2 text-sm opacity-80">
                     <li><span class="text-green-400 font-bold">ON:</span> Full active monitoring. Visual & Voice alerts enabled. Oscilloscope displays Ping.</li>
@@ -213,9 +229,11 @@
         <div class="flex-1 dmd-container w-full min-w-0" id="dmd-main-node">
             <div class="dmd-pixel-overlay"></div>
             
-            <div class="dmd-branding-zone" id="dmd-text-stream">Re-Tek corp.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;..::77th JSOC::.. Server Tactical Monitor v4.14//........SYSTEM READY<span class="cursor-blink">!█</span></div>
+            <div id="dmd-override-zone" class="absolute inset-0 flex items-center justify-center font-black tracking-widest text-[1.4rem] z-20 pointer-events-none opacity-0 transition-opacity duration-300 text-white"></div>
 
-            <div class="dmd-reticle hidden sm:flex">
+            <div class="dmd-branding-zone" id="dmd-text-stream">Re-Tek corp.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;..::77th JSOC::.. Server Tactical Monitor PRO V5//........SYSTEM READY<span class="cursor-blink">!█</span></div>
+
+            <div class="dmd-reticle hidden sm:flex" id="dmd-reticle-node">
                 <div id="dmd-time" class="dmd-time-val">00:00:00</div>
             </div>
 
@@ -430,9 +448,14 @@
                 <div class="hidden md:block cyber-cable w-[4px] h-[24px] -bottom-[24px] right-[10%] delay-1"></div>
 
                 <div class="flex justify-between items-center mb-4 relative z-20">
-                    <h3 class="text-sm font-bold uppercase opacity-80">SQUAD ROSTER</h3>
+                    <div class="flex items-center gap-2">
+                        <h3 class="text-sm font-bold uppercase opacity-80 mr-2">SQUAD ROSTER</h3>
+                        <button onclick="toggleStats()" id="btnStatsToggle" class="btn-system-led !text-[9px] !py-1">STATS: OFF</button>
+                        <button onclick="toggleAutoFav()" id="btnAutoFavToggle" class="btn-system-led !text-[9px] !py-1">AUTO-FAV: OFF</button>
+                    </div>
                     <div id="squadCounter" class="squad-count">0/11</div>
                 </div>
+
                 <div class="grid grid-cols-4 gap-1.5 mb-4 relative z-20">
                     <button onclick="switchSquad(1)" id="sq-btn-1" class="squad-btn sq-color-1 active">Alfa</button>
                     <button onclick="switchSquad(2)" id="sq-btn-2" class="squad-btn sq-color-2">Bravo</button>
@@ -447,7 +470,7 @@
                     <input id="watchInput" type="text" placeholder="Callsign..." class="bg-black border border-green-900 text-xs p-2 flex-1 outline-none transition-all" onkeypress="if(event.key === 'Enter') addWatch()">
                     <button onclick="addWatch()" class="btn-system-led">ADD</button>
                     <button onclick="addAllToWatchCurrent()" class="btn-system-led">DRAFT UNLINKED</button>
-                    <button onclick="clearAllWatch()" class="btn-system-led">PURGE ROSTER</button>
+                    <button onclick="clearAllWatch()" class="btn-system-led-red border-red-500 text-red-500 hover:bg-red-500 hover:text-black">PURGE</button>
                 </div>
                 <div id="watchList" class="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto custom-scrollbar relative z-20 content-start"></div>
             </div>
@@ -504,6 +527,40 @@
     </div>
 
     <script>
+        const workerCode = `
+            let timer;
+            self.onmessage = function(e) {
+                if (e.data === 'start') {
+                    if (timer) clearInterval(timer);
+                    timer = setInterval(() => self.postMessage('tick'), 1000);
+                }
+            };
+        `;
+        const workerBlob = new Blob([workerCode], { type: 'application/javascript' });
+        const worker = new Worker(URL.createObjectURL(workerBlob));
+        
+        let lastFetchTime = Date.now();
+        let isFetching = false;
+
+        worker.onmessage = function(e) {
+            if (e.data === 'tick') {
+                updateClock();
+                updateApiHeatUI();
+                renderUI();
+
+                let now = Date.now();
+                let nextInterval = 8000;
+                if (radarMode === 'ECO') nextInterval = 12000;
+                else if (radarMode === 'AGR') nextInterval = 5500;
+
+                if (now >= rateLimitCooldown && now - lastFetchTime >= nextInterval && !isFetching) {
+                    lastFetchTime = now;
+                    isFetching = true;
+                    updateAll().finally(() => { isFetching = false; });
+                }
+            }
+        };
+
         const SERVERS = { EU1: "14808491", EU2: "30137964", EU3: "28825461" };
         const SQUAD_NAMES = ["", "ALFA", "BRAVO", "CHARLIE", "DELTA", "ECHO", "FOXTROT", "GOLF", "FAV"];
         
@@ -550,6 +607,7 @@
         let currentVolume = storedVol !== null ? parseFloat(storedVol) : 1.0;
         
         let lastRestartData = JSON.parse(localStorage.getItem('jsoc_last_restarts')) || { EU1: null, EU2: null, EU3: null };
+        let statsData = JSON.parse(localStorage.getItem('jsoc_stats')) || {}; 
         
         let isBooting = { EU1: false, EU2: false, EU3: false };
         let alert15Triggers = { EU1: false, EU2: false, EU3: false };
@@ -558,16 +616,18 @@
         let audioUnlocked = false; let voiceEnabled = false; let ttsVoice = null;
         let audioQueue = []; let isPlayingQueue = false; let currentAudioObj = null; let ttsUtterances = []; 
 
-        /* =========================================================
-           NOWA LOGIKA: KOLEJKA DMD DLA POWITAŃ
-           ========================================================= */
+        let showStats = false;
+        let autoFavEnabled = false;
+
         let dmdQueue = [];
         let isDmdProcessing = false;
         let dmdTimeout = null;
-        const DMD_DEFAULT_TEXT = `Re-Tek corp.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;..::77th JSOC::.. Server Tactical Monitor v4.14//........SYSTEM READY<span class="cursor-blink">!█</span>`;
+        const DMD_DEFAULT_TEXT = `Re-Tek corp.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;..::77th JSOC::.. Server Tactical Monitor PRO V5//........SYSTEM READY<span class="cursor-blink">!█</span>`;
 
-        function pushToDMD(msg) {
-            dmdQueue.push(msg);
+        let rateLimitCooldown = 0; let wdLogCounter = 0;
+
+        function pushToDMD(msg, priority = 0, colorClass = null) {
+            dmdQueue.push({ msg, priority, colorClass });
             if (!isDmdProcessing) {
                 processDMD();
             }
@@ -575,29 +635,125 @@
 
         function processDMD() {
             const dmdStream = document.getElementById('dmd-text-stream');
-            if (!dmdStream) return;
+            const dmdNode = document.getElementById('dmd-main-node');
+            const dmdOverride = document.getElementById('dmd-override-zone');
+            const hides = [document.getElementById('dmd-reticle-node'), document.getElementById('heat-zone-container')];
+
+            if (!dmdStream || !dmdOverride) return;
 
             if (dmdQueue.length === 0) {
                 isDmdProcessing = false;
+                dmdStream.style.opacity = '1';
+                hides.forEach(el => { if(el) el.style.opacity = '1'; });
+                dmdOverride.style.opacity = '0';
                 dmdStream.innerHTML = DMD_DEFAULT_TEXT;
+                dmdNode.className = "flex-1 dmd-container w-full min-w-0";
                 return;
             }
 
             isDmdProcessing = true;
-            const msg = dmdQueue.shift();
-            
-            // Jeśli ktoś czeka w kolejce - 4 sekundy. Jeśli kolejka pusta - 8 sekund relaksu.
-            const duration = dmdQueue.length > 0 ? 4000 : 8000; 
+            const item = dmdQueue.shift();
 
-            dmdStream.innerHTML = `Re-Tek corp.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;>> ${msg}<span class="cursor-blink">█</span>`;
-            
+            const duration = (item.priority === 2) ? 15000 : (dmdQueue.length > 0 ? 4000 : 8000);
+
+            if (item.priority === 2) {
+                dmdStream.style.opacity = '0';
+                hides.forEach(el => { if(el) el.style.opacity = '0'; });
+                dmdOverride.style.opacity = '1';
+                dmdOverride.innerHTML = `${item.msg}<span class="cursor-blink">█</span>`;
+                dmdNode.className = "flex-1 dmd-container w-full min-w-0"; 
+                dmdNode.classList.add(item.colorClass || 'dmd-alarm-red');
+            } else {
+                dmdStream.innerHTML = `Re-Tek corp.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;>> ${item.msg}<span class="cursor-blink">█</span>`;
+                dmdNode.className = "flex-1 dmd-container w-full min-w-0"; 
+                if (item.colorClass) dmdNode.classList.add(item.colorClass);
+            }
+
             if (dmdTimeout) clearTimeout(dmdTimeout);
             dmdTimeout = setTimeout(processDMD, duration);
         }
 
-        /* =========================================================
-           LOGIKA ZASILANIA DMD (HEAT BAR) Z KOLORAMI
-           ========================================================= */
+        function initVoice() {
+            if (!window.speechSynthesis) return;
+            const voices = window.speechSynthesis.getVoices();
+            const select = document.getElementById('voiceSelect');
+            if (select) {
+                select.innerHTML = "";
+                voices.forEach(v => {
+                    const opt = document.createElement('option');
+                    opt.value = v.name; opt.innerText = `${v.name} (${v.lang})`;
+                    if (v.name.includes('David') || v.name.includes('Male')) opt.selected = true;
+                    select.appendChild(opt);
+                });
+            }
+        }
+        if (window.speechSynthesis) { window.speechSynthesis.onvoiceschanged = initVoice; }
+
+        function toggleVoice() {
+            const btnInit = document.getElementById("btnInitAudio"); const statusEl = document.getElementById("audioStatus");
+            btnInit.classList.remove("btn-attention");
+            const alerts = document.querySelectorAll('#alertBox > div'); alerts.forEach(a => { if(a.innerText.includes("VOICE COMMS STANDBY")) { a.remove(); } });
+            if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") { Notification.requestPermission(); }
+            
+            voiceEnabled = !voiceEnabled;
+            if (voiceEnabled) {
+                audioUnlocked = true;
+                btnInit.innerText = "VOICE: ON"; btnInit.classList.remove("border-gray-500", "text-gray-500"); btnInit.classList.add("border-green-500", "text-green-500");
+                statusEl.innerText = "COMM-LINK ACTIVE"; statusEl.classList.remove("text-red-500"); statusEl.classList.add("text-green-400");
+                
+                pushToDMD("--::COMM-LINK ACTIVE::--", 1, "dmd-alarm-green");
+                queueSpeech("Voice communication active.");
+                logEvent("COMM-LINK INITIALIZED", "text-green-400 font-bold");
+                
+                if(window.speechSynthesis) { const msg = new SpeechSynthesisUtterance(""); msg.volume=0; window.speechSynthesis.speak(msg); }
+            } else {
+                btnInit.innerText = "VOICE: OFF"; btnInit.classList.remove("border-green-500", "text-green-500"); btnInit.classList.add("border-gray-500", "text-gray-500"); 
+                statusEl.innerText = "AUDIO LOCKED"; statusEl.classList.remove("text-green-400"); statusEl.classList.add("text-red-500");
+                
+                pushToDMD("--::COMM-LINK DEACTIVATED::--", 1, "dmd-alarm-red");
+                queueSpeech("Voice communication deactivated.");
+                logEvent("VOICE ENGINE: DISABLED", "text-gray-400"); 
+                
+                audioQueue = []; if (currentAudioObj) { currentAudioObj.pause(); currentAudioObj = null; } if (window.speechSynthesis) window.speechSynthesis.cancel(); ttsUtterances = [];
+            }
+        }
+
+        function processAudioQueue() {
+            if (isMuted) { audioQueue = []; isPlayingQueue = false; if (currentAudioObj) { currentAudioObj.pause(); currentAudioObj = null; } if (window.speechSynthesis) window.speechSynthesis.cancel(); ttsUtterances = []; return; }
+            if (audioQueue.length === 0) { isPlayingQueue = false; currentAudioObj = null; return; }
+            isPlayingQueue = true; let item = audioQueue.shift();
+            
+            if (item.type === 'speech') {
+                if(window.speechSynthesis) {
+                    let msg = new SpeechSynthesisUtterance(item.text); ttsUtterances.push(msg); 
+                    
+                    const select = document.getElementById('voiceSelect');
+                    if (select && select.value) {
+                        const voices = window.speechSynthesis.getVoices();
+                        msg.voice = voices.find(v => v.name === select.value);
+                        if (select.value.toLowerCase().includes('male') || select.value.includes('David')) {
+                            msg.pitch = 0.75;
+                        } else {
+                            msg.pitch = 1.0;
+                        }
+                    }
+                    
+                    msg.volume = currentVolume; msg.lang = 'en-US'; msg.rate = 0.95;
+                    msg.onend = () => { ttsUtterances = ttsUtterances.filter(u => u !== msg); setTimeout(processAudioQueue, 300); }; 
+                    msg.onerror = () => { ttsUtterances = ttsUtterances.filter(u => u !== msg); setTimeout(processAudioQueue, 300); };
+                    window.speechSynthesis.speak(msg);
+                } else { processAudioQueue(); }
+            } else if (item.type === 'sound') {
+                currentAudioObj = new Audio(item.url); currentAudioObj.volume = item.volume !== undefined ? item.volume : currentVolume * 0.15;
+                currentAudioObj.onended = () => { currentAudioObj = null; processAudioQueue(); }; currentAudioObj.onerror = () => { currentAudioObj = null; processAudioQueue(); }; 
+                currentAudioObj.play().catch(() => { currentAudioObj = null; processAudioQueue(); });
+            }
+        }
+
+        function queueSpeech(text) { if (isMuted || !voiceEnabled) return; audioQueue.push({ type: 'speech', text: text }); if (!isPlayingQueue) { processAudioQueue(); } }
+        function queueSound(url, vol) { if (isMuted) return; audioQueue.push({ type: 'sound', url: url, volume: vol }); if (!isPlayingQueue) { processAudioQueue(); } }
+        function unlockAudioFallback() { if(window.speechSynthesis && !window.speechSynthesis.speaking){ let msg = new SpeechSynthesisUtterance(""); msg.volume=0; window.speechSynthesis.speak(msg); } }
+
         function updateApiHeatUI() {
             let log = JSON.parse(localStorage.getItem('jsoc_api_heat')) || [];
             let now = Date.now();
@@ -615,14 +771,11 @@
                 heatText.innerText = `${count.toString().padStart(2, '0')}/60`;
                 
                 if (count >= 50) {
-                    heatContainer.style.color = "#ff4d4d"; 
-                    heatContainer.style.textShadow = "0 0 10px #ff4d4d";
+                    heatContainer.style.color = "#ff4d4d"; heatContainer.style.textShadow = "0 0 10px #ff4d4d";
                 } else if (count >= 35) {
-                    heatContainer.style.color = "#eab308"; 
-                    heatContainer.style.textShadow = "0 0 10px #eab308";
+                    heatContainer.style.color = "#eab308"; heatContainer.style.textShadow = "0 0 10px #eab308";
                 } else {
-                    heatContainer.style.color = "#00ff9c"; 
-                    heatContainer.style.textShadow = "0 0 10px #00ff9c";
+                    heatContainer.style.color = "#00ff9c"; heatContainer.style.textShadow = "0 0 10px #00ff9c";
                 }
             }
             return log.length;
@@ -700,46 +853,25 @@
             }
         }
 
-        function processAudioQueue() {
-            if (isMuted) { audioQueue = []; isPlayingQueue = false; if (currentAudioObj) { currentAudioObj.pause(); currentAudioObj = null; } if (window.speechSynthesis) window.speechSynthesis.cancel(); ttsUtterances = []; return; }
-            if (audioQueue.length === 0) { isPlayingQueue = false; currentAudioObj = null; return; }
-            isPlayingQueue = true; let item = audioQueue.shift();
-            if (item.type === 'speech') {
-                if(window.speechSynthesis) {
-                    let msg = new SpeechSynthesisUtterance(item.text); ttsUtterances.push(msg); if (ttsVoice) { msg.voice = ttsVoice; }
-                    msg.volume = currentVolume; msg.lang = 'en-US'; msg.rate = 0.9; msg.pitch = 0.85;
-                    msg.onend = () => { ttsUtterances = ttsUtterances.filter(u => u !== msg); setTimeout(processAudioQueue, 300); }; 
-                    msg.onerror = () => { ttsUtterances = ttsUtterances.filter(u => u !== msg); setTimeout(processAudioQueue, 300); };
-                    window.speechSynthesis.speak(msg);
-                } else { processAudioQueue(); }
-            } else if (item.type === 'sound') {
-                currentAudioObj = new Audio(item.url); currentAudioObj.volume = item.volume !== undefined ? item.volume : currentVolume * 0.15;
-                currentAudioObj.onended = () => { currentAudioObj = null; processAudioQueue(); }; currentAudioObj.onerror = () => { currentAudioObj = null; processAudioQueue(); }; 
-                currentAudioObj.play().catch(() => { currentAudioObj = null; processAudioQueue(); });
-            }
+        function toggleStats() {
+            showStats = !showStats;
+            const btn = document.getElementById('btnStatsToggle');
+            btn.innerText = `STATS: ${showStats ? 'ON' : 'OFF'}`;
+            if(showStats) btn.classList.add('active'); else btn.classList.remove('active');
+            renderWatchList();
         }
 
-        function queueSpeech(text) { if (isMuted || !voiceEnabled) return; audioQueue.push({ type: 'speech', text: text }); if (!isPlayingQueue) { processAudioQueue(); } }
-        function queueSound(url, vol) { if (isMuted) return; audioQueue.push({ type: 'sound', url: url, volume: vol }); if (!isPlayingQueue) { processAudioQueue(); } }
-        function initVoice() { if (!window.speechSynthesis) return; const voices = window.speechSynthesis.getVoices(); ttsVoice = voices.find(v => v.lang === 'en-US' && v.name.includes('Google')) || voices.find(v => v.lang.includes('en-') && (v.name.includes('Zira') || v.name.includes('David') || v.name.includes('Mark'))) || voices.find(v => v.lang === 'en-US') || voices.find(v => v.lang.startsWith('en')); }
-        if (window.speechSynthesis) { window.speechSynthesis.onvoiceschanged = initVoice; }
-        function unlockAudioFallback() {}
-
-        function toggleVoice() {
-            const btnInit = document.getElementById("btnInitAudio"); const statusEl = document.getElementById("audioStatus");
-            btnInit.classList.remove("btn-attention");
-            const alerts = document.querySelectorAll('#alertBox > div'); alerts.forEach(a => { if(a.innerText.includes("VOICE COMMS STANDBY")) { a.remove(); } });
-            if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") { Notification.requestPermission(); }
-            if (!audioUnlocked) {
-                audioUnlocked = true; voiceEnabled = true; initVoice(); 
-                if(window.speechSynthesis) { const msg = new SpeechSynthesisUtterance(""); window.speechSynthesis.speak(msg); }
-                btnInit.innerText = "VOICE: ON"; btnInit.classList.remove("border-gray-500", "text-gray-500"); btnInit.classList.add("border-green-500", "text-green-500");
-                statusEl.innerText = "COMM-LINK ACTIVE"; statusEl.classList.remove("text-red-500"); statusEl.classList.add("text-green-400");
-                queueSound(SOUND_SQUAD, currentVolume * 0.15); logEvent("COMM-LINK INITIALIZED", "text-cyan-400 font-bold");
+        function toggleAutoFav() {
+            autoFavEnabled = !autoFavEnabled;
+            const btn = document.getElementById('btnAutoFavToggle');
+            btn.innerText = `AUTO-FAV: ${autoFavEnabled ? 'ON' : 'OFF'}`;
+            if(autoFavEnabled) {
+                btn.classList.add('active');
+                pushToDMD("AUTO-FAV MODULE ENGAGED", 1, "dmd-alarm-green");
+                logEvent("[MODULE] AUTO-FAV ENGAGED", "text-cyan-400 font-bold");
             } else {
-                voiceEnabled = !voiceEnabled;
-                if (voiceEnabled) { btnInit.innerText = "VOICE: ON"; btnInit.classList.remove("border-gray-500", "text-gray-500"); btnInit.classList.add("border-green-500", "text-green-500"); logEvent("VOICE ENGINE: ENABLED", "text-green-400"); } 
-                else { btnInit.innerText = "VOICE: OFF"; btnInit.classList.remove("border-green-500", "text-green-500"); btnInit.classList.add("border-gray-500", "text-gray-500"); logEvent("VOICE ENGINE: DISABLED (BEEP MODE)", "text-gray-400"); audioQueue = []; if (currentAudioObj) { currentAudioObj.pause(); currentAudioObj = null; } if (window.speechSynthesis) window.speechSynthesis.cancel(); ttsUtterances = []; }
+                btn.classList.remove('active');
+                logEvent("[MODULE] AUTO-FAV OFFLINE", "text-gray-500");
             }
         }
 
@@ -785,8 +917,6 @@
             b.insertBefore(d, b.firstChild); if (b.children.length > 80) { b.removeChild(b.lastChild); } b.scrollTop = 0; 
         }
 
-        let rateLimitCooldown = 0; let wdLogCounter = 0;
-
         function updateMiniChart(server, ping, players, state) {
             pingHistory[server].push(ping); if (pingHistory[server].length > 30) pingHistory[server].shift(); 
             playerHistory[server].push(players); if (playerHistory[server].length > 30) playerHistory[server].shift();
@@ -800,13 +930,18 @@
                 const res = await fetch(`https://api.battlemetrics.com/servers/${id}?include=player`);
                 const lat = Math.round(performance.now() - start);
                 
-                if (res.status === 429) { rateLimitCooldown = Date.now() + 60000; logEvent(`[WD] API LIMIT: 60S COOLDOWN`, "text-red-500 font-bold"); throw new Error("429"); }
+                if (res.status === 429) { 
+                    rateLimitCooldown = Date.now() + 60000; 
+                    logEvent(`[WD] API LIMIT: 60S COOLDOWN`, "text-red-500 font-bold"); 
+                    pushToDMD(`[ ! ] API CONNECTION SEVERED: 429 TOO MANY REQUESTS [ ! ]`, 2, 'dmd-alarm-red');
+                    throw new Error("429"); 
+                }
 
                 const json = await res.json(); const attr = json.data ? json.data.attributes : {};
                 const players = (json.included || []).filter(x => x.type === "player").map(p => p.attributes.name);
                 const currentPlayers = attr.players || 0; const maxPlayers = attr.maxPlayers || 0; const currentUptime = attr.details?.time || 0;
                 
-                if (currentUptime > 0 && !lastRestartData[name]) {
+                if (currentUptime > 0 && (!lastRestartData[name] || Math.abs(((Date.now() - lastRestartData[name])/1000) - currentUptime) > 600)) {
                     lastRestartData[name] = Date.now() - (currentUptime * 1000);
                     localStorage.setItem('jsoc_last_restarts', JSON.stringify(lastRestartData));
                     logEvent(`[WD] FORCED K.M.S. SYNC VIA UPTIME (${name})`, "text-cyan-400 font-bold");
@@ -821,10 +956,7 @@
 
                 if (!isFirstLoad && state !== 'OFF') {
                     let isCrash = false; if (attr.status === 'dead' || attr.status === 'offline') { isCrash = true; }
-                    if (!isCrash && prevUptime[name] > 0 && currentUptime < prevUptime[name] && (prevUptime[name] - currentUptime) > 60) {
-                        isCrash = true; if (state === 'ON') logEvent(`[WD] RESTART DETECTED VIA UPTIME RESET (${name})`, "text-cyan-400 font-bold");
-                    }
-
+                    
                     if (isCrash) {
                         if (!isBooting[name]) {
                             isBooting[name] = true;
@@ -836,20 +968,23 @@
                             telemetryLog[name].push(logEntry); localStorage.setItem('jsoc_telemetry_log', JSON.stringify(telemetryLog));
                             logEvent(`[TELEMETRY] ${name} CRASH/RESTART | ALIVE: ${aliveStr} | CYCLE DELTA: ${deltaStr} | PL_COUNT: ${plCount}`, "text-yellow-500 font-bold", true);
 
-                            if (currentUptime > 0) { lastRestartData[name] = Date.now() - (currentUptime * 1000); } else { lastRestartData[name] = Date.now(); }
+                            lastRestartData[name] = Date.now();
                             localStorage.setItem('jsoc_last_restarts', JSON.stringify(lastRestartData));
                             
                             if (state === 'ON') {
                                 logEvent(`[WD] CRITICAL: ${name} SERVER DOWN`, "text-red-500 font-bold"); addSystemAlert(`CRITICAL: ${name} SERVER DOWN`); 
                                 showStickyAlert(name, `CRITICAL: ${name} DOWN`, `System detected a potential crash or restart on ${name}.`);
                                 queueSound(SOUND_SQUAD, currentVolume * 0.3); if(audioUnlocked && voiceEnabled && !isMuted) { queueSpeech(`Critical alert. ${name.replace('EU1', 'EU One')} server down.`); }
+                                pushToDMD(`[ ! ] CRITICAL ALERT: ${name} TELEMETRY LOST // AWAITING REBOOT [ ! ]`, 2, 'dmd-alarm-red');
                             } else if (state === 'AUTO') { logEvent(`[WD-AUTO] ${name} RESTART LOGGED SILENTLY.`, "text-yellow-600"); }
                         }
                     } else if (attr.status === 'online' && currentUptime > 0) {
                         let isUnsynced = isBooting[name];
-                        if (!lastRestartData[name]) { isUnsynced = true; } else { let expectedUptime = (Date.now() - lastRestartData[name]) / 1000; if (Math.abs(expectedUptime - currentUptime) > 90) { isUnsynced = true; } }
                         if (isUnsynced) {
-                            isBooting[name] = false; lastRestartData[name] = Date.now() - (currentUptime * 1000); localStorage.setItem('jsoc_last_restarts', JSON.stringify(lastRestartData));
+                            isBooting[name] = false; 
+                            lastRestartData[name] = Date.now() - (currentUptime * 1000); 
+                            localStorage.setItem('jsoc_last_restarts', JSON.stringify(lastRestartData));
+                            
                             if (wdState[name] !== 'ON') { setWdState(name, 'ON'); logEvent(`[WD] CATCH-UP SYNC: ${name} ALIVE FOR ${currentUptime}s. AUTO-SWITCHING TO ON.`, "text-cyan-400 font-bold"); } 
                             else { logEvent(`[WD] CONFIRMED: ${name} ONLINE. CYCLE LOCKED.`, "text-cyan-400 font-bold"); }
                             addSystemAlert(`${name} SYSTEM ONLINE. CYCLE LOCKED.`); if(audioUnlocked && voiceEnabled && !isMuted) { queueSpeech(`System online. ${name.replace('EU1', 'EU One')} cycle locked.`); }
@@ -861,32 +996,76 @@
                 prevUptime[name] = currentUptime;
 
                 if (maxPlayers > 0 && currentPlayers >= maxPlayers) {
-                    if (!isServerFullAlerted[name]) { isServerFullAlerted[name] = true; logEvent(`[ALERT] ${name} IS FULL`, "text-yellow-400 font-bold"); addSystemAlert(`${name} SERVER FULL`); if (voiceEnabled) { queueSpeech(`Warning. ${name.replace('EU1', 'EU One')} is full.`); } else { queueSound(SOUND_SQUAD, currentVolume * 0.2); } }
-                } else if (currentPlayers <= maxPlayers - 2) { isServerFullAlerted[name] = false; }
+                    if (!isServerFullAlerted[name]) {
+                        isServerFullAlerted[name] = true;
+                        logEvent(`[ALERT] ${name} IS FULL`, "text-yellow-400 font-bold");
+                        addSystemAlert(`${name} SERVER FULL`, `alert-full-${name}`);
+                        if (voiceEnabled) { queueSpeech(`Warning. ${name.replace('EU1', 'EU One')} is full.`); }
+                        else { queueSound(SOUND_SQUAD, currentVolume * 0.2); }
+                    }
+                } else if (currentPlayers < maxPlayers) {
+                    isServerFullAlerted[name] = false;
+                    const oldAlert = document.getElementById(`alert-full-${name}`);
+                    if (oldAlert) { oldAlert.remove(); }
+                }
 
-                if (isFirstLoad) { players.forEach(pName => { if (!playerSessions[pName]) playerSessions[pName] = Date.now(); }); } 
+                if (isFirstLoad) { 
+                    players.forEach(pName => { 
+                        if (!playerSessions[pName]) playerSessions[pName] = Date.now(); 
+                        if (!statsData[pName]) statsData[pName] = { sessionTime: 0, lastTick: Date.now() };
+                    }); 
+                } 
                 else {
                     let joinedPlayers = []; let leftPlayers = [];
                     players.forEach(pName => { if (!previous[name].includes(pName)) joinedPlayers.push(pName); });
                     if (state === 'ON' || state === 'AUTO') { if (name !== "EU1" || !isBooting[name]) { previous[name].forEach(pName => { if (!players.includes(pName)) leftPlayers.push(pName); }); } }
                     let isMassEvent = (joinedPlayers.length > 10 || leftPlayers.length > 10);
                     
+                    if (isMassEvent && leftPlayers.length > 30 && currentPlayers < 5) {
+                        logEvent(`[GHOST-TOWN] MASS DISCONNECT DETECTED ON ${name} (${leftPlayers.length} LEFT). FORCING RESTART STATUS.`, "text-yellow-500 font-bold");
+                        isBooting[name] = true; 
+                        lastRestartData[name] = Date.now(); 
+                        localStorage.setItem('jsoc_last_restarts', JSON.stringify(lastRestartData));
+                        
+                        if (state === 'ON') {
+                            addSystemAlert(`CRITICAL: ${name} RESTART DETECTED (GHOST-TOWN)`);
+                            queueSound(SOUND_SQUAD, currentVolume * 0.3); 
+                            if(audioUnlocked && voiceEnabled && !isMuted) { queueSpeech(`Critical alert. ${name.replace('EU1', 'EU One')} restart detected.`); }
+                        }
+                    }
+
                     joinedPlayers.forEach(pName => { 
                         playerSessions[pName] = Date.now(); 
-                        const squadDetails = getWatchedSquadDetails(pName); 
+                        if (!statsData[pName]) statsData[pName] = { sessionTime: 0, lastTick: Date.now() };
+
+                        let squadDetails = getWatchedSquadDetails(pName); 
+                        
+                        if (!squadDetails && autoFavEnabled) {
+                            if (!ALL_SQUADS[8].includes(pName)) {
+                                ALL_SQUADS[8].push(pName);
+                                squadDetails = { squadIdx: 8, squadName: "FAV", playerNumber: ALL_SQUADS[8].length };
+                            }
+                        }
+
                         if (!isMassEvent) announceAction(squadDetails, name, true); 
                         addPlayerAlert(pName, name, true, squadDetails); 
                         logEvent(`${pName} JOINED ${name}`, squadDetails ? "text-red-500 font-bold" : "text-gray-400"); 
 
-                        /* KROK 3: POWITANIA DMD DLA CZŁONKÓW KLANU */
                         const isClan = pName.includes('77th') || pName.toUpperCase().includes('JSOC');
                         if (isClan && !isMassEvent) {
                             setTimeout(() => {
                                 pushToDMD(`UPLINK_ESTABLISHED: OPR. ${pName} // WELCOME!`);
-                            }, 3000); // 3 sekundy po dołączeniu
+                            }, 3000);
                         }
                     });
                     
+                    players.forEach(pName => {
+                        if (statsData[pName]) {
+                            statsData[pName].sessionTime += (Date.now() - (statsData[pName].lastTick || Date.now()));
+                            statsData[pName].lastTick = Date.now();
+                        }
+                    });
+
                     leftPlayers.forEach(pName => { const squadDetails = getWatchedSquadDetails(pName); if (!isMassEvent) announceAction(squadDetails, name, false); let joinedAt = playerSessions[pName]; addPlayerAlert(pName, name, false, squadDetails, joinedAt); delete playerSessions[pName]; logEvent(`${pName} LEFT ${name}`, squadDetails ? "text-red-500 font-bold" : "text-gray-600"); });
                     if (isMassEvent && !isMuted) { logEvent(`[SYS] MASS DATA SHIFT: ${joinedPlayers.length} IN, ${leftPlayers.length} OUT. AUDIO THROTTLED.`, "text-yellow-500 font-bold"); queueSound(SOUND_SQUAD, currentVolume * 0.3); }
                 }
@@ -900,8 +1079,8 @@
 
         async function updateAll() {
             let currentHeat = updateApiHeatUI();
-            if (Date.now() < rateLimitCooldown) { setTimeout(updateAll, 5000); return; }
-            if (currentHeat >= 50) { logEvent(`[WD] API HEAT CRITICAL (${currentHeat}/60). THROTTLE ACTIVATED.`, "text-yellow-500 font-bold"); rateLimitCooldown = Date.now() + 15000; setTimeout(updateAll, 15000); return; }
+            if (Date.now() < rateLimitCooldown) { return; }
+            if (currentHeat >= 50) { logEvent(`[WD] API HEAT CRITICAL (${currentHeat}/60). THROTTLE ACTIVATED.`, "text-yellow-500 font-bold"); rateLimitCooldown = Date.now() + 15000; return; }
             checkTelemetryAutoExport(); 
             
             try {
@@ -938,10 +1117,11 @@
                 const timeLabel = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' });
                 historyData.push(totalPlayers); historyLabels.push(timeLabel); if (historyData.length > 60) { historyData.shift(); historyLabels.shift(); }
                 if(chart) { chart.update('none'); }
+
+                localStorage.setItem('jsoc_stats', JSON.stringify(statsData));
             } catch (e) { console.error(e); }
             
-            isFirstLoad = false; let nextInterval = 7000; if (radarMode === 'ECO') nextInterval = 10000; else if (radarMode === 'AGR') nextInterval = 4000;
-            setTimeout(updateAll, nextInterval);
+            isFirstLoad = false; 
         }
 
         function renderUI() {
@@ -1094,13 +1274,40 @@
             list.forEach((n, i) => { 
                 let isOnline = false; ['EU1', 'EU2', 'EU3'].forEach(server => { if (cache[server] && cache[server].list && cache[server].list.some(p => p.name.toLowerCase() === n.toLowerCase())) { isOnline = true; } });
                 const arrowStr = isOnline ? "◄◄" : "►►"; const arrowColor = isOnline ? "text-green-500" : "text-red-500"; const statusLabel = isOnline ? "ONLINE" : "OFFLINE"; let sessionTimeStr = "";
-                if (isOnline && playerSessions[n]) { let sessionMin = Math.floor((Date.now() - playerSessions[n]) / 60000); sessionTimeStr = `<span class="opacity-50 text-[9px] ml-1 tracking-widest shrink-0">[${sessionMin}m]</span>`; }
-
-                const item = document.createElement("div"); item.className = "flex justify-between items-center p-2 rounded font-bold tracking-wide border-l-2 transition-colors"; item.style.backgroundColor = colors.bg; item.style.borderColor = colors.border;
                 
                 const numClass = isOnline ? "squad-number-glow text-[1.15rem]" : "opacity-50 text-sm font-normal";
-                
-                item.innerHTML = `<div class="flex items-center flex-1 min-w-0"><span class="${numClass} mr-2 w-6 text-right shrink-0" style="color: ${colors.text}">${i + 1}.</span><span class="text-white text-sm md:text-base font-black tracking-wider truncate flex-1">${n}</span>${sessionTimeStr}</div><div class="flex items-center shrink-0 ml-1"><span class="${arrowColor} font-black text-sm mr-2 tracking-[-0.15em] drop-shadow-md" title="${statusLabel}">${arrowStr}</span><span class="cursor-pointer hover:text-red-500 px-2 text-lg" style="color: ${colors.text}" onclick="removeWatch('${n}')">✖</span></div>`; div.appendChild(item); 
+                const item = document.createElement("div"); 
+
+                if (showStats) {
+                    item.className = "player-row p-2 font-bold tracking-wide border-l-2 transition-colors relative"; 
+                    item.style.backgroundColor = "rgba(255,255,255,0.02)"; item.style.borderColor = isOnline ? colors.border : '#555';
+                    
+                    const sessionTime = statsData[n]?.sessionTime || 0;
+                    const perc = Math.min(100, (sessionTime / (6 * 3600000)) * 100); 
+                    
+                    item.innerHTML = `<div class="stats-bar-fill" style="width: ${perc}%; background: ${isOnline ? colors.bg : 'rgba(255,255,255,0.05)'};"></div>`;
+                    
+                    const h = Math.floor(sessionTime / 3600000); const m = Math.floor((sessionTime % 3600000) / 60000);
+                    
+                    item.innerHTML += `
+                        <div class="relative z-10 flex items-center flex-1 min-w-0">
+                            <span class="${numClass} mr-2 w-6 text-right shrink-0" style="color: ${colors.text}">${i + 1}.</span>
+                            <span class="${isOnline?'text-white':'text-gray-400'} text-sm md:text-base font-black tracking-wider truncate flex-1">${n}</span>
+                        </div>
+                        <div class="relative z-10 flex items-center shrink-0 ml-1">
+                            <span class="text-white font-black text-sm md:text-base tracking-widest drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] ml-2">${h}h ${String(m).padStart(2, '0')}m</span>
+                            <span class="cursor-pointer hover:text-red-500 px-2 text-lg" style="color: ${colors.text}" onclick="removeWatch('${n}')">✖</span>
+                        </div>
+                    `;
+                } else {
+                    if (isOnline && playerSessions[n]) { let sessionMin = Math.floor((Date.now() - playerSessions[n]) / 60000); sessionTimeStr = `<span class="opacity-50 text-[9px] ml-1 tracking-widest shrink-0">[${sessionMin}m]</span>`; }
+                    item.className = `flex justify-between items-center p-2 rounded font-bold tracking-wide border-l-2 transition-colors ${isOnline?'':'opacity-70'}`; 
+                    item.style.backgroundColor = isOnline ? colors.bg : 'rgba(0,0,0,0.4)'; item.style.borderColor = isOnline ? colors.border : '#555';
+                    
+                    item.innerHTML = `<div class="flex items-center flex-1 min-w-0"><span class="${numClass} mr-2 w-6 text-right shrink-0" style="color: ${colors.text}">${i + 1}.</span><span class="${isOnline?'text-white':'text-gray-300'} text-sm md:text-base font-black tracking-wider truncate flex-1">${n}</span>${sessionTimeStr}</div><div class="flex items-center shrink-0 ml-1"><span class="${arrowColor} font-black text-sm mr-2 tracking-[-0.15em] drop-shadow-md" title="${statusLabel}">${arrowStr}</span><span class="cursor-pointer hover:text-red-500 px-2 text-lg" style="color: ${colors.text}" onclick="removeWatch('${n}')">✖</span></div>`; 
+                }
+
+                div.appendChild(item); 
             }); 
             document.getElementById("squadCounter").innerText = `${list.length}/${max}`; localStorage.setItem('jsoc_all_squads', JSON.stringify(ALL_SQUADS)); div.scrollTop = scrollPos;
         }
@@ -1155,9 +1362,16 @@
 
         (async function init() {
             switchSquad(currentSquadIdx); renderWdSwitches(); initChart(); updateMuteUI(); updateVolumeUI(); initAdvButton(); setRadarMode(radarMode);
-            setInterval(updateClock, 1000); setInterval(updateApiHeatUI, 1000);
-            updateAll(); setInterval(renderUI, 1000);
-            addSystemAlert("VOICE COMMS STANDBY. CLICK [INIT COMM] TO ACTIVATE.", "alert-startup-voice"); logEvent("VOICE ENGINE DISABLED. AWAITING MANUAL OVERRIDE.", "text-cyan-400 font-bold"); logEvent(`[WD] SYSTEM BOOT COMPLETE`, "text-cyan-400 font-bold");
+            initVoice();
+            
+            worker.postMessage('start');
+            
+            isUpdatingAll = true;
+            updateAll().finally(() => { isUpdatingAll = false; });
+
+            addSystemAlert("VOICE COMMS STANDBY. CLICK [INIT COMM] TO ACTIVATE.", "alert-startup-voice"); 
+            logEvent("VOICE ENGINE DISABLED. AWAITING MANUAL OVERRIDE.", "text-cyan-400 font-bold"); 
+            logEvent(`[WD] S.A.M. PRO KERNEL V5.1 ACTIVE`, "text-cyan-400 font-bold");
         })();
     </script>
 </body>
