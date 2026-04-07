@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Re-Tek | STM PRO v5.4</title>
+    <title>Re-Tek | STM PRO v5.6</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;900&family=VT323&display=swap" rel="stylesheet">
@@ -231,7 +231,7 @@
             
             <div id="dmd-override-zone" class="absolute inset-0 flex items-center justify-center font-black tracking-widest text-[1.4rem] z-20 pointer-events-none opacity-0 transition-opacity duration-300 text-white"></div>
 
-            <div class="dmd-branding-zone" id="dmd-text-stream">Re-Tek corp.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;..::77th JSOC::.. Server Tactical Monitor PRO V5.4//........SYSTEM READY<span class="cursor-blink">!█</span></div>
+            <div class="dmd-branding-zone" id="dmd-text-stream">Re-Tek corp.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;..::77th JSOC::.. Server Tactical Monitor PRO V5.6//........SYSTEM READY<span class="cursor-blink">!█</span></div>
 
             <div class="dmd-reticle hidden sm:flex" id="dmd-reticle-node">
                 <div id="dmd-time" class="dmd-time-val">00:00:00</div>
@@ -551,7 +551,6 @@
         let rateLimitCooldown = 0; 
         let wdLogCounter = 0;
         
-        // --- BLACK BOX INITIALIZATION ---
         let blackBoxLogs = [];
         
         const SERVERS = { EU1: "14808491", EU2: "30137964", EU3: "28825461" };
@@ -617,7 +616,7 @@
         let dmdQueue = [];
         let isDmdProcessing = false;
         let dmdTimeout = null;
-        const DMD_DEFAULT_TEXT = `Re-Tek corp.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;..::77th JSOC::.. Server Tactical Monitor PRO V5.4//........SYSTEM READY<span class="cursor-blink">!█</span>`;
+        const DMD_DEFAULT_TEXT = `Re-Tek corp.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;..::77th JSOC::.. Server Tactical Monitor PRO V5.6//........SYSTEM READY<span class="cursor-blink">!█</span>`;
 
         worker.onmessage = function(e) {
             if (e.data === 'tick') {
@@ -860,26 +859,44 @@
             let db = JSON.parse(localStorage.getItem('jsoc_stats')) || {};
             let arr = Object.keys(db).map(k => ({ name: k, total: db[k].totalTime || 0, session: db[k].sessionTime || 0 }));
             arr.sort((a, b) => b.total - a.total);
-            let text = "=== STM PRO V5.4 | PERSISTENT OPERATOR DATABASE ===\nGENERATED: " + new Date().toLocaleString() + "\n\n";
+            
+            let text = "=== STM PRO V5.6 | PERSISTENT OPERATOR DATABASE ===\n";
+            text += "GENERATED: " + new Date().toLocaleString() + "\n\n";
+            
             arr.forEach((p, i) => {
                 let tH = Math.floor(p.total / 3600000); let tM = Math.floor((p.total % 3600000) / 60000);
                 let sH = Math.floor(p.session / 3600000); let sM = Math.floor((p.session % 3600000) / 60000);
                 text += `${String(i+1).padStart(3, '0')}. ${p.name.padEnd(25, ' ')} | TOTAL: ${tH}h ${String(tM).padStart(2, '0')}m | LAST SES: ${sH}h ${String(sM).padStart(2, '0')}m\n`;
             });
-            const blob = new Blob([text], {type: 'text/plain'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `stm_operator_db_${new Date().getTime()}.txt`; a.click();
+            
+            const blob = new Blob([text], {type: 'text/plain;charset=utf-8'});
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `stm_operator_db_${new Date().getTime()}.txt`;
+            a.click();
             logEvent("[DB] DATABASE EXPORTED SUCCESSFULLY", "text-yellow-400 font-bold");
         }
 
         function toggleStats() {
-            showStats = !showStats; const btn = document.getElementById('btnStatsToggle'); btn.innerText = `STATS: ${showStats ? 'ON' : 'OFF'}`;
+            showStats = !showStats;
+            const btn = document.getElementById('btnStatsToggle');
+            btn.innerText = `STATS: ${showStats ? 'ON' : 'OFF'}`;
             if(showStats) btn.classList.add('active'); else btn.classList.remove('active');
             renderWatchList();
         }
 
         function toggleAutoFav() {
-            autoFavEnabled = !autoFavEnabled; const btn = document.getElementById('btnAutoFavToggle'); btn.innerText = `AUTO-FAV: ${autoFavEnabled ? 'ON' : 'OFF'}`;
-            if(autoFavEnabled) { btn.classList.add('active'); pushToDMD("AUTO-FAV MODULE ENGAGED", 1, "dmd-alarm-green"); logEvent("[MODULE] AUTO-FAV ENGAGED", "text-cyan-400 font-bold"); } 
-            else { btn.classList.remove('active'); logEvent("[MODULE] AUTO-FAV OFFLINE", "text-gray-500"); }
+            autoFavEnabled = !autoFavEnabled;
+            const btn = document.getElementById('btnAutoFavToggle');
+            btn.innerText = `AUTO-FAV: ${autoFavEnabled ? 'ON' : 'OFF'}`;
+            if(autoFavEnabled) {
+                btn.classList.add('active');
+                pushToDMD("AUTO-FAV MODULE ENGAGED", 1, "dmd-alarm-green");
+                logEvent("[MODULE] AUTO-FAV ENGAGED", "text-cyan-400 font-bold");
+            } else {
+                btn.classList.remove('active');
+                logEvent("[MODULE] AUTO-FAV OFFLINE", "text-gray-500");
+            }
         }
 
         function toggleSort() {
@@ -911,7 +928,6 @@
         function initAdvButton() { const btn = document.getElementById("advToggle"); btn.innerText = `Advanced: ${advMode ? 'ON' : 'OFF'}`; if(advMode) { btn.classList.add("active-adv"); } else { btn.classList.remove("active-adv"); } }
         function toggleAdvanced() { advMode = !advMode; localStorage.setItem('jsoc_adv_mode', advMode); initAdvButton(); logEvent(`Advanced logging ${advMode ? 'ENABLED' : 'DISABLED'}`, advMode ? "text-cyan-400" : "text-gray-500"); }
         
-        // ZAPIS LOGOW DO CZARNEJ SKRZYNKI
         function logEvent(text, color = "text-green-500", isAdvanced = false) { 
             if (isAdvanced && !advMode) return; 
             const timeStr = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }); 
@@ -924,13 +940,12 @@
             log.insertBefore(entry, log.firstChild); if (log.children.length > 100) { log.removeChild(log.lastChild); } 
         }
 
-        // EXPORT Z UZYCIEM UTF-8
         function copyLog() { 
             const text = blackBoxLogs.join('\n'); 
             navigator.clipboard.writeText(text).then(() => logEvent("BLACK BOX COPIED TO CLIPBOARD", "text-cyan-400")); 
         }
         function saveLog() { 
-            let header = "=== STM PRO V5.4 | BLACK BOX FLIGHT RECORDER ===\n";
+            let header = "=== STM PRO V5.6 | BLACK BOX FLIGHT RECORDER ===\n";
             header += "GENERATED: " + new Date().toLocaleString() + "\n";
             header += "=================================================\n\n";
             const text = header + blackBoxLogs.join('\n'); 
@@ -945,7 +960,6 @@
             let sessionMin = 0;
             if (!isJoin && joinedAt) { sessionMin = Math.floor((Date.now() - joinedAt) / 60000); sessionTimeStr = `<span class="text-orange-400 text-[10px] ml-2 tracking-widest">[${sessionMin}m]</span>`; }
             
-            // ZAPIS DO CZARNEJ SKRZYNKI
             const bbAction = isJoin ? "JOINED" : "LEFT";
             const bbSq = squadDetails ? `[${squadDetails.squadName}-${squadDetails.playerNumber}] ` : "";
             const bbSess = (!isJoin && joinedAt) ? ` [SESSION: ${sessionMin}m]` : "";
@@ -967,7 +981,6 @@
         function addSystemAlert(message, alertId = null) {
             const b = document.getElementById("alertBox"); const d = document.createElement("div"); const timeStr = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
             
-            // ZAPIS DO CZARNEJ SKRZYNKI
             blackBoxLogs.push(`[${timeStr}] [ALERT] ${message}`);
             if (blackBoxLogs.length > 20000) blackBoxLogs.shift();
 
@@ -1020,10 +1033,21 @@
                 }
                 
                 let isMassEvent = (joinedPlayers.length > 10 || leftPlayers.length > 10);
-                
                 let isCrash = (attr.status === 'dead' || attr.status === 'offline');
-                let isGhostTown = (isMassEvent && leftPlayers.length > 30 && currentPlayers < 10); 
                 let isUptimeReset = (prevUptime[name] > 300 && currentUptime < 120 && currentUptime >= 0); 
+                
+                // KROK 7: Zaawansowana Heurystyka Weteranów (Veteran Drop)
+                let veteranDrops = 0;
+                leftPlayers.forEach(pName => {
+                    if (statsData[pName] && statsData[pName].sessionTime > 90 * 60 * 1000) {
+                        veteranDrops++;
+                    }
+                });
+
+                // V5.6: DODANY 3-CI WARUNEK (LOW-POP MASS DROP) - Kiedy serwer pustoszeje z 15 do np 2 osob.
+                let isGhostTown = (isMassEvent && leftPlayers.length > 30 && currentPlayers < 10) ||
+                                  (leftPlayers.length > 15 && veteranDrops >= 2 && currentPlayers < 20) ||
+                                  (leftPlayers.length >= 10 && currentPlayers <= 5);
 
                 if (!isFirstLoad && state !== 'OFF') {
                     if (isCrash || isGhostTown) {
@@ -1031,7 +1055,7 @@
                         lastRestartData[name] = Date.now();
                         localStorage.setItem('jsoc_last_restarts', JSON.stringify(lastRestartData));
 
-                        let reason = isCrash ? "API STATUS DEAD" : "GHOST-TOWN MASS DISCONNECT";
+                        let reason = isCrash ? "API STATUS DEAD" : (veteranDrops >= 2 ? "HEURISTICS: VETERAN MASS DROP" : (leftPlayers.length >= 10 && currentPlayers <= 5 ? "HEURISTICS: LOW-POP MASS DROP" : "GHOST-TOWN MASS DISCONNECT"));
                         logEvent(`[TELEMETRY] ${name} TRUE RESTART DETECTED (${reason}).`, "text-red-500 font-bold");
 
                         if (state === 'ON' || state === 'AUTO') {
@@ -1467,7 +1491,7 @@
 
             addSystemAlert("VOICE COMMS STANDBY. CLICK [INIT COMM] TO ACTIVATE.", "alert-startup-voice"); 
             logEvent("VOICE ENGINE DISABLED. AWAITING MANUAL OVERRIDE.", "text-cyan-400 font-bold"); 
-            logEvent(`[WD] STM PRO KERNEL V5.4 ACTIVE (BLACK BOX LOADED)`, "text-cyan-400 font-bold");
+            logEvent(`[WD] STM PRO KERNEL V5.6 ACTIVE (NIGHT PROTOCOL LOADED)`, "text-cyan-400 font-bold");
         })();
     </script>
 </body>
