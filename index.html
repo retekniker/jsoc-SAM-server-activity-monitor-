@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Re-Tek | STM PRO v5.3</title>
+    <title>Re-Tek | STM PRO v5.4</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;900&family=VT323&display=swap" rel="stylesheet">
@@ -231,7 +231,7 @@
             
             <div id="dmd-override-zone" class="absolute inset-0 flex items-center justify-center font-black tracking-widest text-[1.4rem] z-20 pointer-events-none opacity-0 transition-opacity duration-300 text-white"></div>
 
-            <div class="dmd-branding-zone" id="dmd-text-stream">Re-Tek corp.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;..::77th JSOC::.. Server Tactical Monitor PRO V5.3//........SYSTEM READY<span class="cursor-blink">!█</span></div>
+            <div class="dmd-branding-zone" id="dmd-text-stream">Re-Tek corp.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;..::77th JSOC::.. Server Tactical Monitor PRO V5.4//........SYSTEM READY<span class="cursor-blink">!█</span></div>
 
             <div class="dmd-reticle hidden sm:flex" id="dmd-reticle-node">
                 <div id="dmd-time" class="dmd-time-val">00:00:00</div>
@@ -551,6 +551,9 @@
         let rateLimitCooldown = 0; 
         let wdLogCounter = 0;
         
+        // --- BLACK BOX INITIALIZATION ---
+        let blackBoxLogs = [];
+        
         const SERVERS = { EU1: "14808491", EU2: "30137964", EU3: "28825461" };
         const SQUAD_NAMES = ["", "ALFA", "BRAVO", "CHARLIE", "DELTA", "ECHO", "FOXTROT", "GOLF", "FAV"];
         
@@ -614,7 +617,7 @@
         let dmdQueue = [];
         let isDmdProcessing = false;
         let dmdTimeout = null;
-        const DMD_DEFAULT_TEXT = `Re-Tek corp.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;..::77th JSOC::.. Server Tactical Monitor PRO V5.3//........SYSTEM READY<span class="cursor-blink">!█</span>`;
+        const DMD_DEFAULT_TEXT = `Re-Tek corp.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;..::77th JSOC::.. Server Tactical Monitor PRO V5.4//........SYSTEM READY<span class="cursor-blink">!█</span>`;
 
         worker.onmessage = function(e) {
             if (e.data === 'tick') {
@@ -654,9 +657,7 @@
 
         function pushToDMD(msg, priority = 0, colorClass = null) {
             dmdQueue.push({ msg, priority, colorClass });
-            if (!isDmdProcessing) {
-                processDMD();
-            }
+            if (!isDmdProcessing) processDMD();
         }
 
         function processDMD() {
@@ -679,7 +680,6 @@
 
             isDmdProcessing = true;
             const item = dmdQueue.shift();
-
             const duration = (item.priority === 2) ? 15000 : (dmdQueue.length > 0 ? 4000 : 8000);
 
             if (item.priority === 2) {
@@ -725,20 +725,16 @@
                 audioUnlocked = true;
                 btnInit.innerText = "VOICE: ON"; btnInit.classList.remove("border-gray-500", "text-gray-500"); btnInit.classList.add("border-green-500", "text-green-500");
                 statusEl.innerText = "COMM-LINK ACTIVE"; statusEl.classList.remove("text-red-500"); statusEl.classList.add("text-green-400");
-                
                 pushToDMD("--::COMM-LINK ACTIVE::--", 1, "dmd-alarm-green");
                 queueSpeech("Voice communication active.");
                 logEvent("COMM-LINK INITIALIZED", "text-green-400 font-bold");
-                
                 if(window.speechSynthesis) { const msg = new SpeechSynthesisUtterance(""); msg.volume=0; window.speechSynthesis.speak(msg); }
             } else {
                 btnInit.innerText = "VOICE: OFF"; btnInit.classList.remove("border-green-500", "text-green-500"); btnInit.classList.add("border-gray-500", "text-gray-500"); 
                 statusEl.innerText = "AUDIO LOCKED"; statusEl.classList.remove("text-green-400"); statusEl.classList.add("text-red-500");
-                
                 pushToDMD("--::COMM-LINK DEACTIVATED::--", 1, "dmd-alarm-red");
                 queueSpeech("Voice communication deactivated.");
                 logEvent("VOICE ENGINE: DISABLED", "text-gray-400"); 
-                
                 audioQueue = []; if (currentAudioObj) { currentAudioObj.pause(); currentAudioObj = null; } if (window.speechSynthesis) window.speechSynthesis.cancel(); ttsUtterances = [];
             }
         }
@@ -751,18 +747,12 @@
             if (item.type === 'speech') {
                 if(window.speechSynthesis) {
                     let msg = new SpeechSynthesisUtterance(item.text); ttsUtterances.push(msg); 
-                    
                     const select = document.getElementById('voiceSelect');
                     if (select && select.value) {
                         const voices = window.speechSynthesis.getVoices();
                         msg.voice = voices.find(v => v.name === select.value);
-                        if (select.value.toLowerCase().includes('male') || select.value.includes('David')) {
-                            msg.pitch = 0.75;
-                        } else {
-                            msg.pitch = 1.0;
-                        }
+                        if (select.value.toLowerCase().includes('male') || select.value.includes('David')) { msg.pitch = 0.75; } else { msg.pitch = 1.0; }
                     }
-                    
                     msg.volume = currentVolume; msg.lang = 'en-US'; msg.rate = 0.95;
                     msg.onend = () => { ttsUtterances = ttsUtterances.filter(u => u !== msg); setTimeout(processAudioQueue, 300); }; 
                     msg.onerror = () => { ttsUtterances = ttsUtterances.filter(u => u !== msg); setTimeout(processAudioQueue, 300); };
@@ -781,38 +771,26 @@
 
         function updateApiHeatUI() {
             let log = JSON.parse(localStorage.getItem('jsoc_api_heat')) || [];
-            let now = Date.now();
-            log = log.filter(t => now - t < 60000); 
+            let now = Date.now(); log = log.filter(t => now - t < 60000); 
             localStorage.setItem('jsoc_api_heat', JSON.stringify(log));
-
             const heatVisual = document.getElementById('heat-visual');
             const heatText = document.getElementById('heat-text-val');
             const heatContainer = document.getElementById('heat-zone-container');
-
             if (heatVisual && heatText && heatContainer) {
-                let count = log.length;
-                let bars = Math.min(10, Math.floor(count / 6));
+                let count = log.length; let bars = Math.min(10, Math.floor(count / 6));
                 heatVisual.innerText = "[" + "|".repeat(bars) + ".".repeat(10 - bars) + "]";
                 heatText.innerText = `${count.toString().padStart(2, '0')}/60`;
-                
-                if (count >= 50) {
-                    heatContainer.style.color = "#ff4d4d"; heatContainer.style.textShadow = "0 0 10px #ff4d4d";
-                } else if (count >= 35) {
-                    heatContainer.style.color = "#eab308"; heatContainer.style.textShadow = "0 0 10px #eab308";
-                } else {
-                    heatContainer.style.color = "#00ff9c"; heatContainer.style.textShadow = "0 0 10px #00ff9c";
-                }
+                if (count >= 50) { heatContainer.style.color = "#ff4d4d"; heatContainer.style.textShadow = "0 0 10px #ff4d4d"; } 
+                else if (count >= 35) { heatContainer.style.color = "#eab308"; heatContainer.style.textShadow = "0 0 10px #eab308"; } 
+                else { heatContainer.style.color = "#00ff9c"; heatContainer.style.textShadow = "0 0 10px #00ff9c"; }
             }
             return log.length;
         }
 
         function recordApiCall() {
             let log = JSON.parse(localStorage.getItem('jsoc_api_heat')) || [];
-            let now = Date.now();
-            log = log.filter(t => now - t < 60000);
-            log.push(now);
-            localStorage.setItem('jsoc_api_heat', JSON.stringify(log));
-            updateApiHeatUI();
+            let now = Date.now(); log = log.filter(t => now - t < 60000); log.push(now);
+            localStorage.setItem('jsoc_api_heat', JSON.stringify(log)); updateApiHeatUI();
         }
 
         function setRadarMode(mode) {
@@ -882,44 +860,26 @@
             let db = JSON.parse(localStorage.getItem('jsoc_stats')) || {};
             let arr = Object.keys(db).map(k => ({ name: k, total: db[k].totalTime || 0, session: db[k].sessionTime || 0 }));
             arr.sort((a, b) => b.total - a.total);
-            
-            let text = "=== STM PRO V5.3 | PERSISTENT OPERATOR DATABASE ===\n";
-            text += "GENERATED: " + new Date().toLocaleString() + "\n\n";
-            
+            let text = "=== STM PRO V5.4 | PERSISTENT OPERATOR DATABASE ===\nGENERATED: " + new Date().toLocaleString() + "\n\n";
             arr.forEach((p, i) => {
                 let tH = Math.floor(p.total / 3600000); let tM = Math.floor((p.total % 3600000) / 60000);
                 let sH = Math.floor(p.session / 3600000); let sM = Math.floor((p.session % 3600000) / 60000);
                 text += `${String(i+1).padStart(3, '0')}. ${p.name.padEnd(25, ' ')} | TOTAL: ${tH}h ${String(tM).padStart(2, '0')}m | LAST SES: ${sH}h ${String(sM).padStart(2, '0')}m\n`;
             });
-            
-            const blob = new Blob([text], {type: 'text/plain'});
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = `stm_operator_db_${new Date().getTime()}.txt`;
-            a.click();
+            const blob = new Blob([text], {type: 'text/plain'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `stm_operator_db_${new Date().getTime()}.txt`; a.click();
             logEvent("[DB] DATABASE EXPORTED SUCCESSFULLY", "text-yellow-400 font-bold");
         }
 
         function toggleStats() {
-            showStats = !showStats;
-            const btn = document.getElementById('btnStatsToggle');
-            btn.innerText = `STATS: ${showStats ? 'ON' : 'OFF'}`;
+            showStats = !showStats; const btn = document.getElementById('btnStatsToggle'); btn.innerText = `STATS: ${showStats ? 'ON' : 'OFF'}`;
             if(showStats) btn.classList.add('active'); else btn.classList.remove('active');
             renderWatchList();
         }
 
         function toggleAutoFav() {
-            autoFavEnabled = !autoFavEnabled;
-            const btn = document.getElementById('btnAutoFavToggle');
-            btn.innerText = `AUTO-FAV: ${autoFavEnabled ? 'ON' : 'OFF'}`;
-            if(autoFavEnabled) {
-                btn.classList.add('active');
-                pushToDMD("AUTO-FAV MODULE ENGAGED", 1, "dmd-alarm-green");
-                logEvent("[MODULE] AUTO-FAV ENGAGED", "text-cyan-400 font-bold");
-            } else {
-                btn.classList.remove('active');
-                logEvent("[MODULE] AUTO-FAV OFFLINE", "text-gray-500");
-            }
+            autoFavEnabled = !autoFavEnabled; const btn = document.getElementById('btnAutoFavToggle'); btn.innerText = `AUTO-FAV: ${autoFavEnabled ? 'ON' : 'OFF'}`;
+            if(autoFavEnabled) { btn.classList.add('active'); pushToDMD("AUTO-FAV MODULE ENGAGED", 1, "dmd-alarm-green"); logEvent("[MODULE] AUTO-FAV ENGAGED", "text-cyan-400 font-bold"); } 
+            else { btn.classList.remove('active'); logEvent("[MODULE] AUTO-FAV OFFLINE", "text-gray-500"); }
         }
 
         function toggleSort() {
@@ -950,33 +910,69 @@
 
         function initAdvButton() { const btn = document.getElementById("advToggle"); btn.innerText = `Advanced: ${advMode ? 'ON' : 'OFF'}`; if(advMode) { btn.classList.add("active-adv"); } else { btn.classList.remove("active-adv"); } }
         function toggleAdvanced() { advMode = !advMode; localStorage.setItem('jsoc_adv_mode', advMode); initAdvButton(); logEvent(`Advanced logging ${advMode ? 'ENABLED' : 'DISABLED'}`, advMode ? "text-cyan-400" : "text-gray-500"); }
+        
+        // ZAPIS LOGOW DO CZARNEJ SKRZYNKI
         function logEvent(text, color = "text-green-500", isAdvanced = false) { 
-            if (isAdvanced && !advMode) return; const log = document.getElementById("logBox"); if (!log) return; 
-            const entry = document.createElement("div"); entry.className = `${color} py-0.5 border-b border-white/5 uppercase`; entry.innerHTML = `<span class="opacity-40">[${new Date().toLocaleTimeString('en-US', { hour12: false })}]</span> ${text}`; 
+            if (isAdvanced && !advMode) return; 
+            const timeStr = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }); 
+            
+            blackBoxLogs.push(`[${timeStr}] [SYS] ${text}`);
+            if (blackBoxLogs.length > 20000) blackBoxLogs.shift();
+
+            const log = document.getElementById("logBox"); if (!log) return; 
+            const entry = document.createElement("div"); entry.className = `${color} py-0.5 border-b border-white/5 uppercase`; entry.innerHTML = `<span class="opacity-40">[${timeStr}]</span> ${text}`; 
             log.insertBefore(entry, log.firstChild); if (log.children.length > 100) { log.removeChild(log.lastChild); } 
         }
-        function copyLog() { const text = Array.from(document.getElementById("logBox").children).map(el => el.innerText).join('\n'); navigator.clipboard.writeText(text).then(() => logEvent("Log copied", "text-cyan-400")); }
-        function saveLog() { const text = Array.from(document.getElementById("logBox").children).map(el => el.innerText).join('\n'); const blob = new Blob([text], {type: 'text/plain'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `sam_log_${new Date().getTime()}.txt`; a.click(); }
+
+        // EXPORT Z UZYCIEM UTF-8
+        function copyLog() { 
+            const text = blackBoxLogs.join('\n'); 
+            navigator.clipboard.writeText(text).then(() => logEvent("BLACK BOX COPIED TO CLIPBOARD", "text-cyan-400")); 
+        }
+        function saveLog() { 
+            let header = "=== STM PRO V5.4 | BLACK BOX FLIGHT RECORDER ===\n";
+            header += "GENERATED: " + new Date().toLocaleString() + "\n";
+            header += "=================================================\n\n";
+            const text = header + blackBoxLogs.join('\n'); 
+            const blob = new Blob([text], {type: 'text/plain;charset=utf-8'}); 
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); 
+            a.download = `stm_blackbox_${new Date().getTime()}.txt`; a.click(); 
+            logEvent("BLACK BOX EXPORTED SUCCESSFULLY", "text-cyan-400 font-bold");
+        }
 
         function addPlayerAlert(name, server, isJoin, squadDetails, joinedAt = null) {
-            const b = document.getElementById("alertBox"); const d = document.createElement("div"); const time = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }); let sessionTimeStr = "";
-            if (!isJoin && joinedAt) { let sessionMin = Math.floor((Date.now() - joinedAt) / 60000); sessionTimeStr = `<span class="text-orange-400 text-[10px] ml-2 tracking-widest">[${sessionMin}m]</span>`; }
+            const b = document.getElementById("alertBox"); const d = document.createElement("div"); const timeStr = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }); let sessionTimeStr = "";
+            let sessionMin = 0;
+            if (!isJoin && joinedAt) { sessionMin = Math.floor((Date.now() - joinedAt) / 60000); sessionTimeStr = `<span class="text-orange-400 text-[10px] ml-2 tracking-widest">[${sessionMin}m]</span>`; }
+            
+            // ZAPIS DO CZARNEJ SKRZYNKI
+            const bbAction = isJoin ? "JOINED" : "LEFT";
+            const bbSq = squadDetails ? `[${squadDetails.squadName}-${squadDetails.playerNumber}] ` : "";
+            const bbSess = (!isJoin && joinedAt) ? ` [SESSION: ${sessionMin}m]` : "";
+            blackBoxLogs.push(`[${timeStr}] [ACTIVITY] ${bbSq}${name} ${bbAction} ${server}${bbSess}`);
+            if (blackBoxLogs.length > 20000) blackBoxLogs.shift();
+
             if (squadDetails) {
-                const actionText = isJoin ? "JOINED" : "LEFT"; const actionColor = isJoin ? "text-green-500" : "text-red-500"; const arrow = isJoin ? "◄◄◄◄" : "►►►►"; const bgClass = isJoin ? "bg-green-900/20" : "bg-red-900/20"; const borderClass = isJoin ? "border-green-500" : "border-red-500"; const squadTag = `${squadDetails.squadName}-${squadDetails.playerNumber}`; const sqColor = SQUAD_COLORS[squadDetails.squadIdx].text;
+                const actionText = isJoin ? "JOINED" : "LEFT"; const actionColor = isJoin ? "text-green-500" : "text-red-500"; const arrow = isJoin ? "IN" : "OUT"; const bgClass = isJoin ? "bg-green-900/20" : "bg-red-900/20"; const borderClass = isJoin ? "border-green-500" : "border-red-500"; const squadTag = `${squadDetails.squadName}-${squadDetails.playerNumber}`; const sqColor = SQUAD_COLORS[squadDetails.squadIdx].text;
                 d.className = `flex justify-between items-center border-l-2 ${borderClass} pl-2 ${bgClass} py-1.5 transition-all mb-0.5`;
-                d.innerHTML = `<div class="flex items-center gap-2 flex-wrap flex-1"><span class="opacity-60 text-xs text-white">[${time}]</span><span class="font-bold text-sm uppercase" style="color: ${sqColor}; text-shadow: 0 0 5px ${sqColor};">[${squadTag}]</span><span class="text-white font-black text-lg tracking-wider">&lt; ${name} &gt;</span><span class="${actionColor} font-bold text-sm ml-1">${actionText} ${server}</span>${sessionTimeStr}<span class="${actionColor} font-black text-xl ml-2 tracking-[-0.15em] drop-shadow-md">${arrow}</span></div><div class="flex items-center pr-2"><span class="cursor-pointer text-white hover:text-red-500 text-sm px-2 font-bold" onclick="this.parentElement.parentElement.remove()">✖</span></div>`;
+                d.innerHTML = `<div class="flex items-center gap-2 flex-wrap flex-1"><span class="opacity-60 text-xs text-white">[${timeStr}]</span><span class="font-bold text-sm uppercase" style="color: ${sqColor}; text-shadow: 0 0 5px ${sqColor};">[${squadTag}]</span><span class="text-white font-black text-lg tracking-wider">&lt; ${name} &gt;</span><span class="${actionColor} font-bold text-sm ml-1">${actionText} ${server}</span>${sessionTimeStr}<span class="${actionColor} font-black text-xs ml-2 tracking-widest drop-shadow-md">${arrow}</span></div><div class="flex items-center pr-2"><span class="cursor-pointer text-white hover:text-red-500 text-sm px-2 font-bold" onclick="this.parentElement.parentElement.remove()">X</span></div>`;
             } else {
-                const actionText = isJoin ? "JOINED" : "LEFT"; const color = isJoin ? "text-green-500" : "text-red-500"; const arrow = isJoin ? "◄◄" : "►►";
+                const actionText = isJoin ? "JOINED" : "LEFT"; const color = isJoin ? "text-green-500" : "text-red-500"; const arrow = isJoin ? "IN" : "OUT";
                 d.className = `flex justify-between items-center pl-2 bg-black/40 py-1 border-l border-white/10 mb-0.5`;
-                d.innerHTML = `<div class="flex items-center gap-2 opacity-90 flex-1"><span class="opacity-50 text-[11px] text-white">[${time}]</span><span class="text-gray-300 text-sm font-bold uppercase">${name}</span><span class="text-gray-500 text-xs ml-1">${actionText} ${server}</span>${sessionTimeStr}<span class="${color} font-bold text-base ml-1 tracking-tighter drop-shadow-sm">${arrow}</span></div><div class="flex items-center pr-2 opacity-80"><span class="cursor-pointer text-gray-500 hover:text-red-500 text-xs px-2 font-bold" onclick="this.parentElement.parentElement.remove()">✖</span></div>`;
+                d.innerHTML = `<div class="flex items-center gap-2 opacity-90 flex-1"><span class="opacity-50 text-[11px] text-white">[${timeStr}]</span><span class="text-gray-300 text-sm font-bold uppercase">${name}</span><span class="text-gray-500 text-xs ml-1">${actionText} ${server}</span>${sessionTimeStr}<span class="${color} font-bold text-xs ml-1 tracking-widest drop-shadow-sm">${arrow}</span></div><div class="flex items-center pr-2 opacity-80"><span class="cursor-pointer text-gray-500 hover:text-red-500 text-xs px-2 font-bold" onclick="this.parentElement.parentElement.remove()">X</span></div>`;
             }
             b.insertBefore(d, b.firstChild); if (b.children.length > 80) { b.removeChild(b.lastChild); } b.scrollTop = 0; 
         }
 
         function addSystemAlert(message, alertId = null) {
-            const b = document.getElementById("alertBox"); const d = document.createElement("div"); const time = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const b = document.getElementById("alertBox"); const d = document.createElement("div"); const timeStr = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            
+            // ZAPIS DO CZARNEJ SKRZYNKI
+            blackBoxLogs.push(`[${timeStr}] [ALERT] ${message}`);
+            if (blackBoxLogs.length > 20000) blackBoxLogs.shift();
+
             d.className = `flex justify-between items-center border-l-4 border-red-500 pl-3 bg-red-950/80 py-2 soc-border-pulse mb-1`; if (alertId) { d.id = alertId; }
-            d.innerHTML = `<div class="flex items-center gap-3"><span class="opacity-70 text-[10px] text-white">[${time}]</span><span class="text-yellow-400 font-black text-xs md:text-sm tracking-widest uppercase text-shadow-sm">⚠️ ${message} ⚠️</span></div><span class="cursor-pointer text-white hover:text-red-500 px-2 text-lg" onclick="this.parentElement.remove()">✖</span>`;
+            d.innerHTML = `<div class="flex items-center gap-3"><span class="opacity-70 text-[10px] text-white">[${timeStr}]</span><span class="text-yellow-400 font-black text-xs md:text-sm tracking-widest uppercase text-shadow-sm">! ${message} !</span></div><span class="cursor-pointer text-white hover:text-red-500 px-2 text-lg" onclick="this.parentElement.remove()">X</span>`;
             b.insertBefore(d, b.firstChild); if (b.children.length > 80) { b.removeChild(b.lastChild); } b.scrollTop = 0; 
         }
 
@@ -1025,10 +1021,9 @@
                 
                 let isMassEvent = (joinedPlayers.length > 10 || leftPlayers.length > 10);
                 
-                // KALIBRACJA V5.3 - Ostre filtry dla restartów
                 let isCrash = (attr.status === 'dead' || attr.status === 'offline');
-                let isGhostTown = (isMassEvent && leftPlayers.length > 30 && currentPlayers < 10); // Wymagany potężny spadek
-                let isUptimeReset = (prevUptime[name] > 300 && currentUptime < 120 && currentUptime >= 0); // Serwer musiał działać min. 5 min
+                let isGhostTown = (isMassEvent && leftPlayers.length > 30 && currentPlayers < 10); 
+                let isUptimeReset = (prevUptime[name] > 300 && currentUptime < 120 && currentUptime >= 0); 
 
                 if (!isFirstLoad && state !== 'OFF') {
                     if (isCrash || isGhostTown) {
@@ -1472,7 +1467,7 @@
 
             addSystemAlert("VOICE COMMS STANDBY. CLICK [INIT COMM] TO ACTIVATE.", "alert-startup-voice"); 
             logEvent("VOICE ENGINE DISABLED. AWAITING MANUAL OVERRIDE.", "text-cyan-400 font-bold"); 
-            logEvent(`[WD] STM PRO KERNEL V5.3 ACTIVE (DB CORE LOADED)`, "text-cyan-400 font-bold");
+            logEvent(`[WD] STM PRO KERNEL V5.4 ACTIVE (BLACK BOX LOADED)`, "text-cyan-400 font-bold");
         })();
     </script>
 </body>
