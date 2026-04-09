@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Re-Tek | STM PRO v5.6</title>
+    <title>Re-Tek | STM PRO v6.0</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;900&family=VT323&display=swap" rel="stylesheet">
@@ -24,6 +24,20 @@
 
         @keyframes pulse-warning-orange { 0%, 100% { color: #eab308; text-shadow: 0 0 10px #eab308; } 50% { color: #ffffff; text-shadow: 0 0 20px #eab308; } }
         .warning-pulse { animation: pulse-warning-orange 1s infinite; }
+
+        /* --- STM V6.0: AUTO MODE UI (ANALYSIS) --- */
+        .text-analysis {
+            font-size: 2rem !important;
+            font-weight: 900;
+            color: #ffb300; 
+            text-shadow: 0 0 10px rgba(255, 179, 0, 0.5);
+            animation: pulseAnalysis 1.5s infinite alternate;
+            letter-spacing: 2px;
+        }
+        @keyframes pulseAnalysis {
+            from { opacity: 0.6; text-shadow: 0 0 5px rgba(255, 179, 0, 0.3); }
+            to { opacity: 1; text-shadow: 0 0 15px rgba(255, 179, 0, 0.8); color: #fff; }
+        }
 
         @keyframes data-flow { 0%, 100% { opacity: 0.1; box-shadow: 0 0 5px #00ff9c; } 50% { opacity: 0.8; box-shadow: 0 0 20px #00ff9c, 0 0 30px rgba(0,255,156,0.6); } }
         @keyframes data-flow-red { 0%, 100% { opacity: 0.1; box-shadow: 0 0 5px #ff4d4d; } 50% { opacity: 0.8; box-shadow: 0 0 20px #ff4d4d, 0 0 30px rgba(255,77,77,0.6); } }
@@ -198,7 +212,7 @@
     <div id="helpModal">
         <div class="modal-content custom-scrollbar">
             <div class="flex justify-between items-center border-b border-green-900 pb-4 mb-6">
-                <h2 class="text-2xl md:text-3xl font-black glow-text uppercase tracking-tighter">STM OPERATIONAL GUIDE</h2>
+                <h2 class="text-2xl md:text-3xl font-black glow-text uppercase tracking-tighter">STM OPERATIONAL GUIDE V6.0</h2>
                 <button onclick="toggleHelp()" class="text-green-500 hover:text-white text-4xl">&times;</button>
             </div>
             
@@ -213,10 +227,10 @@
                 <strong>2. SQUAD TRACKING:</strong> Operators are color-coded by squad. The [DRAFT UNLINKED] function targets and assigns only unlinked players.<br>
                 <span class="text-sm opacity-80">- <b>AUTO-FAV:</b> Automatically adds new, unassigned players to Squad 8 (FAV).</span><br>
                 <span class="text-sm opacity-80">- <b>STATS:</b> Displays session time and persistent total historical time.</span><br><br>
-                <strong>3. ASSET TELEMETRY (WATCHDOG):</strong> Real-time persistent tracking of server stability. <br>
+                <strong>3. ASSET TELEMETRY (WATCHDOG V6.0):</strong> Real-time persistent tracking of server stability. <br>
                 <ul class="list-disc ml-8 mt-2 space-y-2 text-sm opacity-80">
                     <li><span class="text-green-400 font-bold">ON:</span> Full active monitoring. Visual & Voice alerts enabled. Oscilloscope displays Ping.</li>
-                    <li><span class="text-yellow-500 font-bold">AUTO:</span> Stealth telemetry. No loud alarms. Analyzes cycle deltas and auto-exports data logs every 2 hours. Oscilloscope active.</li>
+                    <li><span class="text-yellow-500 font-bold">AUTO:</span> Stealth telemetry (SILENT HUNTER). Analyzes cycle deltas, veteran disconnects, and auto-exports data logs. 12H quarantine on cold start.</li>
                     <li><span class="text-red-400 font-bold">OFF:</span> System Standby. Reboot tracking disabled. Oscilloscope flatlined.</li>
                 </ul>
             </div>
@@ -231,7 +245,7 @@
             
             <div id="dmd-override-zone" class="absolute inset-0 flex items-center justify-center font-black tracking-widest text-[1.4rem] z-20 pointer-events-none opacity-0 transition-opacity duration-300 text-white"></div>
 
-            <div class="dmd-branding-zone" id="dmd-text-stream">Re-Tek corp.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;..::77th JSOC::.. Server Tactical Monitor PRO V5.6//........SYSTEM READY<span class="cursor-blink">!█</span></div>
+            <div class="dmd-branding-zone" id="dmd-text-stream">Re-Tek corp.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;..::77th JSOC::.. Server Tactical Monitor PRO V6.0//........SYSTEM READY<span class="cursor-blink">!█</span></div>
 
             <div class="dmd-reticle hidden sm:flex" id="dmd-reticle-node">
                 <div id="dmd-time" class="dmd-time-val">00:00:00</div>
@@ -273,8 +287,8 @@
             </div>
 
             <div class="flex items-center gap-2">
-                <div class="sync-btn-wrapper" title="Force Sync">
-                    <button onclick="location.reload()" class="sync-btn-inner btn-system-led py-1 px-3 text-[10px] md:text-[11px] font-black !border-none hover:!bg-[#00ff9c] hover:!text-[#0b0f14]">SYNC</button>
+                <div class="sync-btn-wrapper" title="Force Sync API">
+                    <button onclick="updateAll()" class="sync-btn-inner btn-system-led py-1 px-3 text-[10px] md:text-[11px] font-black !border-none hover:!bg-[#00ff9c] hover:!text-[#0b0f14]">SYNC</button>
                 </div>
                 <button onclick="toggleHelp()" class="btn-system-led py-1 px-3 text-[10px] md:text-[11px] font-black drop-shadow-[0_0_8px_rgba(0,255,156,0.8)] border-2 border-green-400">GUIDE [?]</button>
             </div>
@@ -437,7 +451,7 @@
                         <div id="audioStatus" class="text-[9px] text-red-500 mt-2 font-bold uppercase blink-text tracking-widest">AUDIO LOCKED</div>
                     </div>
 
-                    <img src="Adobe Express - file.png" alt="77th JSOC Logo" class="bottom-logo mt-4 max-w-[100px] md:max-w-[140px]">
+                    <img src="Adobe Express - file.png" alt="77th JSOC Logo" class="bottom-logo mt-4 max-w-[100px] md:max-w-[140px]" onerror="this.style.display='none'">
                 </div>
             </div>
         </div>
@@ -546,13 +560,20 @@
         const workerBlob = new Blob([workerCode], { type: 'application/javascript' });
         const worker = new Worker(URL.createObjectURL(workerBlob));
         
+        // --- STM V6.0: ZMIENNE GLOBALNE I BUFORY ---
         let lastFetchTime = Date.now();
         let isFetching = false;
         let rateLimitCooldown = 0; 
         let wdLogCounter = 0;
-        
         let blackBoxLogs = [];
         
+        // V6.0: Protokół Zimnego Startu - Zapis czasu startu do zapobiegania "fałszywym zbrojeniom" na pustym systemie
+        const systemStartTime = Date.now();
+        const QUARANTINE_MS = 12 * 60 * 60 * 1000; // 12 Godzin
+        
+        // V6.0: Bufor pamięci krótkotrwałej (RAM) dla każdego serwera do wykrywania "Śladu Offline"
+        let serverBuffers = { EU1: [], EU2: [], EU3: [] };
+
         const SERVERS = { EU1: "14808491", EU2: "30137964", EU3: "28825461" };
         const SQUAD_NAMES = ["", "ALFA", "BRAVO", "CHARLIE", "DELTA", "ECHO", "FOXTROT", "GOLF", "FAV"];
         
@@ -576,7 +597,10 @@
         const TITLE_COLORS = { 'EU1': 'text-[#00ff9c]', 'EU2': 'text-[#ff8c00]', 'EU3': 'text-[#00e5ff]' };
 
         let isServerFullAlerted = { EU1: false, EU2: false, EU3: false }; 
-        let wdState = JSON.parse(localStorage.getItem('jsoc_wd_state')) || { EU1: 'ON', EU2: 'OFF', EU3: 'OFF' };
+        
+        // V6.0: Protokół "Silent Hunter" - Zmieniono domyślny tryb pierwszego uruchomienia wszystkich na AUTO
+        let wdState = JSON.parse(localStorage.getItem('jsoc_wd_state')) || { EU1: 'AUTO', EU2: 'AUTO', EU3: 'AUTO' };
+        
         let radarMode = localStorage.getItem('jsoc_radar_mode') || 'NORM';
         let telemetryLog = JSON.parse(localStorage.getItem('jsoc_telemetry_log')) || { EU1: [], EU2: [], EU3: [] };
         let lastExportTime = parseInt(localStorage.getItem('jsoc_last_export')) || Date.now();
@@ -616,7 +640,13 @@
         let dmdQueue = [];
         let isDmdProcessing = false;
         let dmdTimeout = null;
-        const DMD_DEFAULT_TEXT = `Re-Tek corp.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;..::77th JSOC::.. Server Tactical Monitor PRO V5.6//........SYSTEM READY<span class="cursor-blink">!█</span>`;
+        const DMD_DEFAULT_TEXT = `Re-Tek corp.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;..::77th JSOC::.. Server Tactical Monitor PRO V6.0//........SYSTEM READY<span class="cursor-blink">!█</span>`;
+
+        // V6.0: Aktualizacja RAM bufora z ostatnich 60 sekund
+        function updateServerBuffer(server, ping, status) {
+            serverBuffers[server].push({ ping: ping, status: status, time: Date.now() });
+            serverBuffers[server] = serverBuffers[server].filter(entry => Date.now() - entry.time <= 60000);
+        }
 
         worker.onmessage = function(e) {
             if (e.data === 'tick') {
@@ -629,6 +659,7 @@
                 if (radarMode === 'ECO') nextInterval = 12000;
                 else if (radarMode === 'AGR') nextInterval = 5500;
 
+                // Sprawdzanie starego systemu kalibracji (jeśli coś utknęło w locie z poprzedniej wersji)
                 ["EU1", "EU2", "EU3"].forEach(n => {
                     if (wdState[n] === 'AUTO' && calibrationData[n] > 0 && now > calibrationData[n]) {
                         calibrationData[n] = 0;
@@ -860,7 +891,7 @@
             let arr = Object.keys(db).map(k => ({ name: k, total: db[k].totalTime || 0, session: db[k].sessionTime || 0 }));
             arr.sort((a, b) => b.total - a.total);
             
-            let text = "=== STM PRO V5.6 | PERSISTENT OPERATOR DATABASE ===\n";
+            let text = "=== STM PRO V6.0 | PERSISTENT OPERATOR DATABASE ===\n";
             text += "GENERATED: " + new Date().toLocaleString() + "\n\n";
             
             arr.forEach((p, i) => {
@@ -945,7 +976,7 @@
             navigator.clipboard.writeText(text).then(() => logEvent("BLACK BOX COPIED TO CLIPBOARD", "text-cyan-400")); 
         }
         function saveLog() { 
-            let header = "=== STM PRO V5.6 | BLACK BOX FLIGHT RECORDER ===\n";
+            let header = "=== STM PRO V6.0 | BLACK BOX FLIGHT RECORDER ===\n";
             header += "GENERATED: " + new Date().toLocaleString() + "\n";
             header += "=================================================\n\n";
             const text = header + blackBoxLogs.join('\n'); 
@@ -1019,12 +1050,24 @@
                     logEvent(`[WD] INITIAL K.M.S. SYNC (${name})`, "text-cyan-400 font-bold");
                 }
 
-                const plCount = cache[name] ? cache[name].players : 0; const state = wdState[name];
+                const state = wdState[name];
+                
+                // --- V6.0: PROTOKÓŁ ANTY-ZOMBIE (Weryfikacja Faktów API) ---
+                let finalStatus = attr.status;
+                if ((finalStatus === 'offline' || finalStatus === 'dead' || finalStatus === 'booting')) {
+                    if (currentPlayers > 5 && lat > 0 && lat < 500) {
+                        finalStatus = 'online'; 
+                        logEvent(`[SYS] ANTY-ZOMBIE (${name}): API REPORTED DEAD, BUT SQUAD IS ACTIVE. OVERRIDING TO ONLINE.`, "text-yellow-400 font-bold");
+                    }
+                }
+                
+                // Aktualizujemy "Krótką Pamięć" RAM
+                updateServerBuffer(name, lat, finalStatus);
 
                 if (state === 'OFF') { updateMiniChart(name, 0, 0, state); } 
-                else { updateMiniChart(name, (attr.status === 'online' ? lat : 0), (attr.status === 'online' ? currentPlayers : 0), state); }
+                else { updateMiniChart(name, (finalStatus === 'online' ? lat : 0), (finalStatus === 'online' ? currentPlayers : 0), state); }
 
-                if (advMode) { logEvent(`[ADV] ${name} SYNC OK | LAT: ${lat}MS | STAT: ${attr.status || 'UNKNOWN'}`, "text-gray-500", true); }
+                if (advMode) { logEvent(`[ADV] ${name} SYNC OK | LAT: ${lat}MS | STAT: ${finalStatus || 'UNKNOWN'}`, "text-gray-500", true); }
 
                 let joinedPlayers = []; let leftPlayers = [];
                 if (!isFirstLoad) {
@@ -1033,59 +1076,76 @@
                 }
                 
                 let isMassEvent = (joinedPlayers.length > 10 || leftPlayers.length > 10);
-                let isCrash = (attr.status === 'dead' || attr.status === 'offline');
+                let isCrash = (finalStatus === 'dead' || finalStatus === 'offline');
                 let isUptimeReset = (prevUptime[name] > 300 && currentUptime < 120 && currentUptime >= 0); 
                 
-                // KROK 7: Zaawansowana Heurystyka Weteranów (Veteran Drop)
-                let veteranDrops = 0;
-                leftPlayers.forEach(pName => {
-                    if (statsData[pName] && statsData[pName].sessionTime > 90 * 60 * 1000) {
-                        veteranDrops++;
-                    }
-                });
+                // KROK 9 (V6.0) HEURYSTYKA:
+                let droppedPlayersCount = leftPlayers.length;
+                let isConfirmedRestart = false;
+                let heuristicReason = "";
 
-                // V5.6: DODANY 3-CI WARUNEK (LOW-POP MASS DROP) - Kiedy serwer pustoszeje z 15 do np 2 osob.
-                let isGhostTown = (isMassEvent && leftPlayers.length > 30 && currentPlayers < 10) ||
-                                  (leftPlayers.length > 15 && veteranDrops >= 2 && currentPlayers < 20) ||
-                                  (leftPlayers.length >= 10 && currentPlayers <= 5);
+                // --- BEZPIECZNIK KWARANTANNY (12H Cold Start) ---
+                let hasPassedQuarantine = (Date.now() - systemStartTime) >= QUARANTINE_MS;
+                // Jeśli serwer ma już w bazie twardy zapis z poprzedniej sesji to pomijamy kwarantanne
+                if(localStorage.getItem('jsoc_last_restarts')) { hasPassedQuarantine = true; }
 
                 if (!isFirstLoad && state !== 'OFF') {
-                    if (isCrash || isGhostTown) {
+                    
+                    // --- SYGNATURA 1: CZYSTE CIĘCIE (Low-Pop) ---
+                    if (currentPlayers <= 1 && droppedPlayersCount > 0) {
+                        // Weryfikacja wsteczna RAM
+                        let hasLagOrOfflineInRam = serverBuffers[name].some(entry => entry.ping > 500 || entry.status === 'offline' || entry.status === 'dead');
+                        if (hasLagOrOfflineInRam || isCrash) {
+                            isConfirmedRestart = true;
+                            heuristicReason = "HEURISTIC: CZYSTE CIĘCIE (UNANIMITY RULE)";
+                        }
+                    }
+
+                    // --- SYGNATURA 2: WSTRZĄS WETERANÓW (High-Pop) ---
+                    if (droppedPlayersCount > 15 && !isConfirmedRestart) {
+                        let veteranCount = 0;
+                        leftPlayers.forEach(pName => {
+                            if (statsData[pName] && statsData[pName].totalTime > 90 * 60 * 1000) veteranCount++;
+                        });
+
+                        if (veteranCount >= 2 || isCrash) {
+                            isConfirmedRestart = true;
+                            heuristicReason = `HEURISTIC: WSTRZĄS WETERANÓW (${veteranCount} ELITE OPR. LOST)`;
+                        }
+                    }
+
+                    // --- UZBROJENIE ZEGARA I RESTART ---
+                    if (isConfirmedRestart) {
                         isBooting[name] = true;
                         lastRestartData[name] = Date.now();
                         localStorage.setItem('jsoc_last_restarts', JSON.stringify(lastRestartData));
-
-                        let reason = isCrash ? "API STATUS DEAD" : (veteranDrops >= 2 ? "HEURISTICS: VETERAN MASS DROP" : (leftPlayers.length >= 10 && currentPlayers <= 5 ? "HEURISTICS: LOW-POP MASS DROP" : "GHOST-TOWN MASS DISCONNECT"));
-                        logEvent(`[TELEMETRY] ${name} TRUE RESTART DETECTED (${reason}).`, "text-red-500 font-bold");
-
-                        if (state === 'ON' || state === 'AUTO') {
-                            addSystemAlert(`CRITICAL: ${name} RESTART (${reason})`);
-                            queueSound(SOUND_SQUAD, currentVolume * 0.3);
-                            if (state === 'ON' && audioUnlocked && voiceEnabled && !isMuted) {
-                                queueSpeech(`Critical alert. ${name.replace('EU1', 'EU One')} restart detected.`);
-                            }
-                            if (state === 'ON') {
-                                pushToDMD(`[ ! ] CRITICAL: ${name} RESTARTING [ ! ]`, 2, 'dmd-alarm-red');
-                            }
-                        }
-                    } else if (isUptimeReset && attr.status === 'online') {
-                        logEvent(`[ANOMALY] ${name} SOFT RESTART DETECTED. IGNORING CYCLE RESET.`, "text-yellow-400 font-bold");
                         
-                        if (state === 'ON') {
-                            setWdState(name, 'AUTO');
-                            calibrationData[name] = Date.now() + (24 * 60 * 60 * 1000);
-                            localStorage.setItem('jsoc_calibration_data', JSON.stringify(calibrationData));
-                            logEvent(`[WD] DATA CONFLICT ON ${name}. SHIFTING TO AUTO FOR 24H CALIBRATION.`, "text-orange-500 font-bold");
-                            pushToDMD(`[ ! ] ANOMALY: ${name} // ENTERING 24H CALIBRATION [ ! ]`, 2, 'dmd-alarm-yellow');
+                        logEvent(`[TELEMETRY] ${name} TRUE RESTART DETECTED (${heuristicReason}).`, "text-red-500 font-bold");
+
+                        if (state === 'AUTO' && hasPassedQuarantine) {
+                            setWdState(name, 'ON');
+                            logEvent(`[ ! ] ${name} CYCLE SECURED // LOCK-ON [ ! ]`, "text-green-400 font-bold");
+                            pushToDMD(`[ ! ] ${name} CYCLE SECURED // LOCK-ON [ ! ]`, 2, 'dmd-alarm-green');
+                        } else if (state === 'AUTO' && !hasPassedQuarantine) {
+                            logEvent(`[SYS] ${name} RESTART DETECTED BUT QUARANTINE ACTIVE. AWAITING 12H DATA.`, "text-yellow-500");
                         }
-                    } else if (attr.status === 'online' && currentUptime > 0) {
+
+                        if (state === 'ON' || (state === 'AUTO' && hasPassedQuarantine)) {
+                            addSystemAlert(`CRITICAL: ${name} RESTART (${heuristicReason})`);
+                            queueSound(SOUND_SQUAD, currentVolume * 0.3);
+                            if (audioUnlocked && voiceEnabled && !isMuted) { queueSpeech(`Critical alert. ${name.replace('EU1', 'EU One')} restart detected.`); }
+                            if (wdState[name] === 'ON') pushToDMD(`[ ! ] CRITICAL: ${name} RESTARTING [ ! ]`, 2, 'dmd-alarm-red');
+                        }
+                    } 
+                    else if (isUptimeReset && finalStatus === 'online') {
+                        logEvent(`[ANOMALY] ${name} SOFT RESTART DETECTED. IGNORING CYCLE RESET.`, "text-yellow-400 font-bold");
+                    } 
+                    else if (finalStatus === 'online' && currentUptime > 0) {
                         if (isBooting[name]) {
                             isBooting[name] = false;
                             lastRestartData[name] = Date.now() - (currentUptime * 1000); 
                             localStorage.setItem('jsoc_last_restarts', JSON.stringify(lastRestartData));
                             
-                            if (wdState[name] !== 'ON') { setWdState(name, 'ON'); logEvent(`[WD] CATCH-UP SYNC: ${name} ALIVE FOR ${currentUptime}s. AUTO-SWITCHING TO ON.`, "text-cyan-400 font-bold"); } 
-                            else { logEvent(`[WD] CONFIRMED: ${name} ONLINE. CYCLE LOCKED.`, "text-cyan-400 font-bold"); }
                             addSystemAlert(`${name} SYSTEM ONLINE. CYCLE LOCKED.`); 
                             if(audioUnlocked && voiceEnabled && !isMuted) { queueSpeech(`System online. ${name.replace('EU1', 'EU One')} cycle locked.`); }
                             clearStickyAlertForServer(name);
@@ -1163,7 +1223,7 @@
                     leftPlayers.forEach(pName => { const squadDetails = getWatchedSquadDetails(pName); if (!isMassEvent) announceAction(squadDetails, name, false); let joinedAt = playerSessions[pName]; addPlayerAlert(pName, name, false, squadDetails, joinedAt); delete playerSessions[pName]; logEvent(`${pName} LEFT ${name}`, squadDetails ? "text-red-500 font-bold" : "text-gray-600"); });
                     if (isMassEvent && !isMuted) { logEvent(`[SYS] MASS DATA SHIFT: ${joinedPlayers.length} IN, ${leftPlayers.length} OUT. AUDIO THROTTLED.`, "text-yellow-500 font-bold"); queueSound(SOUND_SQUAD, currentVolume * 0.3); }
                 }
-                previous[name] = players; cache[name] = { status: attr.status || 'offline', players: currentPlayers, maxPlayers: maxPlayers, details: attr.details || {}, list: players.map(n => ({name: n})), ping: lat };
+                previous[name] = players; cache[name] = { status: finalStatus || 'offline', players: currentPlayers, maxPlayers: maxPlayers, details: attr.details || {}, list: players.map(n => ({name: n})), ping: lat };
             } catch (err) {
                 const state = wdState[name]; updateMiniChart(name, 0, 0, state);
                 if (advMode && err.message !== "429") { logEvent(`[ADV] ${name} FETCH FAILED`, "text-red-900", true); }
@@ -1309,46 +1369,37 @@
                     leds.forEach(l => { if(l) l.className = "led-indicator led-yellow-pulse " + (l.id.includes('side') ? "w-3 h-3 md:w-4 md:h-4 mr-2 border-2" : ""); }); 
                     titles.forEach(t=>{if(t) { t.innerText = `${n} TELEMETRY`; }}); titleWrappers.forEach(tw=>{if(tw) { tw.className = `text-xs uppercase flex items-center mb-1 font-bold tracking-widest drop-shadow-md ${activeTitleColor} whitespace-nowrap`; }});
                     if(vfdL1 && vfdL2) { vfdL1.innerText = `LAT:${latStr}`; vfdL1.className = "vfd-text whitespace-nowrap vfd-ping-auto"; vfdL2.innerText = `OPR:${oprStr}`; vfdL2.className = "vfd-text whitespace-nowrap vfd-opr"; }
+                    
+                    // --- V6.0: ZMIANA ZEGARA NA "ANALYSIS" W TRYBIE AUTO ---
+                    els.forEach(e => { if(e) { e.innerText = "ANALYSIS"; e.className = "text-analysis"; }});
+                    etas.forEach(t=>{if(t) { t.className = "text-[9px] font-bold tracking-widest mt-1 text-yellow-500 uppercase warning-pulse whitespace-nowrap"; t.innerText = `[ GATHERING INTEL ]`; }});
+                    return; // Zakończ odliczanie dla trybu AUTO (nie pokazujemy cyfr)
                 } else {
                     leds.forEach(l => { if(l) l.className = "led-indicator led-green-pulse " + (l.id.includes('side') ? "w-3 h-3 md:w-4 md:h-4 mr-2 border-2" : ""); }); 
                     titles.forEach(t=>{if(t) { t.innerText = `${n} REBOOT`; }}); titleWrappers.forEach(tw=>{if(tw) { tw.className = `text-xs uppercase flex items-center mb-1 font-bold tracking-widest drop-shadow-md ${activeTitleColor} whitespace-nowrap`; }});
                     if(vfdL1 && vfdL2) { vfdL1.innerText = `LAT:${latStr}`; vfdL1.className = "vfd-text whitespace-nowrap vfd-ping"; vfdL2.innerText = `OPR:${oprStr}`; vfdL2.className = "vfd-text whitespace-nowrap vfd-opr"; }
+                    els.forEach(e => { if(e) { e.className = `text-3xl md:text-4xl font-black tracking-widest ${activeClockColor} whitespace-nowrap`; } }); 
                 }
 
-                els.forEach(e => { if(e) { e.className = `text-3xl md:text-4xl font-black tracking-widest ${activeClockColor} whitespace-nowrap`; } }); 
                 
                 let elapsed = Date.now() - lastRestartData[n];
                 let remain = CYCLE - (elapsed % CYCLE);
                 let next = Date.now() + remain;
 
-                if (isCalibrating) {
-                    els.forEach(e => { if(e) { e.innerText = "CALIBRATION"; e.className = `text-3xl md:text-4xl font-black tracking-widest ${activeClockColor} warning-pulse whitespace-nowrap`; }});
-                    etas.forEach(t=>{if(t) { t.className = "text-[9px] font-bold tracking-widest mt-1 text-yellow-500 uppercase warning-pulse whitespace-nowrap"; t.innerText = `OBSERVING (24H)`; }});
-                    leds.forEach(l => { if(l) l.className = "led-indicator led-yellow-blink-rapid " + (l.id.includes('side') ? "w-3 h-3 md:w-4 md:h-4 mr-2 border-2" : ""); });
-                    if(vfdL1) { vfdL1.innerText = `CALIB..`; vfdL1.className = "vfd-text whitespace-nowrap vfd-ping-auto"; }
-                }
-                else if (state === 'AUTO' && remain < 15 * 60 * 1000 && remain > 60 * 1000) {
-                    els.forEach(e => { if(e) { e.innerText = "ANALYSIS"; e.className = `text-3xl md:text-4xl font-black tracking-widest ${activeClockColor} warning-pulse whitespace-nowrap`; }});
-                    etas.forEach(t=>{if(t) { t.className = "text-[9px] font-bold tracking-widest mt-1 text-yellow-500 uppercase warning-pulse whitespace-nowrap"; t.innerText = `ANALYZING...`; }});
-                    leds.forEach(l => { if(l) l.className = "led-indicator led-yellow-blink-rapid " + (l.id.includes('side') ? "w-3 h-3 md:w-4 md:h-4 mr-2 border-2" : ""); });
-                    if(vfdL1) { vfdL1.innerText = `ANLYZNG`; vfdL1.className = "vfd-text whitespace-nowrap vfd-ping-auto"; }
-                } else {
-                    if (remain <= 0) { remain = 0; leds.forEach(l => { if(l) l.className = "led-indicator led-red-blink " + (l.id.includes('side') ? "w-3 h-3 md:w-4 md:h-4 mr-2 border-2" : ""); }); } 
-                    else if (remain <= 15 * 60 * 1000 && state === 'ON') {
-                        if (!alert15Triggers[n]) { 
-                            logEvent(`[WD] WARNING: ${n} RESTART IN 15 MINUTES`, "text-cyan-400 font-bold"); addSystemAlert(`WARNING: ${n} REBOOT IN 15 MIN`); 
-                            showStickyAlert(n, `WARNING: ${n} REBOOT IN 15 MIN`, `Scheduled restart on ${n} is approaching.`);
-                            if(audioUnlocked && voiceEnabled && !isMuted) { queueSpeech(`Warning. 15 minutes to scheduled restart on ${n.replace('EU1', 'EU One')}`); } 
-                            alert15Triggers[n] = true; 
-                        }
-                    } else { alert15Triggers[n] = false; }
+                if (remain <= 0) { remain = 0; leds.forEach(l => { if(l) l.className = "led-indicator led-red-blink " + (l.id.includes('side') ? "w-3 h-3 md:w-4 md:h-4 mr-2 border-2" : ""); }); } 
+                else if (remain <= 15 * 60 * 1000 && state === 'ON') {
+                    if (!alert15Triggers[n]) { 
+                        logEvent(`[WD] WARNING: ${n} RESTART IN 15 MINUTES`, "text-cyan-400 font-bold"); addSystemAlert(`WARNING: ${n} REBOOT IN 15 MIN`); 
+                        showStickyAlert(n, `WARNING: ${n} REBOOT IN 15 MIN`, `Scheduled restart on ${n} is approaching.`);
+                        if(audioUnlocked && voiceEnabled && !isMuted) { queueSpeech(`Warning. 15 minutes to scheduled restart on ${n.replace('EU1', 'EU One')}`); } 
+                        alert15Triggers[n] = true; 
+                    }
+                } else { alert15Triggers[n] = false; }
 
-                    const h = Math.floor(remain / 3600000); const m = Math.floor((remain % 3600000) / 60000); const s = Math.floor((remain % 60000) / 1000);
-                    els.forEach(e => { if(e) e.innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; });
-                    const nextStr = new Date(next).toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }); 
-                    if (state === 'AUTO') { etas.forEach(t=>{if(t) { t.className = "text-[9px] opacity-60 font-bold tracking-widest mt-1 text-yellow-400 uppercase whitespace-nowrap"; t.innerText = `NEXT: ${nextStr}`; }}); } 
-                    else { etas.forEach(t=>{if(t) { t.className = "text-[9px] opacity-60 font-bold tracking-widest mt-1 uppercase text-white whitespace-nowrap"; t.innerText = `NEXT: ${nextStr}`; }}); }
-                }
+                const h = Math.floor(remain / 3600000); const m = Math.floor((remain % 3600000) / 60000); const s = Math.floor((remain % 60000) / 1000);
+                els.forEach(e => { if(e) e.innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; });
+                const nextStr = new Date(next).toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }); 
+                etas.forEach(t=>{if(t) { t.className = "text-[9px] opacity-60 font-bold tracking-widest mt-1 uppercase text-white whitespace-nowrap"; t.innerText = `NEXT: ${nextStr}`; }}); 
             });
         }
 
@@ -1491,7 +1542,8 @@
 
             addSystemAlert("VOICE COMMS STANDBY. CLICK [INIT COMM] TO ACTIVATE.", "alert-startup-voice"); 
             logEvent("VOICE ENGINE DISABLED. AWAITING MANUAL OVERRIDE.", "text-cyan-400 font-bold"); 
-            logEvent(`[WD] STM PRO KERNEL V5.6 ACTIVE (NIGHT PROTOCOL LOADED)`, "text-cyan-400 font-bold");
+            logEvent(`[WD] STM PRO KERNEL V6.0 ACTIVE (SILENT HUNTER PROTOCOL)`, "text-cyan-400 font-bold");
+            logEvent(`[SYS] 12H QUARANTINE ENGAGED. AWAITING LOCK-ON.`, "text-yellow-500 font-bold");
         })();
     </script>
 </body>
