@@ -261,37 +261,39 @@
         </div>
 
         <div class="flex items-center justify-end gap-3 shrink-0 flex-wrap">
-            <div class="volume-wrapper hidden md:flex">
-                <button onclick="toggleMute()" id="muteBtn" class="mute-btn flex items-center justify-center">
-                    <svg id="muteIcon" width="16" height="16" viewBox="0 0 24 24" fill="#00ff9c"></svg>
+            
+            <div class="volume-wrapper hidden md:flex h-[50px] px-4">
+                <button onclick="toggleMute()" id="muteBtn" class="mute-btn flex items-center justify-center mr-3">
+                    <svg id="muteIcon" width="22" height="22" viewBox="0 0 24 24" fill="#00ff9c"></svg>
                 </button>
-                <div class="flex gap-1" id="volumeLevels">
-                    <div class="vol-level cursor-pointer" onclick="setVolume(0.2)" data-vol="0.2"></div>
-                    <div class="vol-level cursor-pointer" onclick="setVolume(0.4)" data-vol="0.4"></div>
-                    <div class="vol-level cursor-pointer" onclick="setVolume(0.6)" data-vol="0.6"></div>
-                    <div class="vol-level cursor-pointer" onclick="setVolume(0.8)" data-vol="0.8"></div>
-                    <div class="vol-level cursor-pointer" onclick="setVolume(1.0)" data-vol="1.0"></div>
+                <div class="flex gap-1.5 items-center" id="volumeLevels">
+                    <div class="vol-level cursor-pointer !h-[26px] !w-[6px]" onclick="setVolume(0.2)" data-vol="0.2"></div>
+                    <div class="vol-level cursor-pointer !h-[26px] !w-[6px]" onclick="setVolume(0.4)" data-vol="0.4"></div>
+                    <div class="vol-level cursor-pointer !h-[26px] !w-[6px]" onclick="setVolume(0.6)" data-vol="0.6"></div>
+                    <div class="vol-level cursor-pointer !h-[26px] !w-[6px]" onclick="setVolume(0.8)" data-vol="0.8"></div>
+                    <div class="vol-level cursor-pointer !h-[26px] !w-[6px]" onclick="setVolume(1.0)" data-vol="1.0"></div>
                 </div>
             </div>
 
-            <div id="radar-glow-container" class="flex items-center gap-2 radar-glow-box mr-1">
+            <div id="radar-glow-container" class="flex items-center gap-3 radar-glow-box mr-1 h-[50px] px-4">
                 <div id="radar-icon-wrapper" class="flex items-center radar-norm transition-colors duration-300 rounded-full px-1 py-0.5">
-                    <div class="radar-scope"><div class="radar-sweep"></div></div>
-                    <span class="text-[9px] opacity-90 uppercase tracking-widest font-black hidden sm:inline ml-1.5">RADAR</span>
+                    <div class="radar-scope !w-[18px] !h-[18px]"><div class="radar-sweep"></div></div>
+                    <span class="text-[11px] md:text-xs opacity-90 uppercase tracking-widest font-black hidden sm:inline ml-2">RADAR</span>
                 </div>
-                <div class="wd-switch-container">
-                    <div class="wd-switch-btn" id="radar-btn-eco" onclick="setRadarMode('ECO')">EKO</div>
-                    <div class="wd-switch-btn" id="radar-btn-norm" onclick="setRadarMode('NORM')">NORM</div>
-                    <div class="wd-switch-btn" id="radar-btn-agr" onclick="setRadarMode('AGR')">AGR</div>
+                <div class="wd-switch-container h-full items-center flex">
+                    <div class="wd-switch-btn flex items-center justify-center h-full !text-[11px] md:!text-xs !px-4" id="radar-btn-eco" onclick="setRadarMode('ECO')">EKO</div>
+                    <div class="wd-switch-btn flex items-center justify-center h-full !text-[11px] md:!text-xs !px-4" id="radar-btn-norm" onclick="setRadarMode('NORM')">NORM</div>
+                    <div class="wd-switch-btn flex items-center justify-center h-full !text-[11px] md:!text-xs !px-4" id="radar-btn-agr" onclick="setRadarMode('AGR')">AGR</div>
                 </div>
             </div>
 
-            <div class="flex items-center gap-2">
-                <div class="sync-btn-wrapper" title="Force Sync API">
-                    <button onclick="updateAll()" class="sync-btn-inner btn-system-led py-1 px-3 text-[10px] md:text-[11px] font-black !border-none hover:!bg-[#00ff9c] hover:!text-[#0b0f14]">SYNC</button>
+            <div class="flex items-center gap-3 h-[50px]">
+                <div class="sync-btn-wrapper h-full" title="Force Sync API">
+                    <button onclick="updateAll()" class="sync-btn-inner btn-system-led flex items-center justify-center h-full w-full px-6 text-xs md:text-sm font-black !border-none hover:!bg-[#00ff9c] hover:!text-[#0b0f14] tracking-[0.2em]">SYNC</button>
                 </div>
-                <button onclick="toggleHelp()" class="btn-system-led py-1 px-3 text-[10px] md:text-[11px] font-black drop-shadow-[0_0_8px_rgba(0,255,156,0.8)] border-2 border-green-400">GUIDE [?]</button>
+                <button onclick="toggleHelp()" class="btn-system-led flex items-center justify-center h-full px-6 text-xs md:text-sm font-black drop-shadow-[0_0_8px_rgba(0,255,156,0.8)] border-2 border-green-400 tracking-[0.2em]">GUIDE [?]</button>
             </div>
+
         </div>
     </div>
 
@@ -825,9 +827,9 @@
 
         function setRadarMode(mode) {
             radarMode = mode; localStorage.setItem('jsoc_radar_mode', mode);
-            document.getElementById('radar-btn-eco').className = `wd-switch-btn ${mode === 'ECO' ? 'active-on' : ''}`;
-            document.getElementById('radar-btn-norm').className = `wd-switch-btn ${mode === 'NORM' ? 'active-auto' : ''}`;
-            document.getElementById('radar-btn-agr').className = `wd-switch-btn ${mode === 'AGR' ? 'active-off' : ''}`;
+            document.getElementById('radar-btn-eco').className = `wd-switch-btn flex items-center justify-center h-full !text-[11px] md:!text-xs !px-4 ${mode === 'ECO' ? 'active-on' : ''}`;
+            document.getElementById('radar-btn-norm').className = `wd-switch-btn flex items-center justify-center h-full !text-[11px] md:!text-xs !px-4 ${mode === 'NORM' ? 'active-auto' : ''}`;
+            document.getElementById('radar-btn-agr').className = `wd-switch-btn flex items-center justify-center h-full !text-[11px] md:!text-xs !px-4 ${mode === 'AGR' ? 'active-off' : ''}`;
             const radarIcon = document.getElementById('radar-icon-wrapper');
             if(radarIcon) { radarIcon.className = `flex items-center transition-colors duration-300 rounded-full px-1 py-0.5 ${mode === 'ECO' ? 'radar-eco' : mode === 'NORM' ? 'radar-norm' : 'radar-agr'}`; }
             const radarContainer = document.getElementById('radar-glow-container');
