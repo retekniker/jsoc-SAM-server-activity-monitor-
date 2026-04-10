@@ -556,6 +556,7 @@
                         
                         <button id="advToggle" onclick="toggleAdvanced()" class="btn-system-led-red">ADV: OFF</button>
                         <button onclick="exportDatabase()" class="btn-system-led text-yellow-400 border-yellow-400 hover:bg-yellow-400 hover:text-black">DB</button>
+                        <button class="btn-system-led" onclick="copyLog()">COPY</button>
                         <button class="btn-system-led" onclick="saveLog()">LOG</button>
                     </div>
                 </div>
@@ -780,6 +781,7 @@
                 a.click();
                 
                 logEvent("[SYS] SYSTEM STATE BACKUP EXPORTED", "text-purple-400 font-bold");
+                pushToDMD(`[SYS] SYSTEM STATE BACKUP EXPORTED`, 1, 'dmd-alarm-green');
             }, 500); 
         }
 
@@ -799,11 +801,13 @@
                     if (data.jsoc_radar_mode) localStorage.setItem('jsoc_radar_mode', data.jsoc_radar_mode);
                     if (data.jsoc_sq_idx) localStorage.setItem('jsoc_sq_idx', data.jsoc_sq_idx);
                     
+                    pushToDMD(`[SYS] SYSTEM RESTORED. REBOOTING...`, 2, 'dmd-alarm-green');
                     alert("SYSTEM RESTORED SUCCESSFULLY! Rebooting kernel...");
                     location.reload();
                 } catch (err) {
                     alert("FAILED TO RESTORE BACKUP. Invalid file format.");
                     logEvent("[ERROR] RESTORE FAILED. CORRUPTED FILE.", "text-red-500 font-bold");
+                    pushToDMD(`[ERROR] RESTORE FAILED: CORRUPTED FILE`, 2, 'dmd-alarm-red');
                 }
             };
             reader.readAsText(file);
@@ -820,9 +824,11 @@
                 lastBackupTime = Date.now(); 
                 localStorage.setItem('jsoc_last_backup_time', lastBackupTime);
                 logEvent("[SYS] 48H AUTO-BACKUP ENGAGED", "text-purple-400 font-bold");
+                pushToDMD(`[SYS] 48H AUTO-BACKUP: ON`, 1, 'dmd-alarm-green');
             } else {
                 btn.classList.remove("active");
                 logEvent("[SYS] 48H AUTO-BACKUP OFFLINE", "text-gray-500");
+                pushToDMD(`[SYS] 48H AUTO-BACKUP: OFF`, 1, 'dmd-alarm-yellow');
             }
         }
 
@@ -1032,6 +1038,7 @@
             a.download = `stm_operator_db_${new Date().getTime()}.txt`;
             a.click();
             logEvent("[DB] DATABASE EXPORTED SUCCESSFULLY", "text-yellow-400 font-bold");
+            pushToDMD(`[SYS] OPERATOR DB EXPORTED`, 1, 'dmd-alarm-green');
         }
 
         function toggleStats() {
@@ -1083,7 +1090,13 @@
         }
 
         function initAdvButton() { const btn = document.getElementById("advToggle"); btn.innerText = `ADV: ${advMode ? 'ON' : 'OFF'}`; if(advMode) { btn.classList.add("active-adv"); } else { btn.classList.remove("active-adv"); } }
-        function toggleAdvanced() { advMode = !advMode; localStorage.setItem('jsoc_adv_mode', advMode); initAdvButton(); logEvent(`Advanced logging ${advMode ? 'ENABLED' : 'DISABLED'}`, advMode ? "text-cyan-400" : "text-gray-500"); }
+        function toggleAdvanced() { 
+            advMode = !advMode; 
+            localStorage.setItem('jsoc_adv_mode', advMode); 
+            initAdvButton(); 
+            logEvent(`Advanced logging ${advMode ? 'ENABLED' : 'DISABLED'}`, advMode ? "text-cyan-400" : "text-gray-500"); 
+            pushToDMD(`[SYS] ADVANCED LOGGING: ${advMode ? 'ON' : 'OFF'}`, 1, advMode ? 'dmd-alarm-yellow' : null);
+        }
         
         function logEvent(text, color = "text-green-500", isAdvanced = false) { 
             if (isAdvanced && !advMode) return; 
@@ -1099,7 +1112,10 @@
 
         function copyLog() { 
             const text = blackBoxLogs.join('\n'); 
-            navigator.clipboard.writeText(text).then(() => logEvent("BLACK BOX COPIED TO CLIPBOARD", "text-cyan-400")); 
+            navigator.clipboard.writeText(text).then(() => {
+                logEvent("BLACK BOX COPIED TO CLIPBOARD", "text-cyan-400"); 
+                pushToDMD(`[SYS] BLACK BOX COPIED TO CLIPBOARD`, 1, 'dmd-alarm-green');
+            });
         }
         function saveLog() { 
             let header = "=== STM PRO V6.0 | BLACK BOX FLIGHT RECORDER ===\n";
@@ -1110,6 +1126,7 @@
             const a = document.createElement('a'); a.href = URL.createObjectURL(blob); 
             a.download = `stm_blackbox_${new Date().getTime()}.txt`; a.click(); 
             logEvent("BLACK BOX EXPORTED SUCCESSFULLY", "text-cyan-400 font-bold");
+            pushToDMD(`[SYS] BLACK BOX EXPORTED`, 1, 'dmd-alarm-green');
         }
 
         function addPlayerAlert(name, server, isJoin, squadDetails, joinedAt = null) {
