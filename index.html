@@ -234,9 +234,10 @@
                     <li><span class="text-red-400 font-bold">OFF:</span> System Standby. Reboot tracking disabled. Oscilloscope flatlined.</li>
                 </ul>
                 <br>
-                <strong>4. OVERRIDE MODULE:</strong><br>
+                <strong>4. OVERRIDE MODULE & ARCHIVING:</strong><br>
                 <span class="text-sm opacity-80">- <b>SINGLE CLICK CLOCK:</b> Toggle between Countdown and Approx Time formats.</span><br>
-                <span class="text-sm opacity-80">- <b>DOUBLE CLICK CLOCK:</b> Manual time injection. Sets state to [APRX] until mathematically verified by the system.</span>
+                <span class="text-sm opacity-80">- <b>DOUBLE CLICK CLOCK:</b> Manual time injection. Sets state to [APRX] until mathematically verified by the system.</span><br>
+                <span class="text-sm opacity-80">- <b>AUTO-BACKUP:</b> Automatically downloads a full system JSON backup and operator DB every 48 hours.</span>
             </div>
             <button onclick="toggleHelp()" class="mt-10 w-full py-4 bg-green-900/20 border border-green-500 hover:bg-green-500 hover:text-black transition-all font-bold uppercase text-sm tracking-widest">CLOSE INTERFACE</button>
         </div>
@@ -547,11 +548,15 @@
             <div class="soc-border p-4 bg-black/40 relative z-10">
                 <div class="flex justify-between items-center mb-2 relative z-20">
                     <h3 class="text-sm font-bold uppercase opacity-80">SYS-LOG</h3>
-                    <div class="flex gap-2">
-                        <button id="advToggle" onclick="toggleAdvanced()" class="btn-system-led-red">Advanced: OFF</button>
-                        <button onclick="exportDatabase()" class="btn-system-led text-yellow-400 border-yellow-400 hover:bg-yellow-400 hover:text-black">EXPORT DB</button>
-                        <button class="btn-system-led" onclick="copyLog()">COPY</button>
-                        <button class="btn-system-led" onclick="saveLog()">SAVE</button>
+                    <div class="flex gap-2 flex-wrap justify-end">
+                        <button id="btnAutoBackup" onclick="toggleAutoBackup()" class="btn-system-led">AUTO-BACKUP: OFF</button>
+                        <button onclick="systemBackup()" class="btn-system-led text-purple-400 border-purple-400 hover:bg-purple-400 hover:text-black">SYS BACKUP</button>
+                        <label for="restoreUpload" class="btn-system-led text-blue-400 border-blue-400 hover:bg-blue-400 hover:text-black cursor-pointer mb-0 flex items-center">RESTORE</label>
+                        <input type="file" id="restoreUpload" accept=".json" class="hidden" onchange="restoreSystem(event)">
+                        
+                        <button id="advToggle" onclick="toggleAdvanced()" class="btn-system-led-red">ADV: OFF</button>
+                        <button onclick="exportDatabase()" class="btn-system-led text-yellow-400 border-yellow-400 hover:bg-yellow-400 hover:text-black">DB</button>
+                        <button class="btn-system-led" onclick="saveLog()">LOG</button>
                     </div>
                 </div>
                 <div id="logBox" class="text-[11px] h-32 overflow-y-auto font-mono opacity-80 bg-black/20 p-2 custom-scrollbar relative z-20"></div>
@@ -615,7 +620,10 @@
 
         let radarMode = localStorage.getItem('jsoc_radar_mode') || 'NORM';
         let telemetryLog = JSON.parse(localStorage.getItem('jsoc_telemetry_log')) || { EU1: [], EU2: [], EU3: [] };
-        let lastExportTime = parseInt(localStorage.getItem('jsoc_last_export')) || Date.now();
+        
+        // AUTO BACKUP VARS
+        let autoBackupEnabled = localStorage.getItem('jsoc_auto_backup') === 'true';
+        let lastBackupTime = parseInt(localStorage.getItem('jsoc_last_backup_time')) || Date.now();
 
         let miniCharts = {};
         let pingHistory = { EU1: Array(30).fill(0), EU2: Array(30).fill(0), EU3: Array(30).fill(0) };
@@ -680,6 +688,17 @@
                     }
                 });
 
+                if (autoBackupEnabled && now - lastBackupTime >= 48 * 60 * 60 * 1000) {
+                    systemBackup();
+                    if (blackBoxLogs.length > 500) {
+                        blackBoxLogs = blackBoxLogs.slice(-500);
+                    }
+                    lastBackupTime = now;
+                    localStorage.setItem('jsoc_last_backup_time', lastBackupTime);
+                    logEvent("[SYS] 48H AUTO-BACKUP COMPLETED. LOGS PRUNED.", "text-purple-400 font-bold");
+                    pushToDMD("[SYS] 48H AUTO-BACKUP COMPLETED", 1, "dmd-alarm-green");
+                }
+
                 if (now >= rateLimitCooldown && now - lastFetchTime >= nextInterval && !isFetching) {
                     lastFetchTime = now;
                     isFetching = true;
@@ -739,6 +758,73 @@
             pushToDMD(`[ ! ] MANUAL OVERRIDE: ${server} SYNCED TO ${timeStr} [APRX] [ ! ]`, 2, 'dmd-alarm-yellow');
             updateClock();
         };
+
+        function systemBackup() {
+            exportDatabase();
+            
+            setTimeout(() => {
+                let backupData = {
+                    jsoc_stats: localStorage.getItem('jsoc_stats') || '{}',
+                    jsoc_all_squads: localStorage.getItem('jsoc_all_squads') || '{}',
+                    jsoc_wd_state: localStorage.getItem('jsoc_wd_state') || '{}',
+                    jsoc_last_restarts: localStorage.getItem('jsoc_last_restarts') || '{}',
+                    jsoc_approx_state: localStorage.getItem('jsoc_approx_state') || '{}',
+                    jsoc_radar_mode: localStorage.getItem('jsoc_radar_mode') || 'NORM',
+                    jsoc_sq_idx: localStorage.getItem('jsoc_sq_idx') || '1'
+                };
+                
+                const blob = new Blob([JSON.stringify(backupData, null, 2)], {type: 'application/json'});
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = `stm_system_backup_${new Date().getTime()}.json`;
+                a.click();
+                
+                logEvent("[SYS] SYSTEM STATE BACKUP EXPORTED", "text-purple-400 font-bold");
+            }, 500); 
+        }
+
+        function restoreSystem(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (data.jsoc_stats) localStorage.setItem('jsoc_stats', data.jsoc_stats);
+                    if (data.jsoc_all_squads) localStorage.setItem('jsoc_all_squads', data.jsoc_all_squads);
+                    if (data.jsoc_wd_state) localStorage.setItem('jsoc_wd_state', data.jsoc_wd_state);
+                    if (data.jsoc_last_restarts) localStorage.setItem('jsoc_last_restarts', data.jsoc_last_restarts);
+                    if (data.jsoc_approx_state) localStorage.setItem('jsoc_approx_state', data.jsoc_approx_state);
+                    if (data.jsoc_radar_mode) localStorage.setItem('jsoc_radar_mode', data.jsoc_radar_mode);
+                    if (data.jsoc_sq_idx) localStorage.setItem('jsoc_sq_idx', data.jsoc_sq_idx);
+                    
+                    alert("SYSTEM RESTORED SUCCESSFULLY! Rebooting kernel...");
+                    location.reload();
+                } catch (err) {
+                    alert("FAILED TO RESTORE BACKUP. Invalid file format.");
+                    logEvent("[ERROR] RESTORE FAILED. CORRUPTED FILE.", "text-red-500 font-bold");
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = ''; 
+        }
+
+        function toggleAutoBackup() {
+            autoBackupEnabled = !autoBackupEnabled;
+            localStorage.setItem('jsoc_auto_backup', autoBackupEnabled);
+            const btn = document.getElementById("btnAutoBackup");
+            btn.innerText = `AUTO-BACKUP: ${autoBackupEnabled ? 'ON' : 'OFF'}`;
+            if (autoBackupEnabled) {
+                btn.classList.add("active");
+                lastBackupTime = Date.now(); 
+                localStorage.setItem('jsoc_last_backup_time', lastBackupTime);
+                logEvent("[SYS] 48H AUTO-BACKUP ENGAGED", "text-purple-400 font-bold");
+            } else {
+                btn.classList.remove("active");
+                logEvent("[SYS] 48H AUTO-BACKUP OFFLINE", "text-gray-500");
+            }
+        }
 
         function pushToDMD(msg, priority = 0, colorClass = null) {
             dmdQueue.push({ msg, priority, colorClass });
@@ -926,21 +1012,6 @@
             if(miniCharts[server]) { let color = '#555'; if (value === 'ON') color = '#00ff9c'; if (value === 'AUTO') color = '#eab308'; miniCharts[server].data.datasets[0].borderColor = color; miniCharts[server].update('none'); }
         }
 
-        function exportTelemetry(server) {
-            if(telemetryLog[server].length === 0) return;
-            const text = telemetryLog[server].join('\n'); const blob = new Blob([text], {type: 'text/plain'}); const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob); a.download = `telemetry_${server}_${new Date().getTime()}.txt`; a.click();
-            telemetryLog[server] = []; localStorage.setItem('jsoc_telemetry_log', JSON.stringify(telemetryLog));
-            logEvent(`[WD-AUTO] ${server} TELEMETRY DATA DUMP INITIATED`, "text-yellow-500 font-bold");
-        }
-
-        function checkTelemetryAutoExport() {
-            if (Date.now() - lastExportTime > 2 * 60 * 60 * 1000) {
-                ["EU1", "EU2", "EU3"].forEach(n => { if (wdState[n] === 'AUTO' && telemetryLog[n].length > 0) { exportTelemetry(n); } });
-                lastExportTime = Date.now(); localStorage.setItem('jsoc_last_export', lastExportTime);
-            }
-        }
-
         function exportDatabase() {
             let db = JSON.parse(localStorage.getItem('jsoc_stats')) || {};
             let arr = Object.keys(db).map(k => ({ name: k, total: db[k].totalTime || 0, session: db[k].sessionTime || 0 }));
@@ -1011,7 +1082,7 @@
             if (voiceEnabled) { queueSpeech("Audio check. Charlie 2 connected."); queueSpeech("Critical alert. EU One server down or restarting."); } else { queueSound(SOUND_SQUAD, currentVolume * 0.15); } queueSound(SOUND_SQUAD, currentVolume * 0.3);
         }
 
-        function initAdvButton() { const btn = document.getElementById("advToggle"); btn.innerText = `Advanced: ${advMode ? 'ON' : 'OFF'}`; if(advMode) { btn.classList.add("active-adv"); } else { btn.classList.remove("active-adv"); } }
+        function initAdvButton() { const btn = document.getElementById("advToggle"); btn.innerText = `ADV: ${advMode ? 'ON' : 'OFF'}`; if(advMode) { btn.classList.add("active-adv"); } else { btn.classList.remove("active-adv"); } }
         function toggleAdvanced() { advMode = !advMode; localStorage.setItem('jsoc_adv_mode', advMode); initAdvButton(); logEvent(`Advanced logging ${advMode ? 'ENABLED' : 'DISABLED'}`, advMode ? "text-cyan-400" : "text-gray-500"); }
         
         function logEvent(text, color = "text-green-500", isAdvanced = false) { 
@@ -1286,7 +1357,6 @@
             let currentHeat = updateApiHeatUI();
             if (Date.now() < rateLimitCooldown) { return; }
             if (currentHeat >= 50) { logEvent(`[WD] API HEAT CRITICAL (${currentHeat}/60). THROTTLE ACTIVATED.`, "text-yellow-500 font-bold"); rateLimitCooldown = Date.now() + 15000; return; }
-            checkTelemetryAutoExport(); 
             
             try {
                 ["EU1", "EU2", "EU3"].forEach(n => {
@@ -1622,6 +1692,12 @@
             
             const btnSort = document.getElementById('btnSortToggle');
             if(btnSort) { btnSort.innerText = `SORT: ${sortMode}`; if(sortMode !== 'ADDED') btnSort.classList.add('active'); else btnSort.classList.remove('active'); }
+            
+            const btnBackup = document.getElementById('btnAutoBackup');
+            if(btnBackup) {
+                btnBackup.innerText = `AUTO-BACKUP: ${autoBackupEnabled ? 'ON' : 'OFF'}`;
+                if (autoBackupEnabled) btnBackup.classList.add("active");
+            }
             
             worker.postMessage('start');
             
