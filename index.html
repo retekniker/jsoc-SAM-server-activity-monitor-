@@ -662,6 +662,15 @@
         let isDmdProcessing = false;
         let dmdTimeout = null;
         const DMD_DEFAULT_TEXT = `Re-Tek corp.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;..::77th JSOC::.. Server Tactical Monitor PRO V6.0//........SYSTEM READY<span class="cursor-blink">!█</span>`;
+        function escapeHTML(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+        function escapeAttr(str) {
+            return str.replace(/&/g,'&amp;').replace(/'/g,'&#39;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        }
+
 
         function updateServerBuffer(server, ping, status) {
             serverBuffers[server].push({ ping: ping, status: status, time: Date.now() });
@@ -1143,11 +1152,11 @@
             if (squadDetails) {
                 const actionText = isJoin ? "JOINED" : "LEFT"; const actionColor = isJoin ? "text-green-500" : "text-red-500"; const arrow = isJoin ? "IN" : "OUT"; const bgClass = isJoin ? "bg-green-900/20" : "bg-red-900/20"; const borderClass = isJoin ? "border-green-500" : "border-red-500"; const squadTag = `${squadDetails.squadName}-${squadDetails.playerNumber}`; const sqColor = SQUAD_COLORS[squadDetails.squadIdx].text;
                 d.className = `flex justify-between items-center border-l-2 ${borderClass} pl-2 ${bgClass} py-1.5 transition-all mb-0.5`;
-                d.innerHTML = `<div class="flex items-center gap-2 flex-wrap flex-1"><span class="opacity-60 text-xs text-white">[${timeStr}]</span><span class="font-bold text-sm uppercase" style="color: ${sqColor}; text-shadow: 0 0 5px ${sqColor};">[${squadTag}]</span><span class="text-white font-black text-lg tracking-wider">&lt; ${name} &gt;</span><span class="${actionColor} font-bold text-sm ml-1">${actionText} ${server}</span>${sessionTimeStr}<span class="${actionColor} font-black text-xs ml-2 tracking-widest drop-shadow-md">${arrow}</span></div><div class="flex items-center pr-2"><span class="cursor-pointer text-white hover:text-red-500 text-sm px-2 font-bold" onclick="this.parentElement.parentElement.remove()">X</span></div>`;
+                d.innerHTML = `<div class="flex items-center gap-2 flex-wrap flex-1"><span class="opacity-60 text-xs text-white">[${timeStr}]</span><span class="font-bold text-sm uppercase" style="color: ${sqColor}; text-shadow: 0 0 5px ${sqColor};">[${squadTag}]</span><span class="text-white font-black text-lg tracking-wider">&lt; ${escapeHTML(name)} &gt;</span><span class="${actionColor} font-bold text-sm ml-1">${actionText} ${server}</span>${sessionTimeStr}<span class="${actionColor} font-black text-xs ml-2 tracking-widest drop-shadow-md">${arrow}</span></div><div class="flex items-center pr-2"><span class="cursor-pointer text-white hover:text-red-500 text-sm px-2 font-bold" onclick="this.parentElement.parentElement.remove()">X</span></div>`;
             } else {
                 const actionText = isJoin ? "JOINED" : "LEFT"; const color = isJoin ? "text-green-500" : "text-red-500"; const arrow = isJoin ? "IN" : "OUT";
                 d.className = `flex justify-between items-center pl-2 bg-black/40 py-1 border-l border-white/10 mb-0.5`;
-                d.innerHTML = `<div class="flex items-center gap-2 opacity-90 flex-1"><span class="opacity-50 text-[11px] text-white">[${timeStr}]</span><span class="text-gray-300 text-sm font-bold uppercase">${name}</span><span class="text-gray-500 text-xs ml-1">${actionText} ${server}</span>${sessionTimeStr}<span class="${color} font-bold text-xs ml-1 tracking-widest drop-shadow-sm">${arrow}</span></div><div class="flex items-center pr-2 opacity-80"><span class="cursor-pointer text-gray-500 hover:text-red-500 text-xs px-2 font-bold" onclick="this.parentElement.parentElement.remove()">X</span></div>`;
+                d.innerHTML = `<div class="flex items-center gap-2 opacity-90 flex-1"><span class="opacity-50 text-[11px] text-white">[${timeStr}]</span><span class="text-gray-300 text-sm font-bold uppercase">${escapeHTML(name)}</span><span class="text-gray-500 text-xs ml-1">${actionText} ${server}</span>${sessionTimeStr}<span class="${color} font-bold text-xs ml-1 tracking-widest drop-shadow-sm">${arrow}</span></div><div class="flex items-center pr-2 opacity-80"><span class="cursor-pointer text-gray-500 hover:text-red-500 text-xs px-2 font-bold" onclick="this.parentElement.parentElement.remove()">X</span></div>`;
             }
             b.insertBefore(d, b.firstChild); if (b.children.length > 80) { b.removeChild(b.lastChild); } b.scrollTop = 0; 
         }
@@ -1339,12 +1348,12 @@
 
                         if (!isMassEvent) announceAction(squadDetails, name, true); 
                         addPlayerAlert(pName, name, true, squadDetails); 
-                        logEvent(`${pName} JOINED ${name}`, squadDetails ? "text-red-500 font-bold" : "text-gray-400"); 
+                        logEvent(`${escapeHTML(pName)} JOINED ${name}`, squadDetails ? "text-red-500 font-bold" : "text-gray-400"); 
 
                         const isClan = pName.includes('77th') || pName.toUpperCase().includes('JSOC');
                         if (isClan && !isMassEvent) {
                             setTimeout(() => {
-                                pushToDMD(`UPLINK_ESTABLISHED: OPR. ${pName} // WELCOME!`);
+                                pushToDMD(`UPLINK_ESTABLISHED: OPR. ${escapeHTML(pName)} // WELCOME!`);
                             }, 3000);
                         }
                     });
@@ -1359,7 +1368,7 @@
                         }
                     });
 
-                    leftPlayers.forEach(pName => { const squadDetails = getWatchedSquadDetails(pName); if (!isMassEvent) announceAction(squadDetails, name, false); let joinedAt = playerSessions[pName]; addPlayerAlert(pName, name, false, squadDetails, joinedAt); delete playerSessions[pName]; logEvent(`${pName} LEFT ${name}`, squadDetails ? "text-red-500 font-bold" : "text-gray-600"); });
+                    leftPlayers.forEach(pName => { const squadDetails = getWatchedSquadDetails(pName); if (!isMassEvent) announceAction(squadDetails, name, false); let joinedAt = playerSessions[pName]; addPlayerAlert(pName, name, false, squadDetails, joinedAt); delete playerSessions[pName]; logEvent(`${escapeHTML(pName)} LEFT ${name}`, squadDetails ? "text-red-500 font-bold" : "text-gray-600"); });
                     if (isMassEvent && !isMuted) { logEvent(`[SYS] MASS DATA SHIFT: ${joinedPlayers.length} IN, ${leftPlayers.length} OUT. AUDIO THROTTLED.`, "text-yellow-500 font-bold"); queueSound(SOUND_SQUAD, currentVolume * 0.3); }
                 }
                 previous[name] = players; cache[name] = { status: finalStatus || 'offline', players: currentPlayers, maxPlayers: maxPlayers, details: attr.details || {}, list: players.map(n => ({name: n})), ping: lat };
@@ -1479,8 +1488,8 @@
                     }
                     
                     row.className = rClass; 
-                    row.innerHTML = `<span class="${numClass}" style="${numStyle}">${i+1}.</span><span class="truncate">${p.name}</span>`; 
-                    row.ondblclick = () => addWatch(p.name); 
+                    row.innerHTML = `<span class="${numClass}" style="${numStyle}">${i+1}.</span><span class="truncate">${escapeHTML(p.name)}</span>`; 
+                    row.ondblclick = () => addWatch(p.name);  // p.name is already a string, safe for function arg 
                     listEl.appendChild(row);
                 });
                 
@@ -1632,14 +1641,14 @@
                     item.innerHTML += `
                         <div class="relative z-10 flex items-center flex-1 min-w-0">
                             <span class="${numClass} mr-2 w-6 text-right shrink-0" style="color: ${colors.text}">${i + 1}.</span>
-                            <span class="${isOnline?'text-white':'text-gray-400'} text-sm md:text-base font-black tracking-wider truncate flex-1">${n}</span>
+                            <span class="${isOnline?'text-white':'text-gray-400'} text-sm md:text-base font-black tracking-wider truncate flex-1">${escapeHTML(n)}</span>
                         </div>
                         <div class="relative z-10 flex items-center shrink-0 ml-1">
                             <div class="flex flex-col items-end mr-1">
                                 <span class="text-white font-black text-sm md:text-base tracking-widest drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] leading-none mb-1" title="Session Time">S: ${String(sH).padStart(2, '0')}h ${String(sM).padStart(2, '0')}m</span>
                                 <span class="text-yellow-500 font-bold text-[10px] tracking-widest leading-none" title="Total Time">T: ${String(tH).padStart(2, '0')}h ${String(tM).padStart(2, '0')}m</span>
                             </div>
-                            <span class="cursor-pointer hover:text-red-500 px-2 text-lg ml-1" style="color: ${colors.text}" onclick="removeWatch('${n}')">✖</span>
+                            <span class="cursor-pointer hover:text-red-500 px-2 text-lg ml-1" style="color: ${colors.text}" onclick="removeWatch('${escapeAttr(n)}')">✖</span>
                         </div>
                     `;
                 } else {
@@ -1647,7 +1656,7 @@
                     item.className = `flex justify-between items-center p-2 rounded font-bold tracking-wide border-l-2 transition-colors ${isOnline?'':'opacity-70'}`; 
                     item.style.backgroundColor = isOnline ? colors.bg : 'rgba(0,0,0,0.4)'; item.style.borderColor = isOnline ? colors.border : '#555';
                     
-                    item.innerHTML = `<div class="flex items-center flex-1 min-w-0"><span class="${numClass} mr-2 w-6 text-right shrink-0" style="color: ${colors.text}">${i + 1}.</span><span class="${isOnline?'text-white':'text-gray-300'} text-sm md:text-base font-black tracking-wider truncate flex-1">${n}</span>${sessionTimeStr}</div><div class="flex items-center shrink-0 ml-1"><span class="${arrowColor} font-black text-sm mr-2 tracking-[-0.15em] drop-shadow-md" title="${statusLabel}">${arrowStr}</span><span class="cursor-pointer hover:text-red-500 px-2 text-lg" style="color: ${colors.text}" onclick="removeWatch('${n}')">✖</span></div>`; 
+                    item.innerHTML = `<div class="flex items-center flex-1 min-w-0"><span class="${numClass} mr-2 w-6 text-right shrink-0" style="color: ${colors.text}">${i + 1}.</span><span class="${isOnline?'text-white':'text-gray-300'} text-sm md:text-base font-black tracking-wider truncate flex-1">${escapeHTML(n)}</span>${sessionTimeStr}</div><div class="flex items-center shrink-0 ml-1"><span class="${arrowColor} font-black text-sm mr-2 tracking-[-0.15em] drop-shadow-md" title="${statusLabel}">${arrowStr}</span><span class="cursor-pointer hover:text-red-500 px-2 text-lg" style="color: ${colors.text}" onclick="removeWatch('${escapeAttr(n)}')">✖</span></div>`; 
                 }
 
                 div.appendChild(item); 
