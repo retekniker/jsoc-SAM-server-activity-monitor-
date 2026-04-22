@@ -632,6 +632,17 @@
 
         let currentSquadIdx = parseInt(localStorage.getItem('jsoc_sq_idx')) || 1;
         let ALL_SQUADS = JSON.parse(localStorage.getItem('jsoc_all_squads')) || { 1:[], 2:[], 3:[], 4:[], 5:[], 6:[], 7:[], 8:[] };
+        // FIX v2: licznik wersji squadów - bumpuj przy KAŻDEJ mutacji ALL_SQUADS,
+        // używany w listHash żeby renderUI odświeżył kolory po reassignach.
+        let squadsVersion = 0;
+        function bumpSquads() { squadsVersion++; renderDirty = true; lsSet('jsoc_all_squads', JSON.stringify(ALL_SQUADS)); }
+        function isInAnySquad(name) {
+            const lc = name.toLowerCase();
+            for (let i = 1; i <= 8; i++) {
+                if (ALL_SQUADS[i] && ALL_SQUADS[i].some(w => w.toLowerCase() === lc)) return true;
+            }
+            return false;
+        }
         let previous = { EU1: [], EU2: [], EU3: [] };
         
         let prevUptime = { EU1: -1, EU2: -1, EU3: -1 }; 
@@ -694,6 +705,29 @@
             if (cleaned > 0 && advMode) {
                 logEvent(`[GC] CLEANED ${cleaned} STALE SESSION ENTRIES`, "text-gray-500", true);
             }
+
+            // --- FIX v2: GHOST PURGE statsData (ochrona przed QuotaExceededError) ---
+            // Usuwa graczy nieobecnych >30 dni, ALE chroni: watchlistę, wszystkich w squadach,
+            // oraz wpisy bez lastTick (legacy) - dostają jeden grace cycle (lastTick=now).
+            try {
+                const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
+                const now = Date.now();
+                let purged = 0;
+                Object.keys(statsData).forEach(pName => {
+                    const entry = statsData[pName];
+                    if (!entry) return;
+                    if (!entry.lastTick) { entry.lastTick = now; return; } // legacy guard
+                    if (now - entry.lastTick <= THIRTY_DAYS) return;
+                    if (typeof watchlist !== 'undefined' && Array.isArray(watchlist) && watchlist.includes(pName)) return;
+                    if (isInAnySquad(pName)) return;
+                    delete statsData[pName];
+                    purged++;
+                });
+                if (purged > 0) {
+                    lsSet('jsoc_stats', JSON.stringify(statsData));
+                    if (advMode) logEvent(`[GC] PURGED ${purged} GHOST DB ENTRIES (>30d)`, "text-purple-500", true);
+                }
+            } catch(e) { console.warn('[GC] ghost purge failed', e); }
         }
 
         function updateServerBuffer(server, ping, status) {
@@ -1608,7 +1642,8 @@
                 
                 document.getElementById(`players${name}`).innerText = `${c.players || 0}/${c.maxPlayers || 0}`; document.getElementById(`map${name}`).innerText = c.details?.map || "-"; document.getElementById(`ping${name}`).innerText = `${c.ping || 0}ms`;
                 // Hash check: skip full DOM rebuild if player list unchanged
-                const listHash = (c.list || []).map(p => p.name).join('|') + '|' + currentSquadIdx;
+                // FIX v2: dodajemy squadsVersion - reassign gracza zmienia jego kolor nawet bez zmiany rosteru
+                const listHash = (c.list || []).map(p => p.name).join('|') + '|' + currentSquadIdx + '|' + squadsVersion;
                 const listEl = document.getElementById(`list${name}`);
                 
                 if (listHash === lastRenderedHash[name]) {
@@ -1767,6 +1802,8 @@
         }
         
         function renderWatchList() { 
+            // FIX v2: bumpujemy wersję squadów - renderUI odświeży kolory na liście serwerowej
+            squadsVersion++;
             const rawList = ALL_SQUADS[currentSquadIdx]; 
             let displayList = [...rawList];
 
@@ -1897,7 +1934,8 @@
             
             worker.postMessage('start');
             
-            isUpdatingAll = true;
+            // FIX v2: let zamiast implicit global (był wyciek do window.isUpdatingAll)
+            let isUpdatingAll = true;
             updateAll().finally(() => { isUpdatingAll = false; });
 
             addSystemAlert("VOICE COMMS STANDBY. CLICK [INIT COMM] TO ACTIVATE.", "alert-startup-voice"); 
