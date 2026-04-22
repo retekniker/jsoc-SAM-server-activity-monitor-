@@ -1270,7 +1270,7 @@
 
                 if (!isFirstLoad && state !== 'OFF') {
                     
-                    let CYCLE = 6 * 60 * 60 * 1000; 
+                    let CYCLE = 8 * 60 * 60 * 1000; 
                     let elapsedSinceLast = Date.now() - lastRestartData[name]; 
                     let remainToNext = CYCLE - (elapsedSinceLast % CYCLE); 
                     // TARCZA CZASOWA: Chroni przed fałszywym alarmem 20 minut przed restartem
@@ -1569,7 +1569,7 @@
         function updateClock() { 
             const now = new Date(); 
             const dmdTime = document.getElementById('dmd-time'); if (dmdTime) dmdTime.innerText = now.toLocaleTimeString('en-US', { hour12: false }); 
-            const CYCLE = 6 * 60 * 60 * 1000;
+            const CYCLE = 8 * 60 * 60 * 1000;
             
             ["EU1", "EU2", "EU3"].forEach(n => {
                 const els = [document.getElementById(`clock-${n}`), document.getElementById(`clock-${n}-side`)]; 
@@ -1709,7 +1709,7 @@
                     const sessionTime = statsData[n]?.sessionTime || 0;
                     const totalTime = statsData[n]?.totalTime || sessionTime; 
                     
-                    const perc = Math.min(100, (sessionTime / (6 * 3600000)) * 100); 
+                    const perc = Math.min(100, (sessionTime / (8 * 3600000)) * 100); 
                     
                     item.innerHTML = `<div class="stats-bar-fill" style="width: ${perc}%; background: ${isOnline ? colors.bg : 'rgba(255,255,255,0.05)'};"></div>`;
                     
