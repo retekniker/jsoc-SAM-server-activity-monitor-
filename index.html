@@ -361,10 +361,10 @@
                         <div class="flex flex-col justify-center pr-3 border-r border-white/10">
                             <div class="text-xs md:text-sm uppercase flex items-center mb-1 font-bold tracking-widest drop-shadow-md text-gray-500 whitespace-nowrap" id="title-wrapper-EU1-side">
                                 <span id="led-EU1-side" class="led-indicator w-3 h-3 md:w-4 md:h-4 mr-2 border-2"></span>
-                                <span id="title-EU1-side">EU1 REBOOT</span>
+                                <span id="title-EU1-side">EU1 UPTIME</span>
                                 <span id="aprx-EU1" class="ml-2 text-[10px] text-yellow-400 font-black animate-pulse hidden tracking-widest border border-yellow-400 px-1 rounded-sm bg-yellow-400/10">APRX</span>
                             </div>
-                            <div id="clock-EU1-side" class="text-3xl md:text-4xl font-black clock-wait opacity-30 tracking-widest text-gray-500 whitespace-nowrap cursor-pointer hover:text-white transition-colors" title="Click: Toggle Format | Double-click: Manual Override" onclick="handleClockClick('EU1')">--:--:--</div>
+                            <div id="clock-EU1-side" class="text-3xl md:text-4xl font-black clock-wait opacity-30 tracking-widest text-gray-500 whitespace-nowrap cursor-pointer hover:text-white transition-colors" title="Click: Show Last Restart Time | Double-click: Manual Override" onclick="handleClockClick('EU1')">--:--:--</div>
                             <div class="flex items-center justify-between w-full mt-2 pr-2">
                                 <div id="eta-EU1-side" class="text-[9px] opacity-60 font-bold tracking-widest text-orange-400 uppercase whitespace-nowrap">NEXT: --:--:--</div>
                                 <div class="wd-switch-container">
@@ -392,10 +392,10 @@
                         <div class="flex flex-col justify-center pr-3 border-r border-white/10">
                             <div class="text-xs md:text-sm uppercase flex items-center mb-1 font-bold tracking-widest drop-shadow-md text-gray-500 whitespace-nowrap" id="title-wrapper-EU2-side">
                                 <span id="led-EU2-side" class="led-indicator w-3 h-3 md:w-4 md:h-4 mr-2 border-2"></span>
-                                <span id="title-EU2-side">EU2 REBOOT</span>
+                                <span id="title-EU2-side">EU2 UPTIME</span>
                                 <span id="aprx-EU2" class="ml-2 text-[10px] text-yellow-400 font-black animate-pulse hidden tracking-widest border border-yellow-400 px-1 rounded-sm bg-yellow-400/10">APRX</span>
                             </div>
-                            <div id="clock-EU2-side" class="text-3xl md:text-4xl font-black clock-wait opacity-30 tracking-widest text-gray-500 whitespace-nowrap cursor-pointer hover:text-white transition-colors" title="Click: Toggle Format | Double-click: Manual Override" onclick="handleClockClick('EU2')">--:--:--</div>
+                            <div id="clock-EU2-side" class="text-3xl md:text-4xl font-black clock-wait opacity-30 tracking-widest text-gray-500 whitespace-nowrap cursor-pointer hover:text-white transition-colors" title="Click: Show Last Restart Time | Double-click: Manual Override" onclick="handleClockClick('EU2')">--:--:--</div>
                             <div class="flex items-center justify-between w-full mt-2 pr-2">
                                 <div id="eta-EU2-side" class="text-[9px] opacity-60 font-bold tracking-widest text-orange-400 uppercase whitespace-nowrap">NEXT: --:--:--</div>
                                 <div class="wd-switch-container">
@@ -423,10 +423,10 @@
                         <div class="flex flex-col justify-center pr-3 border-r border-white/10">
                             <div class="text-xs md:text-sm uppercase flex items-center mb-1 font-bold tracking-widest drop-shadow-md text-gray-500 whitespace-nowrap" id="title-wrapper-EU3-side">
                                 <span id="led-EU3-side" class="led-indicator w-3 h-3 md:w-4 md:h-4 mr-2 border-2"></span>
-                                <span id="title-EU3-side">EU3 REBOOT</span>
+                                <span id="title-EU3-side">EU3 UPTIME</span>
                                 <span id="aprx-EU3" class="ml-2 text-[10px] text-yellow-400 font-black animate-pulse hidden tracking-widest border border-yellow-400 px-1 rounded-sm bg-yellow-400/10">APRX</span>
                             </div>
-                            <div id="clock-EU3-side" class="text-3xl md:text-4xl font-black clock-wait opacity-30 tracking-widest text-gray-500 whitespace-nowrap cursor-pointer hover:text-white transition-colors" title="Click: Toggle Format | Double-click: Manual Override" onclick="handleClockClick('EU3')">--:--:--</div>
+                            <div id="clock-EU3-side" class="text-3xl md:text-4xl font-black clock-wait opacity-30 tracking-widest text-gray-500 whitespace-nowrap cursor-pointer hover:text-white transition-colors" title="Click: Show Last Restart Time | Double-click: Manual Override" onclick="handleClockClick('EU3')">--:--:--</div>
                             <div class="flex items-center justify-between w-full mt-2 pr-2">
                                 <div id="eta-EU3-side" class="text-[9px] opacity-60 font-bold tracking-widest text-orange-400 uppercase whitespace-nowrap">NEXT: --:--:--</div>
                                 <div class="wd-switch-container">
@@ -662,6 +662,10 @@
         
         let isBooting = { EU1: false, EU2: false, EU3: false };
         let alert15Triggers = { EU1: false, EU2: false, EU3: false };
+
+        // [v5] COOLDOWN: blokuje ponowną detekcję restartu zaraz po wykryciu (anti-storm)
+        const RESTART_DETECTION_COOLDOWN_MS = 30 * 60 * 1000; // 30 min
+        let lastRestartDetected = { EU1: 0, EU2: 0, EU3: 0 };
 
         let advMode = localStorage.getItem('jsoc_adv_mode') === 'true';
         let audioUnlocked = false; let voiceEnabled = false; let ttsVoice = null;
@@ -1415,19 +1419,17 @@
                 if(localStorage.getItem('jsoc_last_restarts')) { hasPassedQuarantine = true; }
 
                 if (!isFirstLoad && state !== 'OFF') {
-                    
-                    let elapsedSinceLast = Date.now() - lastRestartData[name]; 
-                    let remainToNext = CYCLE - (elapsedSinceLast % CYCLE); 
-                    // TARCZA CZASOWA: Chroni przed fałszywym alarmem 20 minut przed restartem
-                    let isNearExpectedRestart = (remainToNext <= 20 * 60 * 1000) || (remainToNext >= (CYCLE - 5 * 60 * 1000));
+
+                    // [v5] COOLDOWN: jeśli niedawno wykryto restart, blokuj ponowną detekcję
+                    let inCooldown = (Date.now() - lastRestartDetected[name]) < RESTART_DETECTION_COOLDOWN_MS;
 
                     // PRIORYTET: Jeśli API mówi DEAD/OFFLINE, to na pewno restart
-                    if (isCrash) {
+                    if (isCrash && !inCooldown) {
                         isConfirmedRestart = true;
                         heuristicReason = "HARD RESTART (API STATUS DEAD/OFFLINE)";
                     }
-                    // HEURYSTYKA: Odpala się TYLKO, gdy nie spodziewamy się restartu
-                    else if (!isNearExpectedRestart) {
+                    // HEURYSTYKA: Czyste cięcie / wstrząs weteranów (bez tarczy czasowej - zegar liczy elapsed)
+                    else if (!inCooldown) {
                         let hasLagOrOfflineInRam = serverBuffers[name].some(entry => entry.ping > 500 || entry.status === 'offline' || entry.status === 'dead');
                         
                         if (currentPlayers <= 1 && droppedPlayersCount > 0 && hasLagOrOfflineInRam) {
@@ -1447,14 +1449,18 @@
                             }
                         }
                     }
-                    // ODBICIE TARCZY: Gracze wychodzą bo jest ostrzeżenie w grze
-                    else if (isNearExpectedRestart && droppedPlayersCount > 0) {
-                        logEvent(`[WD] IGNORING MASS DISCONNECT ON ${name} - SHIELD ACTIVE`, "text-yellow-500");
+                    // W cooldownie: log diagnostyczny tylko w advMode
+                    else if (inCooldown && (isCrash || droppedPlayersCount > 5)) {
+                        if (advMode) {
+                            const remainCd = Math.ceil((RESTART_DETECTION_COOLDOWN_MS - (Date.now() - lastRestartDetected[name])) / 60000);
+                            logEvent(`[WD] ${name} EVENT IGNORED - RESTART COOLDOWN (${remainCd}m left)`, "text-gray-500", true);
+                        }
                     }
 
                     if (isConfirmedRestart) {
                         isBooting[name] = true;
                         lastRestartData[name] = Date.now();
+                        lastRestartDetected[name] = Date.now();  // [v5] Aktywuj cooldown
                         lsSet('jsoc_last_restarts', JSON.stringify(lastRestartData)); recordRestartPattern(name);
                         
                         isApprox[name] = false;
@@ -1753,7 +1759,7 @@
                     leds.forEach(l => { if(l) { l.className = "led-indicator led-off-pulse " + (l.id.includes('side') ? "w-3 h-3 md:w-4 md:h-4 mr-2 border-2" : ""); } });
                     els.forEach(e => { if(e) { e.className = "text-3xl md:text-4xl font-black clock-wait opacity-30 tracking-widest text-gray-500 whitespace-nowrap"; e.innerText = "--:--:--"; } });
                     etas.forEach(t=>{if(t) { t.className = "text-[9px] font-bold tracking-widest mt-1 text-red-500/30 uppercase whitespace-nowrap"; t.innerText = `STANDBY`; }});
-                    titles.forEach(t=>{if(t) { t.innerText = `${n} REBOOT`; }}); titleWrappers.forEach(tw=>{if(tw) { tw.className = "text-xs uppercase flex items-center mb-1 font-bold tracking-widest drop-shadow-md text-gray-600 whitespace-nowrap"; }});
+                    titles.forEach(t=>{if(t) { t.innerText = `${n} UPTIME`; }}); titleWrappers.forEach(tw=>{if(tw) { tw.className = "text-xs uppercase flex items-center mb-1 font-bold tracking-widest drop-shadow-md text-gray-600 whitespace-nowrap"; }});
                     if(vfdL1 && vfdL2) { vfdL1.innerText = "SYS:"; vfdL1.className = "vfd-text whitespace-nowrap vfd-standby"; vfdL2.innerText = "STNDBY"; vfdL2.className = "vfd-text whitespace-nowrap vfd-standby"; }
                     return;
                 }
@@ -1782,48 +1788,36 @@
                     return; 
                 } else {
                     leds.forEach(l => { if(l) l.className = "led-indicator led-green-pulse " + (l.id.includes('side') ? "w-3 h-3 md:w-4 md:h-4 mr-2 border-2" : ""); }); 
-                    titles.forEach(t=>{if(t) { t.innerText = `${n} REBOOT`; }}); titleWrappers.forEach(tw=>{if(tw) { tw.className = `text-xs uppercase flex items-center mb-1 font-bold tracking-widest drop-shadow-md ${activeTitleColor} whitespace-nowrap`; }});
+                    titles.forEach(t=>{if(t) { t.innerText = `${n} UPTIME`; }}); titleWrappers.forEach(tw=>{if(tw) { tw.className = `text-xs uppercase flex items-center mb-1 font-bold tracking-widest drop-shadow-md ${activeTitleColor} whitespace-nowrap`; }});
                     if(vfdL1 && vfdL2) { vfdL1.innerText = `LAT:${latStr}`; vfdL1.className = "vfd-text whitespace-nowrap vfd-ping"; vfdL2.innerText = `OPR:${oprStr}`; vfdL2.className = "vfd-text whitespace-nowrap vfd-opr"; }
                     els.forEach(e => { if(e) { e.className = `text-3xl md:text-4xl font-black tracking-widest ${activeClockColor} whitespace-nowrap cursor-pointer hover:text-white transition-colors`; } }); 
                 }
 
                 
+                // [v5] ZEGAR LICZY W GÓRĘ od ostatniego wykrytego restartu (TIME-SINCE-RESTART)
                 let elapsed = Date.now() - lastRestartData[n];
-                let remain = CYCLE - (elapsed % CYCLE);
-                let next = Date.now() + remain;
+                if (elapsed < 0) elapsed = 0;
+                let lastDate = new Date(lastRestartData[n]);
 
-                if (remain <= 0) { 
-                    remain = 0; 
-                    leds.forEach(l => { if(l) l.className = "led-indicator led-red-blink " + (l.id.includes('side') ? "w-3 h-3 md:w-4 md:h-4 mr-2 border-2" : ""); }); 
-                    
-                    // [POPRAWKA]: Zdejmij wiszące pudło, gdy licznik po prostu dobije do zera
-                    if (alert15Triggers[n]) { clearStickyAlertForServer(n); alert15Triggers[n] = false; }
-                } 
-                else if (remain <= 15 * 60 * 1000 && state === 'ON') {
-                    if (!alert15Triggers[n]) { 
-                        logEvent(`[WD] WARNING: ${n} RESTART IN 15 MINUTES`, "text-cyan-400 font-bold"); addSystemAlert(`WARNING: ${n} REBOOT IN 15 MIN`); 
-                        showStickyAlert(n, `WARNING: ${n} REBOOT IN 15 MIN`, `Scheduled restart on ${n} is approaching.`);
-                        if(audioUnlocked && voiceEnabled && !isMuted) { queueSpeech(`Warning. 15 minutes to scheduled restart on ${n.replace('EU1', 'EU One')}`); } 
-                        alert15Triggers[n] = true; 
-                    }
-                } else { 
-                    if (alert15Triggers[n]) { clearStickyAlertForServer(n); }
-                    alert15Triggers[n] = false; 
-                }
+                // Bez ostrzeżeń 15-min: brak cyklicznego cyklu, restarty są ad-hoc
+                if (alert15Triggers[n]) { clearStickyAlertForServer(n); alert15Triggers[n] = false; }
 
-                const h = Math.floor(remain / 3600000); const m = Math.floor((remain % 3600000) / 60000); const s = Math.floor((remain % 60000) / 1000);
-                
+                const h = Math.floor(elapsed / 3600000);
+                const m = Math.floor((elapsed % 3600000) / 60000);
+                const s = Math.floor((elapsed % 60000) / 1000);
+
                 let displayStr = "";
                 if (clockMode[n] === 'countdown') {
+                    // tryb default: ELAPSED hh:mm:ss od restartu
                     displayStr = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
                 } else {
-                    const nextDate = new Date(next);
-                    displayStr = "~" + nextDate.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' });
+                    // tryb alt (klik): pokaż godzinę ostatniego restartu
+                    displayStr = "@" + lastDate.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' });
                 }
 
                 els.forEach(e => { if(e) e.innerText = displayStr; });
-                const nextStr = new Date(next).toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }); 
-                etas.forEach(t=>{if(t) { t.className = "text-[9px] opacity-60 font-bold tracking-widest mt-1 uppercase text-white whitespace-nowrap"; t.innerText = `NEXT: ${nextStr}`; }}); 
+                const lastStr = lastDate.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                etas.forEach(t=>{if(t) { t.className = "text-[9px] opacity-60 font-bold tracking-widest mt-1 uppercase text-white whitespace-nowrap"; t.innerText = `LAST: ${lastStr}`; }});
             });
         }
 
