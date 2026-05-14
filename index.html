@@ -654,6 +654,8 @@
         let previous = { EU1: [], EU2: [], EU3: [] };
         
         let prevUptime = { EU1: -1, EU2: -1, EU3: -1 }; 
+        // [v8] Steam server ID - rotuje przy KAŻDYM restarcie procesu serwera. 100% pewny sygnał.
+        let prevSteamId = safeJsonGet('jsoc_steam_ids', { EU1: null, EU2: null, EU3: null });
         let cache = {}; let historyData = []; let historyLabels = [];
         let lastRenderedHash = { EU1: '', EU2: '', EU3: '' }; 
         let isFirstLoad = true;
@@ -1392,6 +1394,8 @@
                 const json = await res.json(); const attr = json.data ? json.data.attributes : {};
                 const players = (json.included || []).filter(x => x.type === "player").map(p => p.attributes.name);
                 const currentPlayers = attr.players || 0; const maxPlayers = attr.maxPlayers || 0; const currentUptime = attr.details?.time || 0;
+                // [v8] Wyciągnij Steam Server ID - rotuje przy każdym restarcie procesu (100% pewny sygnał, działa nawet bez graczy).
+                const currentSteamId = attr.details?.serverSteamId || attr.details?.steamId || attr.details?.serverId || null;
                 
                 if (!lastRestartData[name]) {
                     lastRestartData[name] = currentUptime > 0 ? Date.now() - (currentUptime * 1000) : Date.now();
@@ -1427,9 +1431,12 @@
                 
                 let isMassEvent = (joinedPlayers.length > 10 || leftPlayers.length > 10);
                 let isCrash = (finalStatus === 'dead' || finalStatus === 'offline');
-                let isUptimeReset = (prevUptime[name] > 300 && currentUptime < 120 && currentUptime >= 0); 
-                
+                // [v7] Czuły uptime-reset: każdy realny SPADEK uptime > 60s = restart procesu.
+                // Stary warunek (>300 && <120) wymagał, by API zawsze zwracało uptime - dla wielu gier nie zwraca, więc detekcja nigdy nie odpalała.
+                let isUptimeReset = (prevUptime[name] > 60 && currentUptime >= 0 && currentUptime < prevUptime[name] - 60);
+
                 let droppedPlayersCount = leftPlayers.length;
+                let prevPlayerSnapshot = previous[name] ? previous[name].length : 0;
                 let isConfirmedRestart = false;
                 let heuristicReason = "";
 
@@ -1438,43 +1445,52 @@
 
                 if (!isFirstLoad && state !== 'OFF') {
 
-                    // [v5] COOLDOWN: jeśli niedawno wykryto restart, blokuj ponowną detekcję
+                    // [v5] COOLDOWN: blokuje ponowną detekcję restartu zaraz po wykryciu (anti-storm)
                     let inCooldown = (Date.now() - lastRestartDetected[name]) < RESTART_DETECTION_COOLDOWN_MS;
+                    let crashConfirmCount = serverBuffers[name].filter(e => e.status === 'offline' || e.status === 'dead').length;
+                    let hasLagOrOfflineInRam = serverBuffers[name].some(entry => entry.ping > 500 || entry.status === 'offline' || entry.status === 'dead');
 
-                    // PRIORYTET: API DEAD/OFFLINE = restart (ale tylko gdy potwierdzony przez UPTIME RESET, lub gdy bufor >=2 wpisów to potwierdza - chroni przed pojedynczym glitchem API)
-                    if (isCrash && !inCooldown) {
-                        let crashConfirmCount = serverBuffers[name].filter(e => e.status === 'offline' || e.status === 'dead').length;
-                        if (crashConfirmCount >= 2 || isUptimeReset) {
+                    if (!inCooldown) {
+                        // [v8] P0: STEAM SERVER ID ROTATION - 100% pewny sygnał. Działa nawet gdy nikt nie gra i gdy API nie zwraca uptime.
+                        // Wymaga: poprzednie ID było znane (nie null), aktualne też (nie null), oraz różnią się.
+                        if (prevSteamId[name] && currentSteamId && prevSteamId[name] !== currentSteamId) {
                             isConfirmedRestart = true;
-                            heuristicReason = "HARD RESTART (API STATUS DEAD/OFFLINE)";
-                        } else if (advMode) {
-                            logEvent(`[ADV] ${name} single API crash blip ignored (need 2+ samples or uptime reset)`, "text-gray-500", true);
+                            heuristicReason = `STEAM ID ROTATION (${prevSteamId[name]} -> ${currentSteamId})`;
                         }
-                    }
-                    // HEURYSTYKA: Czyste cięcie - WYMAGA potwierdzenia przez UPTIME RESET (faktyczny restart procesu)
-                    // Bez tego pojedynczy lag + odejście gracza powodował false-positive (bug EU1/EU3)
-                    else if (!inCooldown && isUptimeReset) {
-                        let hasLagOrOfflineInRam = serverBuffers[name].some(entry => entry.ping > 500 || entry.status === 'offline' || entry.status === 'dead');
-
-                        if (currentPlayers <= 1 && droppedPlayersCount > 0 && hasLagOrOfflineInRam) {
+                        // P1: jawny reset uptime z API (mocny sygnał, gdy gra wspiera details.time)
+                        else if (isUptimeReset) {
                             isConfirmedRestart = true;
-                            heuristicReason = "HEURISTIC: CZYSTE CIĘCIE (LOW-POP + UPTIME RESET)";
+                            heuristicReason = `UPTIME RESET (${prevUptime[name]}s -> ${currentUptime}s)`;
                         }
-
-                        if (droppedPlayersCount > 15 && !isConfirmedRestart) {
+                        // P2: API DEAD/OFFLINE potwierdzone min. 2 próbkami w buforze 60s (chroni przed pojedynczym blipem)
+                        else if (isCrash && crashConfirmCount >= 2) {
+                            isConfirmedRestart = true;
+                            heuristicReason = `HARD RESTART (API DEAD x${crashConfirmCount})`;
+                        }
+                        // P3: Mass-leave fallback - działa gdy API nie zwraca uptime.
+                        // Wymaga: realnie dużo odejść (>=8 abs. lub >=70% poprzedniej pop), niska populacja po, oraz turbulencja (lag/offline w 60s buforze).
+                        else if (
+                            (droppedPlayersCount >= 8 || (prevPlayerSnapshot >= 5 && droppedPlayersCount >= prevPlayerSnapshot * 0.7))
+                            && currentPlayers <= 3
+                            && hasLagOrOfflineInRam
+                        ) {
+                            isConfirmedRestart = true;
+                            heuristicReason = `MASS LEAVE (${droppedPlayersCount}/${prevPlayerSnapshot}) + LAG`;
+                        }
+                        // P4: Wstrząs weteranów (>=2 graczy z >90min totalTime znika jednocześnie + lag) - silne potwierdzenie nawet bez uptime
+                        else if (droppedPlayersCount >= 4 && hasLagOrOfflineInRam && currentPlayers < prevPlayerSnapshot - 3) {
                             let veteranCount = 0;
                             leftPlayers.forEach(pName => {
                                 if (statsData[pName] && statsData[pName].totalTime > 90 * 60 * 1000) veteranCount++;
                             });
-
                             if (veteranCount >= 2) {
                                 isConfirmedRestart = true;
-                                heuristicReason = `HEURISTIC: WSTRZĄS WETERANÓW + UPTIME RESET (${veteranCount} ELITE)`;
+                                heuristicReason = `VETERAN SHOCK (${veteranCount} ELITE) + LAG`;
                             }
                         }
                     }
                     // W cooldownie: log diagnostyczny tylko w advMode
-                    else if (inCooldown && (isCrash || droppedPlayersCount > 5)) {
+                    else if (isCrash || droppedPlayersCount > 5) {
                         if (advMode) {
                             const remainCd = Math.ceil((RESTART_DETECTION_COOLDOWN_MS - (Date.now() - lastRestartDetected[name])) / 60000);
                             logEvent(`[WD] ${name} EVENT IGNORED - RESTART COOLDOWN (${remainCd}m left)`, "text-gray-500", true);
@@ -1528,6 +1544,14 @@
                 }
                 
                 prevUptime[name] = currentUptime;
+                // [v8] Zapamiętaj Steam ID (tylko jeśli API zwróciło sensowną wartość). Persystujemy w localStorage by przeżyło F5.
+                if (currentSteamId) {
+                    if (prevSteamId[name] !== currentSteamId) {
+                        prevSteamId[name] = currentSteamId;
+                        lsSet('jsoc_steam_ids', JSON.stringify(prevSteamId));
+                        if (advMode) logEvent(`[ADV] ${name} STEAM ID: ${currentSteamId}`, "text-gray-500", true);
+                    }
+                }
 
                 if (maxPlayers > 0 && currentPlayers >= maxPlayers) {
                     if (!isServerFullAlerted[name]) {
