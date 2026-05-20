@@ -1206,6 +1206,26 @@
 
         function clearStickyAlertForServer(server) { const alertNode = document.getElementById(`sticky-${server}`); if (alertNode) { alertNode.remove(); } }
 
+        function clearServerRosterAfterRestart(server) {
+            const oldRoster = Array.isArray(previous[server]) ? [...previous[server]] : [];
+            oldRoster.forEach(pName => {
+                const lc = String(pName).toLowerCase();
+                const stillVisibleElsewhere = ['EU1', 'EU2', 'EU3'].some(other => {
+                    if (other === server) return false;
+                    return cache[other] && Array.isArray(cache[other].list) && cache[other].list.some(p => String(p.name).toLowerCase() === lc);
+                });
+                if (!stillVisibleElsewhere) delete playerSessions[pName];
+            });
+
+            previous[server] = [];
+            if (!cache[server]) cache[server] = { status: 'booting', players: 0, maxPlayers: 0, details: {}, list: [], ping: 0 };
+            cache[server].players = 0;
+            cache[server].list = [];
+            cache[server].status = isBooting[server] ? 'booting' : (cache[server].status || 'online');
+            lastRenderedHash[server] = `restart-clear-${Date.now()}`;
+            renderDirty = true;
+        }
+
         function setWdState(server, state) {
             wdState[server] = state; localStorage.setItem('jsoc_wd_state', JSON.stringify(wdState));
             renderWdSwitches(); updateClock(); updateOscyStyle(server, state); 
@@ -1646,6 +1666,7 @@
                 let prevPlayerSnapshot = previous[name] ? previous[name].length : 0;
                 let isConfirmedRestart = false;
                 let heuristicReason = "";
+                let forceEmptyRosterThisCycle = false;
 
                 let hasPassedQuarantine = (Date.now() - systemStartTime) >= QUARANTINE_MS;
                 if(localStorage.getItem('jsoc_last_restarts')) { hasPassedQuarantine = true; }
@@ -1723,6 +1744,16 @@
                         const correctionText = correctionSec >= 10 ? ` | BM TIME CORRECTION: -${correctionSec}s` : '';
                         logEvent(`[TELEMETRY] ${name} TRUE RESTART DETECTED (${heuristicReason})${correctionText}.`, "text-red-500 font-bold");
 
+                        // Restart means the old roster is invalid. Clear this server immediately and
+                        // treat the current BM roster as stale for this cycle. Next poll will show
+                        // players as fresh joins after the restart instead of keeping ghosts online.
+                        forceEmptyRosterThisCycle = true;
+                        joinedPlayers = [];
+                        leftPlayers = [];
+                        isMassEvent = true;
+                        clearServerRosterAfterRestart(name);
+                        logEvent(`[ROSTER] ${name} CLEARED AFTER RESTART. AWAITING FRESH JOINS.`, "text-orange-400 font-bold");
+
                         if (state === 'AUTO' && hasPassedQuarantine) {
                             setWdState(name, 'ON');
                             logEvent(`[ ! ] ${name} CYCLE SECURED // LOCK-ON [ ! ]`, "text-green-400 font-bold");
@@ -1776,7 +1807,10 @@
                     logEvent(`[ADV] ${name} STEAM ID MISSING IN BM RESPONSE`, "text-yellow-900", true);
                 }
 
-                if (maxPlayers > 0 && currentPlayers >= maxPlayers) {
+                const effectivePlayers = forceEmptyRosterThisCycle ? [] : players;
+                const effectiveCurrentPlayers = forceEmptyRosterThisCycle ? 0 : currentPlayers;
+
+                if (maxPlayers > 0 && effectiveCurrentPlayers >= maxPlayers) {
                     if (!isServerFullAlerted[name]) {
                         isServerFullAlerted[name] = true;
                         logEvent(`[ALERT] ${name} IS FULL`, "text-yellow-400 font-bold");
@@ -1784,14 +1818,14 @@
                         if (voiceEnabled) { queueSpeech(`Warning. ${name.replace('EU1', 'EU One')} is full.`); }
                         else { queueSound(SOUND_SQUAD, currentVolume * 0.2); }
                     }
-                } else if (currentPlayers < maxPlayers) {
+                } else if (effectiveCurrentPlayers < maxPlayers) {
                     isServerFullAlerted[name] = false;
                     const oldAlert = document.getElementById(`alert-full-${name}`);
                     if (oldAlert) { oldAlert.remove(); }
                 }
 
                 if (isFirstLoad) { 
-                    players.forEach(pName => { 
+                    effectivePlayers.forEach(pName => { 
                         if (!playerSessions[pName]) playerSessions[pName] = Date.now(); 
                         if (!statsData[pName]) {
                             statsData[pName] = { sessionTime: 0, totalTime: 0, lastTick: Date.now() };
@@ -1832,7 +1866,7 @@
                         }
                     });
                     
-                    players.forEach(pName => {
+                    effectivePlayers.forEach(pName => {
                         if (statsData[pName]) {
                             let now = Date.now();
                             let delta = now - (statsData[pName].lastTick || now);
@@ -1845,7 +1879,7 @@
                     leftPlayers.forEach(pName => { const squadDetails = getWatchedSquadDetails(pName); if (!isMassEvent) announceAction(squadDetails, name, false); let joinedAt = playerSessions[pName]; addPlayerAlert(pName, name, false, squadDetails, joinedAt); delete playerSessions[pName]; logEvent(`${escapeHTML(pName)} LEFT ${name}`, squadDetails ? "text-red-500 font-bold" : "text-gray-600"); });
                     if (isMassEvent && !isMuted) { logEvent(`[SYS] MASS DATA SHIFT: ${joinedPlayers.length} IN, ${leftPlayers.length} OUT. AUDIO THROTTLED.`, "text-yellow-500 font-bold"); queueSound(SOUND_SQUAD, currentVolume * 0.3); }
                 }
-                previous[name] = players; cache[name] = { status: finalStatus || 'offline', players: currentPlayers, maxPlayers: maxPlayers, details: attr.details || {}, list: players.map(n => ({name: n})), ping: lat };
+                previous[name] = effectivePlayers; cache[name] = { status: finalStatus || 'offline', players: effectiveCurrentPlayers, maxPlayers: maxPlayers, details: attr.details || {}, list: effectivePlayers.map(n => ({name: n})), ping: lat };
             } catch (err) {
                 const state = wdState[name]; updateMiniChart(name, 0, 0, state);
                 if (advMode && err.message !== "429") { logEvent(`[ADV] ${name} FETCH FAILED`, "text-red-900", true); }
