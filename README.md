@@ -184,6 +184,26 @@ STM PRO V6.0 is designed to run as a static webpage.
 
 Recommended deployment:
 
-```text
-/index.html
-/Adobe Express - file.png
+- `/index.html`
+- `/Adobe Express - file.png`
+
+The project can be hosted directly through **GitHub Pages**.
+
+No backend server is required for the current static version.
+
+---
+
+## 🔮 Planned Infrastructure Upgrade
+
+Future versions may use a dedicated 24/7 backend running on a self-hosted homelab server.
+
+Planned backend goals:
+
+- Steam A2S UDP polling
+- BattleMetrics verification layer
+- persistent SQLite history
+- public read-only dashboard
+- private admin panel
+- Home Assistant integration
+- faster restart detection
+- centralized squad and telemetry data
